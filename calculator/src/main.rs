@@ -87,13 +87,27 @@ fn on_activate(app: &gtk::Application) {
         .build();
     entry.connect_activate(|entry| {
         let text = entry.text();
-        match meval::eval_str(text) {
+        match meval::eval_str(text.clone()) {
             Ok(vyl) => {
                 let end = vyl.to_string();
                 entry.set_text(&end);
                 entry.set_position(end.len() as i32);
                 return
             } Err(e) => {
+                if e.to_string() == "Parse error: Missing 1 right parenthesis." {
+                    let ccc = format!("{})", text.clone());
+                    match meval::eval_str(ccc) {
+                        Ok(vyl) => {
+                            let end = vyl.to_string();
+                            entry.set_text(&end);
+                            entry.set_position(end.len() as i32);
+                            return
+                        } Err(ee) => {
+                            println!("Error: {}", ee);
+                            return
+                        }
+                    }
+                }
                 println!("Error: {}", e);
             }
         }
@@ -127,12 +141,26 @@ fn on_activate(app: &gtk::Application) {
             if cur == "" {
                 return
             }
-            match meval::eval_str(cur) {
+            match meval::eval_str(cur.clone()) {
                 Ok(vyl) => {
                     let end = vyl.to_string();
                     entry.set_text(&end);
                     return
                 } Err(e) => {
+                    if e.to_string() == "Parse error: Missing 1 right parenthesis." {
+                        let ccc = format!("{})", cur.clone());
+                        match meval::eval_str(ccc) {
+                            Ok(vyl) => {
+                                let end = vyl.to_string();
+                                entry.set_text(&end);
+                                entry.set_position(end.len() as i32);
+                                return
+                            } Err(ee) => {
+                                println!("Error: {}", ee);
+                                return
+                            }
+                        }
+                    }
                     println!("Error: {}", e);
                 }
             }
