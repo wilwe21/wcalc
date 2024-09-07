@@ -18,6 +18,7 @@ fn on_activate(app: &gtk::Application) {
     let entupbut = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let parbox = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     let clrbox = gtk::Box::new(gtk::Orientation::Horizontal, 1);
+    let porootbox = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     let button1 = gtk::Button::builder()
         .label("1")
         .build();
@@ -60,9 +61,6 @@ fn on_activate(app: &gtk::Application) {
     let buttondot = gtk::Button::builder()
         .label(".")
         .build();
-    let buttonproc = gtk::Button::builder()
-        .label("%")
-        .build();
     let buttonplus = gtk::Button::builder()
         .label("+")
         .build();
@@ -84,6 +82,22 @@ fn on_activate(app: &gtk::Application) {
     let buttonrmlas = gtk::Button::builder()
         .label("Del")
         .build();
+    let buttonroot = gtk::Button::builder()
+        .label("√")
+        .build();
+    entry.connect_activate(|entry| {
+        let text = entry.text();
+        match meval::eval_str(text) {
+            Ok(vyl) => {
+                let end = vyl.to_string();
+                entry.set_text(&end);
+                entry.set_position(end.len() as i32);
+                return
+            } Err(e) => {
+                println!("Error: {}", e);
+            }
+        }
+    });
     let butclick = move |button: &gtk::Button| {
         let sas = button.label().unwrap();
         let cur = entry.text();
@@ -92,12 +106,20 @@ fn on_activate(app: &gtk::Application) {
             return
         }
         if sas == "Del" {
+            if cur == "" {
+                return
+            }
             let new = &cur[..cur.len() -1];
             entry.set_text(new);
             return
         }
         if sas != "Enter" {
-            let endst = format!("{}{}",&cur, &sas);
+            let mut endst = String::new();
+            if sas == "√" {
+                endst = format!("{}^(1/",&cur);
+            } else {
+                endst = format!("{}{}",&cur, &sas);
+            }
             entry.set_text(&endst);
             return
         }
@@ -105,19 +127,19 @@ fn on_activate(app: &gtk::Application) {
             if cur == "" {
                 return
             }
-            if cur.ends_with("*") || cur.ends_with("/") || cur.ends_with("-") || cur.ends_with("+") || cur.ends_with("=") || cur.ends_with("^") {
-                return
-            } else {
-                let vyl = meval::eval_str(cur).unwrap();
-                let end = vyl.to_string();
-                entry.set_text(&end);
-                return
+            match meval::eval_str(cur) {
+                Ok(vyl) => {
+                    let end = vyl.to_string();
+                    entry.set_text(&end);
+                    return
+                } Err(e) => {
+                    println!("Error: {}", e);
+                }
             }
         }
     };
     buttonplus.connect_clicked(butclick.clone());
     buttonminus.connect_clicked(butclick.clone());  
-    buttonproc.connect_clicked(butclick.clone());  
     buttondiv.connect_clicked(butclick.clone());
     buttonmult.connect_clicked(butclick.clone());  
     buttondot.connect_clicked(butclick.clone());
@@ -137,6 +159,7 @@ fn on_activate(app: &gtk::Application) {
     buttonlefpar.connect_clicked(butclick.clone());
     buttonrigpar.connect_clicked(butclick.clone());
     buttonrmlas.connect_clicked(butclick.clone());
+    buttonroot.connect_clicked(butclick.clone());
     topbut.append(&button7);
     midbut.append(&button8);
     botbut.append(&button9);
@@ -151,13 +174,14 @@ fn on_activate(app: &gtk::Application) {
     bbbbut.append(&buttonminus);
     topbut.append(&button0);
     midbut.append(&buttondot);
-    botbut.append(&buttonproc);
     bbbbut.append(&buttonplus);
     parbox.append(&buttonlefpar);
     parbox.append(&buttonrigpar);
     clrbox.append(&buttonclr);
     clrbox.append(&buttonrmlas);
-    entupbut.append(&buttonexp);
+    porootbox.append(&buttonexp);
+    porootbox.append(&buttonroot);
+    entupbut.append(&porootbox);
     entupbut.append(&parbox);
     entupbut.append(&clrbox);
     entupbut.append(&buttonent);
