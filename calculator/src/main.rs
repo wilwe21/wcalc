@@ -1,58 +1,12 @@
 use std::io;
 use gtk::prelude::*;
-
-fn getv() -> [String; 3] {
-    println!("Enter value 1:");
-    let mut v1 = String::new();
-    io::stdin()
-        .read_line(&mut v1)
-        .expect("fail to read");
-    println!("what to do [+-*/^√]:");
-    let mut op = String::new();
-    io::stdin()
-        .read_line(&mut op)
-        .expect("fail to read");
-    println!("Enter value 2:");
-    let mut v2 = String::new();
-    io::stdin()
-        .read_line(&mut v2)
-        .expect("fail to read");
-    v1 = v1.replace("\n", "");
-    v2 = v2.replace("\n", "");
-    op = op.replace("\n", "");
-    [v1, op, v2]
-}
-
-fn domath(op: String, o1: u32, o2: u32) {
-    if &op == "+" {
-        let wyn = o1 + o2;
-        println!("{}+{}={}", o1, o2, wyn);
-    } else if &op == "*" {
-        let wyn = o1 * o2;
-        println!("{}*{}={}", o1, o2, wyn);
-    } else if &op == "-" {
-        let wyn = o1 - o2;
-        println!("{}-{}={}", o1, o2, wyn);
-    } else if &op == "/" {
-        let wyn = o1 / o2;
-        println!("{}/{}={}", o1, o2, wyn);
-    } else if &op == "^" {
-        let wyn = o1.pow(o2);
-        println!("{}^{}={}", o1, o2, wyn);
-    } else if &op == "√" {
-        let f1 = o1 as f32;
-        let f2 = o2 as f32;
-        let wyn = f1.powf(1.0 / f2);
-        println!("{}√{}={}", o1, o2, wyn);
-    }
-
-}
+use meval::eval_str;
 
 fn on_activate(app: &gtk::Application) {
     let mainBox = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let entry = gtk::Entry::builder()
         .has_frame(true)
-        .placeholder_text("chuj")
+        .placeholder_text("9+10=21")
         .build();
     let buttonBox = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     mainBox.append(&entry);
@@ -61,6 +15,9 @@ fn on_activate(app: &gtk::Application) {
     let midbut = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let botbut = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let bbbbut = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let entupbut = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let parbox = gtk::Box::new(gtk::Orientation::Horizontal, 1);
+    let clrbox = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     let button1 = gtk::Button::builder()
         .label("1")
         .build();
@@ -109,20 +66,60 @@ fn on_activate(app: &gtk::Application) {
     let buttonplus = gtk::Button::builder()
         .label("+")
         .build();
+    let buttonexp = gtk::Button::builder()
+        .label("^")
+        .build();
     let buttonent = gtk::Button::builder()
         .label("Enter")
+        .build();
+    let buttonclr = gtk::Button::builder()
+        .label("Clr")
+        .build();
+    let buttonlefpar = gtk::Button::builder()
+        .label("(")
+        .build();
+    let buttonrigpar = gtk::Button::builder()
+        .label(")")
+        .build();
+    let buttonrmlas = gtk::Button::builder()
+        .label("Del")
         .build();
     let butclick = move |button: &gtk::Button| {
         let sas = button.label().unwrap();
         let cur = entry.text();
-        let endst = format!("{}{}",&cur, &sas);
-        entry.set_text(&endst);
+        if sas == "Clr" {
+            entry.set_text("");
+            return
+        }
+        if sas == "Del" {
+            let new = &cur[..cur.len() -1];
+            entry.set_text(new);
+            return
+        }
+        if sas != "Enter" {
+            let endst = format!("{}{}",&cur, &sas);
+            entry.set_text(&endst);
+            return
+        }
+        if sas == "Enter" {
+            if cur == "" {
+                return
+            }
+            if cur.ends_with("*") || cur.ends_with("/") || cur.ends_with("-") || cur.ends_with("+") || cur.ends_with("=") || cur.ends_with("^") {
+                return
+            } else {
+                let vyl = meval::eval_str(cur).unwrap();
+                let end = vyl.to_string();
+                entry.set_text(&end);
+                return
+            }
+        }
     };
     buttonplus.connect_clicked(butclick.clone());
-    buttonminus.connect_clicked(butclick.clone());
-    buttonproc.connect_clicked(butclick.clone());
+    buttonminus.connect_clicked(butclick.clone());  
+    buttonproc.connect_clicked(butclick.clone());  
     buttondiv.connect_clicked(butclick.clone());
-    buttonmult.connect_clicked(butclick.clone());
+    buttonmult.connect_clicked(butclick.clone());  
     buttondot.connect_clicked(butclick.clone());
     button0.connect_clicked(butclick.clone());
     button1.connect_clicked(butclick.clone());
@@ -134,27 +131,41 @@ fn on_activate(app: &gtk::Application) {
     button7.connect_clicked(butclick.clone());
     button8.connect_clicked(butclick.clone());
     button9.connect_clicked(butclick.clone());
+    buttonent.connect_clicked(butclick.clone());
+    buttonexp.connect_clicked(butclick.clone());
+    buttonclr.connect_clicked(butclick.clone());
+    buttonlefpar.connect_clicked(butclick.clone());
+    buttonrigpar.connect_clicked(butclick.clone());
+    buttonrmlas.connect_clicked(butclick.clone());
     topbut.append(&button7);
-    topbut.append(&button8);
-    topbut.append(&button9);
-    topbut.append(&buttondiv);
-    midbut.append(&button4);
+    midbut.append(&button8);
+    botbut.append(&button9);
+    bbbbut.append(&buttondiv);
+    topbut.append(&button4);
     midbut.append(&button5);
-    midbut.append(&button6);
-    midbut.append(&buttonmult);
-    botbut.append(&button1);
-    botbut.append(&button2);
+    botbut.append(&button6);
+    bbbbut.append(&buttonmult);
+    topbut.append(&button1);
+    midbut.append(&button2);
     botbut.append(&button3);
-    botbut.append(&buttonminus);
-    bbbbut.append(&button0);
-    bbbbut.append(&buttondot);
-    bbbbut.append(&buttonproc);
+    bbbbut.append(&buttonminus);
+    topbut.append(&button0);
+    midbut.append(&buttondot);
+    botbut.append(&buttonproc);
     bbbbut.append(&buttonplus);
+    parbox.append(&buttonlefpar);
+    parbox.append(&buttonrigpar);
+    clrbox.append(&buttonclr);
+    clrbox.append(&buttonrmlas);
+    entupbut.append(&buttonexp);
+    entupbut.append(&parbox);
+    entupbut.append(&clrbox);
+    entupbut.append(&buttonent);
     buttonBox.append(&topbut);
     buttonBox.append(&midbut);
     buttonBox.append(&botbut);
     buttonBox.append(&bbbbut);
-    buttonBox.append(&buttonent);
+    buttonBox.append(&entupbut);
     let window = gtk::ApplicationWindow::builder()
         .title("Calc")
         .application(app)

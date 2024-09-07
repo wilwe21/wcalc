@@ -5,3 +5,4 @@ edition = "2021"
 
 [dependencies]
 gtk = { version = "0.9.1", package = "gtk4" }
+meval = "0.2.0"
