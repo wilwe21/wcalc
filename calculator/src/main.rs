@@ -1,7 +1,9 @@
 use gtk::prelude::*;
+use gtk::gdk;
 use meval::eval_str;
 use regex::Regex;
-use grass::from_path;
+
+// css classes :90
 
 fn on_activate(app: &gtk::Application) {
     let mainBox = gtk::Box::new(gtk::Orientation::Vertical, 0);
@@ -86,6 +88,9 @@ fn on_activate(app: &gtk::Application) {
     let buttonroot = gtk::Button::builder()
         .label("√")
         .build();
+    // css related
+    buttonent.add_css_class("class-name");
+    entry.add_css_class("entry");
     entry.connect_activate(|entry| {
         let text = entry.text();
         match meval::eval_str(text.clone()) {
@@ -339,19 +344,23 @@ fn on_activate(app: &gtk::Application) {
     let window = gtk::ApplicationWindow::builder()
         .title("Calc")
         .application(app)
-        .child(&mainBox)
         .build();
+    load_css();
+    window.set_child(Some(&mainBox));
     window.show();
 }
 
+fn load_css() {
+    let display = gdk::Display::default().expect("Could not get default display.");
+    let provider = gtk::CssProvider::new();
+    let priority = gtk::STYLE_PROVIDER_PRIORITY_APPLICATION;
+
+    let css_content = include_str!("../css/main.css");
+    provider.load_from_data(css_content);
+    gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
+}
+
 fn main() {
-    /*let scss = "scss/styles.scss";
-    let css = "target/styles.css";
-    let res = from_path(scss, &grass::Options::default());
-    let cssprov =  gtk::CssProvider::new();
-    let file = gtk::gio::File::new_for_path(css);
-    cssprov.load_from_file(&file);
-    gtk::StyleContext::add_provider_for_screen(&css_provider, gdk::Screen::default().unwrap(), gtk::STYLE_PROVIDER_PRIORITY_APPLICATION);*/
     let app = gtk::Application::builder()
         .application_id("com.github.wilwe21.Calc")
         .build();
