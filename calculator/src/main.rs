@@ -1,7 +1,7 @@
-use std::io;
 use gtk::prelude::*;
 use meval::eval_str;
 use regex::Regex;
+use grass::from_path;
 
 fn on_activate(app: &gtk::Application) {
     let mainBox = gtk::Box::new(gtk::Orientation::Vertical, 0);
@@ -345,6 +345,13 @@ fn on_activate(app: &gtk::Application) {
 }
 
 fn main() {
+    /*let scss = "scss/styles.scss";
+    let css = "target/styles.css";
+    let res = from_path(scss, &grass::Options::default());
+    let cssprov =  gtk::CssProvider::new();
+    let file = gtk::gio::File::new_for_path(css);
+    cssprov.load_from_file(&file);
+    gtk::StyleContext::add_provider_for_screen(&css_provider, gdk::Screen::default().unwrap(), gtk::STYLE_PROVIDER_PRIORITY_APPLICATION);*/
     let app = gtk::Application::builder()
         .application_id("com.github.wilwe21.Calc")
         .build();
