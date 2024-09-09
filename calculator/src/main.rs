@@ -89,8 +89,15 @@ fn on_activate(app: &gtk::Application) {
         .label("√")
         .build();
     // css related
-    buttonent.add_css_class("class-name");
-    entry.add_css_class("entry");
+    topbut.add_css_class("topbut");
+    midbut.add_css_class("midbut");
+    botbut.add_css_class("botbut");
+    bbbbut.add_css_class("bbbbut");
+    entupbut.add_css_class("entupbut");
+    parbox.add_css_class("parbox");
+    clrbox.add_css_class("clrbox");
+    porootbox.add_css_class("porootbox");
+    buttonent.add_css_class("enter");
     entry.connect_activate(|entry| {
         let text = entry.text();
         match meval::eval_str(text.clone()) {

@@ -1,18 +1,18 @@
+entry {
+	margin: 2px;
+	border: 2px solid @accent_bg_color;
+}
 button {
-	background-image: none;
 	margin: 2px;
-	background-color: blue;
-}
-.class-name {
-	background-color: black;
-	color: lime;
-}
-.entry {
-	margin: 2px;
-	background-image: none;
-	background-color: red;
+	border: 2px solid @accent_bg_color;
 }
 box {
-	background-color: blue;
-	color: red;
+	background-color: @bg_color;
+	color: @fg_color;
+}
+.botbut {
+	margin-right: 5px;
+}
+.enter {
+	color: lime;
 }
