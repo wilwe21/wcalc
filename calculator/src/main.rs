@@ -71,7 +71,7 @@ fn on_activate(app: &gtk::Application) {
         .label("^")
         .build();
     let buttonent = gtk::Button::builder()
-        .label("Enter")
+        .label("=")
         .build();
     let buttonclr = gtk::Button::builder()
         .label("Clr")
@@ -198,7 +198,7 @@ fn on_activate(app: &gtk::Application) {
             entry.set_text(new);
             return
         }
-        if sas != "Enter" {
+        if sas != "=" {
             let mut endst = String::new();
             if sas == "√" {
                 endst = format!("{}^(1/",&cur);
@@ -208,7 +208,7 @@ fn on_activate(app: &gtk::Application) {
             entry.set_text(&endst);
             return
         }
-        if sas == "Enter" {
+        if sas == "=" {
             if cur == "" {
                 return
             }
