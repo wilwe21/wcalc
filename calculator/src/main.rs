@@ -349,7 +349,7 @@ fn on_activate(app: &gtk::Application) {
     buttonBox.append(&bbbbut);
     buttonBox.append(&entupbut);
     let window = gtk::ApplicationWindow::builder()
-        .title("Calc")
+        .title("WCalc")
         .application(app)
         .build();
     load_css();
