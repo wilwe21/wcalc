@@ -11,7 +11,7 @@ pub fn get_size(main: gtk::Box) {
         .build();
     window.show();
     entry.clone().connect_activate(move |_| {
-        match entry.text().parse::<u32>() {
+        match entry.text().parse::<u8>() {
             Ok (int) => {
                 if int > 16 {
                     entry.set_placeholder_text(Some("Need to be below 16"));
@@ -22,7 +22,7 @@ pub fn get_size(main: gtk::Box) {
                 }
             },
             Err (_) => {
-                entry.set_placeholder_text(Some("Need to be u32"));
+                entry.set_placeholder_text(Some("Need to be u8"));
                 entry.set_text("");
             }
         }
