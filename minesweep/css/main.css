@@ -1,0 +1,22 @@
+.cell {
+	width: 20px;
+	height: 20px;
+}
+line {
+	height: 20px;
+}
+.x > label {
+	color: red;
+}
+.one > label {
+	color: lime;
+}
+.two > label {
+	color: orange;
+}
+.three > label {
+	color: red;
+}
+.four > label {
+	color: blue;
+}

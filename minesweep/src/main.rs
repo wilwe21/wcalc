@@ -1,4 +1,5 @@
 use gtk::prelude::*;
+use gtk::gdk;
 
 mod get_size;
 mod generate;
@@ -12,8 +13,19 @@ fn on_active(app: &gtk::Application) {
         .application(app)
         .child(&main)
         .build();
+    load_css();
     window.show();
     get_size(main);
+}
+
+fn load_css() {
+    let display = gdk::Display::default().expect("Could not get default display.");
+    let provider = gtk::CssProvider::new();
+    let priority = gtk::STYLE_PROVIDER_PRIORITY_APPLICATION;
+
+    let css_content = include_str!("../css/main.css");
+    provider.load_from_data(css_content);
+    gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
 }
 
 fn main() {
