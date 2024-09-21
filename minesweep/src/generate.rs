@@ -62,7 +62,7 @@ pub fn map_gen(main: gtk::Box, size: u8) {
         }
         map.push(line);
     }
-    let amount: u8 = 4; 
+    let amount: u8 = (size^20); 
     let map = mines(map, size, amount);
     let mapbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     for (x, i) in map.iter().enumerate() {
