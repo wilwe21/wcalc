@@ -25,7 +25,6 @@ impl Grid {
         }
     }
     fn build(&self) {
-        let mut cur = "X";
         for i in &self.grid {
             let row = gtk::Box::new(gtk::Orientation::Horizontal, 1);
             for _j in i {
@@ -34,10 +33,7 @@ impl Grid {
                     .build();
                 row.append(&cell);
                 cell.connect_clicked(move |button| {
-                    button.set_label(cur);
-                    let mut o = "O".to_string();
-                    let mut x = "X".to_string();
-                    cur = if cur == "X" { &mut o } else { &mut x };
+                    button.set_label("X");
                 });
             };
             row.set_hexpand(true);
@@ -46,12 +42,20 @@ impl Grid {
             self.b.append(&row);
         }
     }
+    fn display(&self) {
+        for i in &self.grid {
+            for j in i {
+                print!("{}", j);
+            }
+            println!("");
+        }
+    }
 }
 
 fn on_active(app: &gtk::Application) {
     let mut gir = Grid::new(3);
     gir.build();
-    println!("{:?}",gir);
+    gir.display();
     let window = gtk::ApplicationWindow::builder()
         .title("WTick Tack Toe")
         .application(app)
