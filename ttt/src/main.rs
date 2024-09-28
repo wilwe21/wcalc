@@ -1,6 +1,6 @@
 use gtk::prelude::*;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 struct Grid {
     grid: Vec<Vec<String>>,
     len: u32,
@@ -24,16 +24,19 @@ impl Grid {
             b: gbox,
         }
     }
-    fn build(&self) {
-        for i in &self.grid {
+    fn build(self) {
+        for (a, i) in self.grid.clone().into_iter().enumerate() {
             let row = gtk::Box::new(gtk::Orientation::Horizontal, 1);
-            for _j in i {
+            for (b, _) in i.into_iter().enumerate() {
                 let cell = gtk::Button::builder()
                     .label("")
                     .build();
                 row.append(&cell);
+                let mut gri = self.clone();
                 cell.connect_clicked(move |button| {
                     button.set_label("X");
+                    &gri.place(vec![a,b]);
+                    &gri.display();
                 });
             };
             row.set_hexpand(true);
@@ -50,11 +53,13 @@ impl Grid {
             println!("");
         }
     }
+    fn place(mut self, points: Vec<usize>) {
+        self.grid[points[0]][points[1]] = "X".to_string();
+    }
 }
 
 fn on_active(app: &gtk::Application) {
     let mut gir = Grid::new(3);
-    gir.build();
     gir.display();
     let window = gtk::ApplicationWindow::builder()
         .title("WTick Tack Toe")
