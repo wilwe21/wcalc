@@ -160,12 +160,14 @@ fn on_activate(app: &gtk::Application) {
                                     }
                                 };
                                 let mut stra = test(ccc.clone().to_string(), pos);
+                                let mut iter = 0;
                                 loop {
-                                    if regex.is_match(&stra[1]) {
+                                    if regex.is_match(&stra[1]) && iter > 20 {
                                         let pos = stra[1].to_string().chars()
                                             .find(|a| a.is_digit(10))
                                             .and_then(|a| a.to_digit(10)).unwrap() as i32;
                                         stra = test(stra[0].clone().to_string(), pos);
+                                        iter += 1;
                                     } else {
                                         break
                                     }
@@ -272,12 +274,14 @@ fn on_activate(app: &gtk::Application) {
                                         }
                                     };
                                     let mut stra = test(ccc.clone().to_string(), pos);
+                                    let mut iter = 0;
                                     loop {
-                                        if regex.is_match(&stra[1]) {
+                                        if regex.is_match(&stra[1]) && iter > 20 {
                                             let pos = stra[1].to_string().chars()
                                                 .find(|a| a.is_digit(10))
                                                 .and_then(|a| a.to_digit(10)).unwrap() as i32;
                                             stra = test(stra[0].clone().to_string(), pos);
+                                            iter += 1;
                                         } else {
                                             break
                                         }
