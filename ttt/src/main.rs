@@ -4,11 +4,11 @@ use gtk::prelude::*;
 struct Grid {
     grid: Vec<Vec<String>>,
     len: u32,
-    b: gtk::Box,
+    window: gtk::ApplicationWindow,
 }
 
 impl Grid {
-    fn new(len: u32) -> Self {
+    fn new(len: u32, app: &gtk::Application) -> Self {
         let mut grid: Vec<Vec<String>> = Vec::new();
         for _i in 0..len {
             let mut row: Vec<String> = Vec::new();
@@ -17,56 +17,93 @@ impl Grid {
             }
             grid.push(row);
         }
-        let gbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
+        let window = gtk::ApplicationWindow::builder()
+            .title("WTick Tack Toe")
+            .application(app)
+            .build();
+        window.show();
+        let boX = gtk::Box::new(gtk::Orientation::Vertical, 1);
+        window.set_child(Some(&boX));
         Self {
             grid,
             len,
-            b: gbox,
+            window: window,
         }
     }
     fn build(self) {
-        for (a, i) in self.grid.clone().into_iter().enumerate() {
-            let row = gtk::Box::new(gtk::Orientation::Horizontal, 1);
-            for (b, _) in i.into_iter().enumerate() {
-                let cell = gtk::Button::builder()
-                    .label("")
-                    .build();
-                row.append(&cell);
-                let mut gri = self.clone();
-                cell.connect_clicked(move |button| {
-                    button.set_label("X");
-                    &gri.place(vec![a,b]);
-                    &gri.display();
-                });
-            };
-            row.set_hexpand(true);
-            row.set_vexpand(true);
-            row.set_homogeneous(true);
-            self.b.append(&row);
+        let boX = self.window.observe_children();
+        if let Some(child) = boX.item(0) {
+            if let Ok(box_) = child.downcast::<gtk::Box>() {
+                for (a, i) in self.grid.clone().into_iter().enumerate() {
+                    let row = gtk::Box::new(gtk::Orientation::Horizontal, 1);
+                    for (b, _) in i.into_iter().enumerate() {
+                        let cell = gtk::Button::builder()
+                            .label(self.grid[a][b].clone())
+                            .build();
+                        row.append(&cell);
+                        let win = self.window.clone();
+                        cell.connect_clicked(move |button| {
+                            let cur = check(&win);
+                            button.set_label(&cur);
+                        });
+                    };
+                    row.set_hexpand(true);
+                    row.set_vexpand(true);
+                    row.set_homogeneous(true);
+                    box_.append(&row);
+                }
+            } else {
+                println!("child is not a box");
+            }
+        } else {
+            println!("Non child");
         }
     }
     fn display(&self) {
         for i in &self.grid {
-            for j in i {
+            for j in i.iter() {
                 print!("{}", j);
             }
             println!("");
         }
     }
-    fn place(mut self, points: Vec<usize>) {
-        self.grid[points[0]][points[1]] = "X".to_string();
-    }
+}
+fn check(win: &gtk::ApplicationWindow) -> String {
+   let mut x = 0;
+   let mut o = 0;
+   let boX = win.observe_children();
+   if let Some(child) = boX.item(0) {
+        if let Ok(box_) = child.downcast::<gtk::Box>() {
+            let iter = box_.observe_children();
+            for ch in &iter {
+                if let Ok(inch) = ch.expect("chuj").downcast::<gtk::Box>() {
+                    let init = inch.observe_children();
+                    for inchit in &init {
+                        if let Ok(butt) = inchit.expect("chuj").downcast::<gtk::Button>() {
+                            if let Some(lab) = butt.label() {
+                                if lab == "X"{
+                                    x += 1;
+                                } else if lab == "O" {
+                                    o += 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+   }
+   if x > o {
+        return "O".to_string();
+   } else {
+        return "X".to_string();
+   }
 }
 
 fn on_active(app: &gtk::Application) {
-    let mut gir = Grid::new(3);
+    let gir = Grid::new(3, app);
     gir.display();
-    let window = gtk::ApplicationWindow::builder()
-        .title("WTick Tack Toe")
-        .application(app)
-        .build();
-    window.set_child(Some(&gir.b));
-    window.show();
+    gir.clone().build();
 }
 
 fn main() {
