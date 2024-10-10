@@ -1,10 +1,32 @@
 use gtk::prelude::*;
+
+use yaml_rust::{YamlLoader, Yaml};
+use std::fs::File;
+use home::home_dir;
+
 use gtk::gdk;
 use meval::eval_str;
 use regex::Regex;
 
 // css classes :90
+fn get_conf() {
+    match home_dir() {
+        Some(h) => {
+            let path = format!("{}/.config/wcalc.yaml", h.display());
+            match File::open(&path) {
+                Ok(f) => {
+                    println!("File Found")
+                },
+                _ => {
+                    println!("Not Found") 
+                }
+            }
+        },
+        None => println!("no home path find")
+    }
+}
 fn config() {
+    get_conf();
     let styles = ["default", "gumball"];
     let con = gtk::Window::builder()
         .title("Wcalc Config")
