@@ -18,7 +18,7 @@ fn get_conf() {
                     println!("File Found")
                 },
                 _ => {
-                    println!("Not Found") 
+                    let mut f = File::create(path).expect("What");
                 }
             }
         },
