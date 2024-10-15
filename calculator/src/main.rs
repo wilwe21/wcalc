@@ -1,8 +1,10 @@
 use gtk::prelude::*;
 
 use yaml_rust::{YamlLoader, Yaml};
+use std::fs;
 use std::fs::File;
 use home::home_dir;
+use std::io::prelude::*;
 
 use gtk::gdk;
 use meval::eval_str;
@@ -12,13 +14,22 @@ use regex::Regex;
 fn get_conf() {
     match home_dir() {
         Some(h) => {
-            let path = format!("{}/.config/wcalc.yaml", h.display());
+            let path = format!("{}/.config/wcalc/config.yaml", h.display());
             match File::open(&path) {
                 Ok(f) => {
                     println!("File Found")
                 },
                 _ => {
-                    let mut f = File::create(path).expect("What");
+                    match fs::create_dir(format!("{}/.config/wcalc", h.display())) {
+                        Ok(()) => println!("path created"),
+                        _ => println!("path not")
+                    }
+                    let mut f = File::create(path).expect("can't create file");
+                    match f.write(b"theme: 'default'") {
+                        Ok(_) => println!("write"),
+                        _ => println!("not write")
+                    }
+                    println!("{:?}", f);
                 }
             }
         },
