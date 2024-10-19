@@ -96,11 +96,12 @@ fn save_conf(conf: HashMap <&'static str, &'static str>) {
     }
 }
 
-fn config() {
+fn config(app: &gtk::Application) {
     get_conf();
     save_conf(def_conf());
     let styles = ["default"];
     let con = gtk::Window::builder()
+        .application(app)
         .title("Wcalc Config")
         .build();
     let bob = gtk::Box::new(gtk::Orientation::Vertical, 0);
@@ -207,10 +208,11 @@ fn on_activate(app: &gtk::Application) {
     clrbox.add_css_class("clrbox");
     porootbox.add_css_class("porootbox");
     buttonent.add_css_class("enter");
-    entry.connect_activate(|entry| {
+    let apccl = app.clone();
+    entry.connect_activate(move |entry| {
         let text = entry.text();
         if text == "conf" {
-            config();
+            config(&apccl);
             entry.set_text("");
         } else if text == ":q" {
             exit(6);
@@ -300,6 +302,7 @@ fn on_activate(app: &gtk::Application) {
                 }
         }}
     });
+    let apcl = app.clone();
     let butclick = move |button: &gtk::Button| {
         let sas = button.label().unwrap();
         let cur = entry.text();
@@ -329,7 +332,7 @@ fn on_activate(app: &gtk::Application) {
             if cur == "" {
                 return
             } else if cur == "conf" {
-                config();
+                config(&apcl);
                 entry.set_text("");
             } else if cur == ":q" {
                 exit(6);
