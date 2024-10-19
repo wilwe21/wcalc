@@ -4,39 +4,59 @@ use std::fs;
 use std::fs::File;
 use home::home_dir;
 use std::io::prelude::*;
-use std::io::BufReader;
+use std::collections::HashMap;
 
 use gtk::gdk;
 use meval::eval_str;
 use regex::Regex;
 
 // css classes :90
+
+fn init_conf() -> HashMap <&'static str, &'static str> {
+    match home_dir(){
+        Some(h) => {
+            let path = format!("{}/.config/wcalc/config.cfg", h.display());
+            match fs::create_dir(format!("{}/.config/wcalc", h.display())) {
+                Ok(()) => println!("create"),
+                _ => println!("some error")
+            };
+            let mut f = File::create(path).expect("can't create file");
+            let cont = "//themes ~/.config/wcalc/css\ntheme = default";
+            let mut conf = HashMap::new();
+            conf.insert("theme", "default");
+            f.write(cont.as_bytes()).expect("can't write");
+            println!("{:?}", f);
+            conf
+        },
+        None => {
+            let mut conf = HashMap::new();
+            conf.insert("theme", "default");
+            println!("No home path find");
+            conf
+        }
+    }
+}
+
 fn get_conf() {
     match home_dir() {
         Some(h) => {
             let path = format!("{}/.config/wcalc/config.cfg", h.display());
             match File::open(&path) {
                 Ok(f) => {
-                    let mut buf = BufReader::new(f);
-                    let mut cont = String::new();
-                    buf.read_to_string(&mut cont).expect("file");
+                    let cont = fs::read_to_string(path).expect("config file");
+                    let mut conf = HashMap::new();
                     let settings: Vec<_> = cont.split('\n').filter(|x| x.to_string() != "" && !(x.to_string().contains("//")))
                         .map(|x|
                             x.split("=").map(|y| y.to_string().trim().to_owned()).collect::<Vec<_>>()
                         ).collect();
-                    println!("{:?}", settings);
+                    for i in settings {
+                        conf.insert(i[0].clone(), i[1].clone());
+                    }
+                    println!("{:?}", conf);
                 },
                 _ => {
-                    match fs::create_dir(format!("{}/.config/wcalc", h.display())) {
-                        Ok(()) => println!("path created"),
-                        _ => println!("path not")
-                    }
-                    let mut f = File::create(path).expect("can't create file");
-                    match f.write(b"theme = 'default'") {
-                        Ok(_) => println!("write"),
-                        _ => println!("not write")
-                    }
-                    println!("{:?}", f);
+                    let s = init_conf();
+                    println!("{:?}", s);
                 }
             }
         },
