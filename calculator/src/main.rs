@@ -1,5 +1,6 @@
 use gtk::prelude::*;
 
+use std::process::exit;
 use std::fs;
 use std::fs::File;
 use home::home_dir;
@@ -11,6 +12,12 @@ use meval::eval_str;
 use regex::Regex;
 
 // css classes :90
+fn def_conf() -> HashMap <&'static str, &'static str> {
+    let mut def_conf = HashMap::new();
+    def_conf.insert("theme", "default");
+    def_conf.insert("sus", "true");
+    def_conf
+}
 
 fn init_conf() -> HashMap <&'static str, &'static str> {
     match home_dir(){
@@ -22,17 +29,13 @@ fn init_conf() -> HashMap <&'static str, &'static str> {
             };
             let mut f = File::create(path).expect("can't create file");
             let cont = "//themes ~/.config/wcalc/css\ntheme = default";
-            let mut conf = HashMap::new();
-            conf.insert("theme", "default");
             f.write(cont.as_bytes()).expect("can't write");
             println!("{:?}", f);
-            conf
+            def_conf()
         },
         None => {
-            let mut conf = HashMap::new();
-            conf.insert("theme", "default");
             println!("No home path find");
-            conf
+            def_conf()
         }
     }
 }
@@ -63,9 +66,40 @@ fn get_conf() {
         None => println!("no home path find")
     }
 }
+
+fn save_conf(conf: HashMap <&'static str, &'static str>) {
+    match home_dir() {
+        Some(h) => {
+            let path = format!("{}/.config/wcalc/config.cfg", h.display());
+            match File::open(&path) {
+                Ok(_) => {
+                    let co = fs::read_to_string(path).expect("file");
+                    let mut co = co.split("\n").collect::<Vec<_>>();
+                    let mut new = Vec::new();
+                    println!("{:?}", co);
+                    for i in co { 
+                        for (key, value) in conf.clone().into_iter() {
+                            if i.contains(key) && !(i.contains("//")) {
+                                let form = format!("{} = {}", key, value);
+                                new.push(form);
+                            } else if i.contains("//") {
+                                new.push(i.to_string())
+                            }
+                        }
+                    }
+                    println!("{:?}", new);
+                },
+                _ => println!("sus")
+            }
+        },
+        _ => println!("can't save becouse you don't have home")
+    }
+}
+
 fn config() {
     get_conf();
-    let styles = ["default", "gumball"];
+    save_conf(def_conf());
+    let styles = ["default"];
     let con = gtk::Window::builder()
         .title("Wcalc Config")
         .build();
@@ -178,6 +212,8 @@ fn on_activate(app: &gtk::Application) {
         if text == "conf" {
             config();
             entry.set_text("");
+        } else if text == ":q" {
+            exit(6);
         } else {
             match meval::eval_str(text.clone()) {
                 Ok(vyl) => {
@@ -295,6 +331,8 @@ fn on_activate(app: &gtk::Application) {
             } else if cur == "conf" {
                 config();
                 entry.set_text("");
+            } else if cur == ":q" {
+                exit(6);
             } else {
                 match meval::eval_str(cur.clone()) {
                     Ok(vyl) => {
