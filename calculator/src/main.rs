@@ -429,7 +429,7 @@ fn load_css() {
     let provider = gtk::CssProvider::new();
     let priority = gtk::STYLE_PROVIDER_PRIORITY_APPLICATION;
 
-    let css_content = include_str!("../css/main.css");
+    let css_content = include_str!("./main.css");
     provider.load_from_data(css_content);
     gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
 }
