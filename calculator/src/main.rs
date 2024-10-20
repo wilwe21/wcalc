@@ -98,23 +98,17 @@ fn save_conf(conf: HashMap <&'static str, &'static str>) {
     }
 }
 
-fn config(app: &gtk::Application) {
+fn config() {
     get_conf();
     save_conf(def_conf());
     //let styles = ["default"];
-    //let con = gtk::Window::builder()
-    //    .application(app)
-    //    .title("Wcalc Config")
-    //    .build();
-    //let bob = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    //for styl in styles {
-    //    let sty = gtk::Label::builder()
-    //        .label(styl)
-    //        .build();
-    //   bob.append(&sty); 
-    //}
-    //con.set_child(Some(&bob));
-    //con.show();
+    let con = gtk::Window::builder()
+        .height_request(200)
+        .width_request(300)
+        .resizable(false)
+        .title("Wcalc Config")
+        .build();
+    con.show();
 }
 
 fn on_activate(app: &gtk::Application) {
@@ -210,11 +204,10 @@ fn on_activate(app: &gtk::Application) {
     clrbox.add_css_class("clrbox");
     porootbox.add_css_class("porootbox");
     buttonent.add_css_class("enter");
-    let apccl = app.clone();
     entry.connect_activate(move |entry| {
         let text = entry.text();
         if text == "conf" {
-            config(&apccl);
+            config();
             entry.set_text("");
         } else if text == ":q" {
             exit(6);
@@ -304,7 +297,6 @@ fn on_activate(app: &gtk::Application) {
                 }
         }}
     });
-    let apcl = app.clone();
     let butclick = move |button: &gtk::Button| {
         let sas = button.label().unwrap();
         let cur = entry.text();
@@ -334,7 +326,7 @@ fn on_activate(app: &gtk::Application) {
             if cur == "" {
                 return
             } else if cur == "conf" {
-                config(&apcl);
+                config();
                 entry.set_text("");
             } else if cur == ":q" {
                 exit(6);
@@ -480,6 +472,7 @@ fn on_activate(app: &gtk::Application) {
     buttonBox.append(&entupbut);
     let window = gtk::ApplicationWindow::builder()
         .title("WCalc")
+        .resizable(false)
         .application(app)
         .build();
     load_css();
