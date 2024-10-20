@@ -100,15 +100,30 @@ fn save_conf(conf: HashMap <&'static str, &'static str>) {
 
 fn config() {
     get_conf();
-    save_conf(def_conf());
-    //let styles = ["default"];
     let con = gtk::Window::builder()
         .height_request(200)
         .width_request(300)
         .resizable(false)
         .title("Wcalc Config")
         .build();
+    let mb = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    con.set_child(Some(&mb));
+    let save = gtk::Button::builder()
+        .label("Save")
+        .hexpand(true)
+        .build();
+    let cancel = gtk::Button::builder()
+        .label("Cancel")
+        .hexpand(true)
+        .build();
+    let hcsb = gtk::Box::new(gtk::Orientation::Horizontal, 1);
+    hcsb.append(&save);
+    hcsb.append(&cancel);
+    mb.append(&hcsb);
     con.show();
+    cancel.connect_clicked(move |_| {
+        con.destroy()
+    });
 }
 
 fn on_activate(app: &gtk::Application) {
