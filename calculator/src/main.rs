@@ -15,7 +15,6 @@ use regex::Regex;
 fn def_conf() -> HashMap <String, String> {
     let mut def_conf: HashMap<String, String> = HashMap::new();
     def_conf.insert("theme".to_string(), "default".to_string());
-    def_conf.insert("sus".to_string(), "true".to_string());
     def_conf
 }
 
@@ -72,7 +71,7 @@ fn get_conf() -> HashMap<String, String> {
                 Ok(f) => {
                     let cont = fs::read_to_string(path).expect("config file");
                     let mut conf = HashMap::new();
-                    let settings: Vec<_> = cont.split('\n').filter(|x| x.to_string() != "" && !(x.to_string().contains("//")))
+                    let settings: Vec<_> = cont.split('\n').filter(|x| x.to_string().contains("=") && !(x.to_string().contains("//")))
                         .map(|x|
                             x.split("=").map(|y| y.to_string().trim().to_owned()).collect::<Vec<_>>()
                         ).collect();
@@ -92,13 +91,13 @@ fn get_conf() -> HashMap<String, String> {
     def_conf()
 }
 
-fn save_conf(conf: HashMap <&'static str, &'static str>) {
+fn save_conf(conf: HashMap <&'static str, String>) {
     match home_dir() {
         Some(h) => {
             let path = format!("{}/.config/wcalc/config.cfg", h.display());
             match File::options().read(false).write(true).open(&path) {
-                Ok(mut f) => {
-                    let co = fs::read_to_string(path).expect("file");
+                Ok(_) => {
+                    let co = fs::read_to_string(path.clone()).expect("file");
                     let mut co = co.split("\n").collect::<Vec<_>>().iter()
                         .map(|x| x.to_string()).collect::<Vec<String>>();
                     for (key, value) in conf.clone().into_iter() {
@@ -115,6 +114,9 @@ fn save_conf(conf: HashMap <&'static str, &'static str>) {
                             }
                         }
                     }
+                    println!("{:?}",co);
+                    println!("{}", co.join("\n"));
+                    let mut f = File::create(&path).expect("file path");
                     f.write_all(co.join("\n").as_bytes());
                 },
                 _ => println!("sus")
@@ -125,14 +127,28 @@ fn save_conf(conf: HashMap <&'static str, &'static str>) {
 }
 
 fn config() {
-    get_conf();
+    let home = home_dir().expect("Home");
+    let css_path = format!("{}/.config/wcalc/css", home.display());
+    let mut themes: Vec<String> = vec![];
+    if let Ok(i) = fs::read_dir(css_path) {
+        for j in i {
+            if let Ok(s) = j {
+                let file_name = s.file_name();
+                let name = file_name.to_string_lossy().to_string();
+                themes.push(name.strip_suffix(".css").expect("").to_string());
+            }
+        }
+    }
+    println!("{:?}",themes);
     let con = gtk::Window::builder()
         .height_request(200)
         .width_request(300)
         .resizable(false)
         .title("Wcalc Config")
         .build();
-    let mb = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let mb = gtk::CenterBox::builder()
+        .orientation(gtk::Orientation::Vertical)
+        .build();
     con.set_child(Some(&mb));
     let save = gtk::Button::builder()
         .label("Save")
@@ -142,13 +158,34 @@ fn config() {
         .label("Cancel")
         .hexpand(true)
         .build();
+    let sus = vec![];
+    let model = gtk::StringList::new(&sus);
+    for i in themes.clone() {
+        model.append(&i)
+    }
+    let spin = gtk::DropDown::builder().model(&model).build();
+    mb.set_start_widget(Some(&spin));
     let hcsb = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     hcsb.append(&save);
     hcsb.append(&cancel);
-    mb.append(&hcsb);
+    mb.set_end_widget(Some(&hcsb));
     con.show();
+    let cc = con.clone();
+    save.connect_clicked(move |_| {
+        let them = spin.selected() as usize;
+        let t = get_conf();
+        println!("changing to {}", themes[them]);
+        let t = t.get("theme").expect("theme conf");
+        if t.to_string() != themes[them].to_string() {
+            let mut confa = HashMap::new();
+            confa.insert("theme", themes[them].to_string());
+            println!("{:?}",confa);
+            save_conf(confa);
+        }
+        cc.destroy();
+    });
     cancel.connect_clicked(move |_| {
-        con.destroy()
+        con.destroy();
     });
 }
 
