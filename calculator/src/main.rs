@@ -12,14 +12,14 @@ use meval::eval_str;
 use regex::Regex;
 
 // css classes :90
-fn def_conf() -> HashMap <&'static str, &'static str> {
-    let mut def_conf = HashMap::new();
-    def_conf.insert("theme", "default");
-    def_conf.insert("sus", "true");
+fn def_conf() -> HashMap <String, String> {
+    let mut def_conf: HashMap<String, String> = HashMap::new();
+    def_conf.insert("theme".to_string(), "default".to_string());
+    def_conf.insert("sus".to_string(), "true".to_string());
     def_conf
 }
 
-fn init_conf() -> HashMap <&'static str, &'static str> {
+fn init_conf() -> HashMap <String, String> {
     match home_dir(){
         Some(h) => {
             let path = format!("{}/.config/wcalc/config.cfg", h.display());
@@ -27,6 +27,31 @@ fn init_conf() -> HashMap <&'static str, &'static str> {
                 Ok(()) => println!("create"),
                 _ => println!("some error")
             };
+            match fs::create_dir(format!("{}/.config/wcalc/css", h.display())) {
+                Ok(()) => println!("Created path"),
+                _ => println!("Can't create css path")
+            }
+            let cs = ".entry {
+	margin: 2px;
+	border: 2px solid @accent_bg_color;
+}
+button {
+	margin: 2px;
+	border: 2px solid @accent_bg_color;
+}
+box {
+	background-color: @bg_color;
+	color: @fg_color;
+}
+.botbut {
+	margin-right: 5px;
+}
+.enter {
+	color: lime;
+}
+";
+            let mut fi = File::create(format!("{}/.config/wcalc/css/default.css", h.display())).expect("can't create file");
+            fi.write(cs.as_bytes()).expect("can't create file");
             let mut f = File::create(path).expect("can't create file");
             let cont = "//themes ~/.config/wcalc/css\ntheme = default";
             f.write(cont.as_bytes()).expect("can't write");
@@ -39,7 +64,7 @@ fn init_conf() -> HashMap <&'static str, &'static str> {
     }
 }
 
-fn get_conf() {
+fn get_conf() -> HashMap<String, String> {
     match home_dir() {
         Some(h) => {
             let path = format!("{}/.config/wcalc/config.cfg", h.display());
@@ -54,16 +79,17 @@ fn get_conf() {
                     for i in settings {
                         conf.insert(i[0].clone(), i[1].clone());
                     }
-                    println!("{:?}", conf);
+                    return conf
                 },
                 _ => {
                     let s = init_conf();
-                    println!("{:?}", s);
+                    return s
                 }
             }
         },
         None => println!("no home path find")
     }
+    def_conf()
 }
 
 fn save_conf(conf: HashMap <&'static str, &'static str>) {
@@ -500,9 +526,30 @@ fn load_css() {
     let provider = gtk::CssProvider::new();
     let priority = gtk::STYLE_PROVIDER_PRIORITY_APPLICATION;
 
-    let css_content = include_str!("./main.css");
-    provider.load_from_data(css_content);
-    gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
+    let conf = get_conf();
+    let theme = conf.get("theme").expect("theme");
+    match home_dir() {
+        Some(h) => {
+            match File::open(format!("{}/.config/wcalc/css/{}.css",h.display(), theme)) {
+                Ok(_) => {
+                    let css_p = format!("{}/.config/wcalc/css/{}.css",h.display(), theme);
+                    let css_content = fs::read_to_string(css_p).expect("file");
+                    provider.load_from_data(&css_content);
+                    gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
+                }
+                _ => {
+                    let css_content = include_str!("./main.css");
+                    provider.load_from_data(css_content);
+                    gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
+                }
+            }
+        },
+        _ => {
+            let css_content = include_str!("./main.css");
+            provider.load_from_data(css_content);
+            gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
+        }
+    }
 }
 
 fn main() {
