@@ -30,7 +30,6 @@ fn init_conf() -> HashMap <&'static str, &'static str> {
             let mut f = File::create(path).expect("can't create file");
             let cont = "//themes ~/.config/wcalc/css\ntheme = default";
             f.write(cont.as_bytes()).expect("can't write");
-            println!("{:?}", f);
             def_conf()
         },
         None => {
@@ -71,23 +70,26 @@ fn save_conf(conf: HashMap <&'static str, &'static str>) {
     match home_dir() {
         Some(h) => {
             let path = format!("{}/.config/wcalc/config.cfg", h.display());
-            match File::open(&path) {
-                Ok(_) => {
+            match File::options().read(false).write(true).open(&path) {
+                Ok(mut f) => {
                     let co = fs::read_to_string(path).expect("file");
-                    let mut co = co.split("\n").collect::<Vec<_>>();
-                    let mut new = Vec::new();
-                    println!("{:?}", co);
-                    for i in co { 
-                        for (key, value) in conf.clone().into_iter() {
-                            if i.contains(key) && !(i.contains("//")) {
-                                let form = format!("{} = {}", key, value);
-                                new.push(form);
-                            } else if i.contains("//") {
-                                new.push(i.to_string())
+                    let mut co = co.split("\n").collect::<Vec<_>>().iter()
+                        .map(|x| x.to_string()).collect::<Vec<String>>();
+                    for (key, value) in conf.clone().into_iter() {
+                        let cci = co.clone();
+                        let ind = cci.iter().enumerate()
+                            .find(|(_, r)| r.to_string().split("=").collect::<Vec<_>>()[0].contains(key) && !(r.to_string().contains("//"))).map(|(i, _)| i);
+                        match ind {
+                            Some(i) => {
+                                let form: String = format!("{} = {}", key, value).to_string();
+                                co.remove(i);
+                                co.insert(i,form);
+                            }, _ => {
+                                co.push(format!("{} = {}", key, value))
                             }
                         }
                     }
-                    println!("{:?}", new);
+                    f.write_all(co.join("\n").as_bytes());
                 },
                 _ => println!("sus")
             }
@@ -99,20 +101,20 @@ fn save_conf(conf: HashMap <&'static str, &'static str>) {
 fn config(app: &gtk::Application) {
     get_conf();
     save_conf(def_conf());
-    let styles = ["default"];
-    let con = gtk::Window::builder()
-        .application(app)
-        .title("Wcalc Config")
-        .build();
-    let bob = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    for styl in styles {
-        let sty = gtk::Label::builder()
-            .label(styl)
-            .build();
-       bob.append(&sty); 
-    }
-    con.set_child(Some(&bob));
-    con.show();
+    //let styles = ["default"];
+    //let con = gtk::Window::builder()
+    //    .application(app)
+    //    .title("Wcalc Config")
+    //    .build();
+    //let bob = gtk::Box::new(gtk::Orientation::Vertical, 0);
+    //for styl in styles {
+    //    let sty = gtk::Label::builder()
+    //        .label(styl)
+    //        .build();
+    //   bob.append(&sty); 
+    //}
+    //con.set_child(Some(&bob));
+    //con.show();
 }
 
 fn on_activate(app: &gtk::Application) {
