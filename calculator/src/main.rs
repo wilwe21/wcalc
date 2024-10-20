@@ -181,6 +181,7 @@ fn config() {
             confa.insert("theme", themes[them].to_string());
             println!("{:?}",confa);
             save_conf(confa);
+            load_css();
         }
         cc.destroy();
     });
