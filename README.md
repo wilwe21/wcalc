@@ -1,1 +1,1 @@
-# rust-small
+# Wcalc
