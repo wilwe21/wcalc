@@ -3,7 +3,7 @@ use gtk::prelude::*;
 use std::process::exit;
 use std::fs;
 use std::fs::File;
-use home::home_dir;
+use dirs::config_dir;
 use std::io::prelude::*;
 use std::collections::HashMap;
 
@@ -19,14 +19,14 @@ fn def_conf() -> HashMap <String, String> {
 }
 
 fn init_conf() -> HashMap <String, String> {
-    match home_dir(){
+    match config_dir(){
         Some(h) => {
-            let path = format!("{}/.config/wcalc/config.cfg", h.display());
-            match fs::create_dir(format!("{}/.config/wcalc", h.display())) {
+            let path = format!("{}/wcalc/config.cfg", h.display());
+            match fs::create_dir(format!("{}/wcalc", h.display())) {
                 Ok(()) => println!("create"),
                 _ => println!("some error")
             };
-            match fs::create_dir(format!("{}/.config/wcalc/css", h.display())) {
+            match fs::create_dir(format!("{}/wcalc/css", h.display())) {
                 Ok(()) => println!("Created path"),
                 _ => println!("Can't create css path")
             }
@@ -49,24 +49,24 @@ box {
 	color: lime;
 }
 ";
-            let mut fi = File::create(format!("{}/.config/wcalc/css/default.css", h.display())).expect("can't create file");
+            let mut fi = File::create(format!("{}/wcalc/css/default.css", h.display())).expect("can't create file");
             fi.write(cs.as_bytes()).expect("can't create file");
             let mut f = File::create(path).expect("can't create file");
-            let cont = "//themes ~/.config/wcalc/css\ntheme = default";
+            let cont = format!("//themes {}/wcalc/css\ntheme = default", h.display());
             f.write(cont.as_bytes()).expect("can't write");
             def_conf()
         },
         None => {
-            println!("No home path find");
+            println!("No config path find");
             def_conf()
         }
     }
 }
 
 fn get_conf() -> HashMap<String, String> {
-    match home_dir() {
+    match config_dir() {
         Some(h) => {
-            let path = format!("{}/.config/wcalc/config.cfg", h.display());
+            let path = format!("{}/wcalc/config.cfg", h.display());
             match File::open(&path) {
                 Ok(f) => {
                     let cont = fs::read_to_string(path).expect("config file");
@@ -92,9 +92,9 @@ fn get_conf() -> HashMap<String, String> {
 }
 
 fn save_conf(conf: HashMap <&'static str, String>) {
-    match home_dir() {
+    match config_dir() {
         Some(h) => {
-            let path = format!("{}/.config/wcalc/config.cfg", h.display());
+            let path = format!("{}/wcalc/config.cfg", h.display());
             match File::options().read(false).write(true).open(&path) {
                 Ok(_) => {
                     let co = fs::read_to_string(path.clone()).expect("file");
@@ -127,8 +127,8 @@ fn save_conf(conf: HashMap <&'static str, String>) {
 }
 
 fn config() {
-    let home = home_dir().expect("Home");
-    let css_path = format!("{}/.config/wcalc/css", home.display());
+    let home = config_dir().expect("Home");
+    let css_path = format!("{}/wcalc/css", home.display());
     let mut themes: Vec<String> = vec![];
     if let Ok(i) = fs::read_dir(css_path) {
         for j in i {
@@ -566,11 +566,11 @@ fn load_css() {
 
     let conf = get_conf();
     let theme = conf.get("theme").expect("theme");
-    match home_dir() {
+    match config_dir() {
         Some(h) => {
-            match File::open(format!("{}/.config/wcalc/css/{}.css",h.display(), theme)) {
+            match File::open(format!("{}/wcalc/css/{}.css",h.display(), theme)) {
                 Ok(_) => {
-                    let css_p = format!("{}/.config/wcalc/css/{}.css",h.display(), theme);
+                    let css_p = format!("{}/wcalc/css/{}.css",h.display(), theme);
                     let css_content = fs::read_to_string(css_p).expect("file");
                     provider.load_from_data(&css_content);
                     gtk::StyleContext::add_provider_for_display(&display, &provider, priority);

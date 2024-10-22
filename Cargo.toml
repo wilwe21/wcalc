@@ -4,9 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-grass = "0.13.4"
+dirs = "5.0.1"
 gtk = { version = "0.9.1", package = "gtk4", features = ["v4_6"] }
-home = "0.5.9"
 meval = "0.2.0"
 regex = "1.10.6"
-yaml-rust = "0.4.5"
