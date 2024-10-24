@@ -1,3 +1,4 @@
+#![windows_subsystem = "windows"]
 use gtk::prelude::*;
 
 use std::process::exit;

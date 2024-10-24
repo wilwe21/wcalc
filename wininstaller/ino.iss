@@ -3,7 +3,7 @@ AppName=Wcalc
 AppVersion=1.5.0
 DefaultDirName={pf}\Wcalc
 DefaultGroupName=Wcalc
-OutputBaseFilename=Installer
+OutputBaseFilename=WcalcInstaller
 
 [Files]
 Source: "wcalc.exe"; DestDir: "{app}"
