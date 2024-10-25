@@ -13,6 +13,7 @@ use std::collections::HashMap;
 pub fn def_conf() -> HashMap <String, String> {
     let mut def_conf: HashMap<String, String> = HashMap::new();
     def_conf.insert("theme".to_string(), "default".to_string());
+    def_conf.insert("placeholder".to_string(), "9+10=21".to_string());
     def_conf
 }
 
@@ -30,49 +31,16 @@ pub fn init_conf() -> HashMap <String, String> {
             }
             let mut cs = String::new();
             if System::name().unwrap() == "Windows" {
-                cs = ".entry {
-	margin: 2px;
-	border: 2px solid blue;
-}
-button {
-	margin: 2px;
-	border: 2px solid blue;
-}
-box {
-	background-color: @bg_color;
-	color: @fg_color;
-}
-.botbut {
-	margin-right: 5px;
-}
-".to_string();
+                cs = include_str!("./css/win.css").to_string();
             } else {
-                cs = ".entry {
-	margin: 2px;
-	border: 2px solid @accent_bg_color;
-}
-button {
-	margin: 2px;
-	border: 2px solid @accent_bg_color;
-}
-box {
-	background-color: @bg_color;
-	color: @fg_color;
-}
-.botbut {
-	margin-right: 5px;
-}
-.enter {
-	color: lime;
-}
-".to_string();
+                cs = include_str!("./css/linux.css").to_string();
             }
             let mut fi = File::create(format!("{}/wcalc/css/default.css", h.display())).expect("can't create file");
             fi.write(cs.as_bytes()).expect("can't create file");
             let mut f = File::create(path).expect("can't create file");
             let cont = format!("//themes {}/wcalc/css
 theme = default
-placeholder = 21"
+placeholder = 9+10=21"
 , h.display());
             f.write(cont.as_bytes()).expect("can't write");
             def_conf()
@@ -100,7 +68,6 @@ pub fn get_conf() -> HashMap<String, String> {
                                 .map(|y| y.to_string().trim().to_owned()).collect::<Vec<_>>()
                         }
                         ).collect();
-                    println!("{:?}", settings);
                     for i in settings {
                         conf.insert(i[0].clone(), i[1].clone());
                     }
@@ -140,8 +107,6 @@ pub fn save_conf(conf: HashMap <&'static str, String>) {
                             }
                         }
                     }
-                    println!("{:?}",co);
-                    println!("{}", co.join("\n"));
                     let mut f = File::create(&path).expect("file path");
                     f.write_all(co.join("\n").as_bytes());
                 },
@@ -190,10 +155,14 @@ pub fn config() {
         model.append(&i)
     }
     let spin = gtk::DropDown::builder().model(&model).build();
+    let spin_lab = gtk::Label::builder().label(format!("themes: {}/wcalc/css",home.display())).build();
     let cur_conf = get_conf();
     let cur_theme = cur_conf.get("theme").expect("theme");
     spin.set_selected(themes.clone().iter().position(|r| *r == *cur_theme).unwrap().try_into().unwrap());
-    mb.set_start_widget(Some(&spin));
+    let wbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    wbox.append(&spin_lab);
+    wbox.append(&spin);
+    mb.set_start_widget(Some(&wbox));
     let hcsb = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     hcsb.append(&save);
     hcsb.append(&cancel);
