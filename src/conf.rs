@@ -135,7 +135,7 @@ pub fn config() {
             }
         }
     }
-    println!("{:?}",themes);
+    themes.sort();
     let con = gtk::Window::builder()
         .height_request(200)
         .width_request(300)
@@ -160,6 +160,9 @@ pub fn config() {
         model.append(&i)
     }
     let spin = gtk::DropDown::builder().model(&model).build();
+    let cur_conf = get_conf();
+    let cur_theme = cur_conf.get("theme").expect("theme");
+    spin.set_selected(themes.clone().iter().position(|r| *r == *cur_theme).unwrap().try_into().unwrap());
     mb.set_start_widget(Some(&spin));
     let hcsb = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     hcsb.append(&save);
@@ -203,14 +206,14 @@ pub fn conf_css() {
                     gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
                 }
                 _ => {
-                    let css_content = include_str!("./main.css");
+                    let css_content = include_str!("./css.css");
                     provider.load_from_data(css_content);
                     gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
                 }
             }
         },
         _ => {
-            let css_content = include_str!("./main.css");
+            let css_content = include_str!("./css.css");
             provider.load_from_data(css_content);
             gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
         }
