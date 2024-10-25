@@ -14,6 +14,7 @@ pub fn def_conf() -> HashMap <String, String> {
     let mut def_conf: HashMap<String, String> = HashMap::new();
     def_conf.insert("theme".to_string(), "default".to_string());
     def_conf.insert("placeholder".to_string(), "9+10=21".to_string());
+    def_conf.insert("config button".to_string(), "true".to_string());
     def_conf
 }
 
@@ -40,7 +41,8 @@ pub fn init_conf() -> HashMap <String, String> {
             let mut f = File::create(path).expect("can't create file");
             let cont = format!("//themes {}/wcalc/css
 theme = default
-placeholder = 9+10=21"
+placeholder = 9+10=21
+config button = true"
 , h.display());
             f.write(cont.as_bytes()).expect("can't write");
             def_conf()
@@ -160,8 +162,15 @@ pub fn config() {
     let cur_theme = cur_conf.get("theme").expect("theme");
     spin.set_selected(themes.clone().iter().position(|r| *r == *cur_theme).unwrap().try_into().unwrap());
     let wbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let cur_plac = cur_conf.get("placeholder").expect("placeholder");
+    let placent = gtk::Entry::builder()
+        .placeholder_text(&*cur_plac)
+        .build();
+    let placlab = gtk::Label::builder().label("Placeholder").build();
     wbox.append(&spin_lab);
     wbox.append(&spin);
+    wbox.append(&placlab);
+    wbox.append(&placent);
     mb.set_start_widget(Some(&wbox));
     let hcsb = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     hcsb.append(&save);
@@ -171,12 +180,15 @@ pub fn config() {
     let cc = con.clone();
     save.connect_clicked(move |_| {
         let them = spin.selected() as usize;
+        let place = placent.text();
         let t = get_conf();
         println!("changing to {}", themes[them]);
-        let t = t.get("theme").expect("theme conf");
-        if t.to_string() != themes[them].to_string() {
+        let te = t.get("theme").expect("theme conf");
+        let tp = t.get("placeholder").expect("placeholder");
+        if te.to_string() != themes[them].to_string() || tp.to_string() != place.to_string() {
             let mut confa = HashMap::new();
             confa.insert("theme", themes[them].to_string());
+            confa.insert("placeholder", place.to_string());
             println!("{:?}",confa);
             save_conf(confa);
             conf_css();
