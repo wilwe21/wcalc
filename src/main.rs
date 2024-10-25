@@ -2,13 +2,8 @@
 use gtk::prelude::*;
 
 use std::process::exit;
-use std::fs;
-use std::fs::File;
-use dirs::config_dir;
-use std::io::prelude::*;
-use std::collections::HashMap;
+//use std::collections::HashMap;
 
-use gtk::gdk;
 use meval::eval_str;
 use regex::Regex;
 
@@ -16,10 +11,16 @@ mod conf;
 
 // css classes :90
 fn on_activate(app: &gtk::Application) {
+    let cur_conf = conf::get_conf();
+    let mut plac = String::new();
+    match cur_conf.get("placeholder") {
+        Some(p) => plac = p.to_string(),
+        _ => plac = "9+10=21".to_string()
+    };
     let mainBox = gtk::Box::new(gtk::Orientation::Vertical, 0);
     let entry = gtk::Entry::builder()
         .has_frame(true)
-        .placeholder_text("9+10=21")
+        .placeholder_text(&plac)
         .build();
     let buttonBox = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     mainBox.append(&entry);

@@ -70,7 +70,10 @@ box {
             let mut fi = File::create(format!("{}/wcalc/css/default.css", h.display())).expect("can't create file");
             fi.write(cs.as_bytes()).expect("can't create file");
             let mut f = File::create(path).expect("can't create file");
-            let cont = format!("//themes {}/wcalc/css\ntheme = default", h.display());
+            let cont = format!("//themes {}/wcalc/css
+theme = default
+placeholder = 21"
+, h.display());
             f.write(cont.as_bytes()).expect("can't write");
             def_conf()
         },
@@ -90,9 +93,14 @@ pub fn get_conf() -> HashMap<String, String> {
                     let cont = fs::read_to_string(path).expect("config file");
                     let mut conf = HashMap::new();
                     let settings: Vec<_> = cont.split('\n').filter(|x| x.to_string().contains("=") && !(x.to_string().contains("//")))
-                        .map(|x|
-                            x.split("=").map(|y| y.to_string().trim().to_owned()).collect::<Vec<_>>()
+                        .map(|x| {
+                            let spl = x.split("=").collect::<Vec<_>>();
+                            let xxx = vec![spl[0].to_string(),spl[1..].join("=").to_string()];
+                            xxx.into_iter()
+                                .map(|y| y.to_string().trim().to_owned()).collect::<Vec<_>>()
+                        }
                         ).collect();
+                    println!("{:?}", settings);
                     for i in settings {
                         conf.insert(i[0].clone(), i[1].clone());
                     }
