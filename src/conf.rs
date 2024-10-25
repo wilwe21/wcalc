@@ -230,9 +230,9 @@ pub fn conf_css() {
                 _ => {
                     let css_content = String::new();
                     if System::name().unwrap() == "Windows" {
-                        let css_content = include_str!("./win.css");
+                        let css_content = include_str!("./css/win.css");
                     } else {
-                        let css_content = include_str!("./linux.css");
+                        let css_content = include_str!("./css/linux.css");
                     }
                     provider.load_from_data(&css_content);
                     gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
@@ -242,9 +242,9 @@ pub fn conf_css() {
         _ => {
             let css_content = String::new();
             if System::name().unwrap() == "Windows" {
-                let css_content = include_str!("./win.css");
+                let css_content = include_str!("./css/win.css");
             } else {
-                let css_content = include_str!("./linux.css");
+                let css_content = include_str!("./css/linux.css");
             }
             provider.load_from_data(&css_content);
             gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
