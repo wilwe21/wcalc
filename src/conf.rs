@@ -2,6 +2,8 @@
 use gtk::prelude::*;
 use gtk::gdk;
 
+use sysinfo::System;
+
 use std::fs;
 use std::fs::File;
 use dirs::config_dir;
@@ -26,7 +28,26 @@ pub fn init_conf() -> HashMap <String, String> {
                 Ok(()) => println!("Created path"),
                 _ => println!("Can't create css path")
             }
-            let cs = ".entry {
+            let mut cs = String::new();
+            if System::name().unwrap() == "Windows" {
+                cs = ".entry {
+	margin: 2px;
+	border: 2px solid blue;
+}
+button {
+	margin: 2px;
+	border: 2px solid blue;
+}
+box {
+	background-color: @bg_color;
+	color: @fg_color;
+}
+.botbut {
+	margin-right: 5px;
+}
+".to_string();
+            } else {
+                cs = ".entry {
 	margin: 2px;
 	border: 2px solid @accent_bg_color;
 }
@@ -44,7 +65,8 @@ box {
 .enter {
 	color: lime;
 }
-";
+".to_string();
+            }
             let mut fi = File::create(format!("{}/wcalc/css/default.css", h.display())).expect("can't create file");
             fi.write(cs.as_bytes()).expect("can't create file");
             let mut f = File::create(path).expect("can't create file");
@@ -206,15 +228,25 @@ pub fn conf_css() {
                     gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
                 }
                 _ => {
-                    let css_content = include_str!("./css.css");
-                    provider.load_from_data(css_content);
+                    let css_content = String::new();
+                    if System::name().unwrap() == "Windows" {
+                        let css_content = include_str!("./win.css");
+                    } else {
+                        let css_content = include_str!("./linux.css");
+                    }
+                    provider.load_from_data(&css_content);
                     gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
                 }
             }
         },
         _ => {
-            let css_content = include_str!("./css.css");
-            provider.load_from_data(css_content);
+            let css_content = String::new();
+            if System::name().unwrap() == "Windows" {
+                let css_content = include_str!("./win.css");
+            } else {
+                let css_content = include_str!("./linux.css");
+            }
+            provider.load_from_data(&css_content);
             gtk::StyleContext::add_provider_for_display(&display, &provider, priority);
         }
     }
