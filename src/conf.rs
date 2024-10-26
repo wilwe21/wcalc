@@ -10,6 +10,8 @@ use dirs::config_dir;
 use std::io::prelude::*;
 use std::collections::HashMap;
 
+use crate::window;
+
 pub fn def_conf() -> HashMap <String, String> {
     let mut def_conf: HashMap<String, String> = HashMap::new();
     def_conf.insert("theme".to_string(), "default".to_string());
@@ -182,13 +184,19 @@ pub fn config() {
         let them = spin.selected() as usize;
         let place = placent.text();
         let t = get_conf();
-        println!("changing to {}", themes[them]);
         let te = t.get("theme").expect("theme conf");
         let tp = t.get("placeholder").expect("placeholder");
-        if te.to_string() != themes[them].to_string() || tp.to_string() != place.to_string() {
+        println!("{:?} == {:?}",place, tp);
+        let mut end = String::new();
+        if place == "" {
+            end = tp.to_string();
+        } else {
+            end = place.to_string();
+        }
+        if te.to_string() != themes[them].to_string() || tp.to_string() != end.to_string() {
             let mut confa = HashMap::new();
             confa.insert("theme", themes[them].to_string());
-            confa.insert("placeholder", place.to_string());
+            confa.insert("placeholder", end.to_string());
             println!("{:?}",confa);
             save_conf(confa);
             conf_css();

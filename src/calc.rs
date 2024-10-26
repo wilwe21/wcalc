@@ -113,6 +113,8 @@ pub fn wind() -> gtk::Box {
             entry.set_text("");
         } else if text == ":q" {
             exit(6);
+        } else if text.contains("clr") {
+            entry.set_text("");
         } else {
             match meval::eval_str(text.clone()) {
                 Ok(vyl) => {
@@ -232,6 +234,8 @@ pub fn wind() -> gtk::Box {
                 entry.set_text("");
             } else if cur == ":q" {
                 exit(6);
+            } else if cur.contains("clr") {
+                entry.set_text("");
             } else {
                 match meval::eval_str(cur.clone()) {
                     Ok(vyl) => {
