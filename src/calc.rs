@@ -7,6 +7,88 @@ use regex::Regex;
 
 use crate::conf;
 
+pub fn calc(entr: String) -> String {
+    match meval::eval_str(entr.clone()) {
+        Ok(vyl) => {
+            return vyl.to_string()
+        } Err(e) => {
+            let chpar = |strin: &str| {
+                let one = "Parse error: Missing 1 right parenthesis.";
+                let par = Regex::new(r"Parse error: Missing .* right parentheses.")
+                    .map(|regex| {
+                        if regex.is_match(&strin.clone()) || &strin == &one {
+                            let numb = strin.to_string().chars()
+                                .find(|a| a.is_digit(10))
+                                .and_then(|a| a.to_digit(10)).unwrap() as usize;
+                            let pars = ")".repeat(numb);
+                            let mut ccc = format!("{}{}", entr.clone(), pars);
+                            match meval::eval_str(ccc.clone()) {
+                                Ok(vyl) => {
+                                    return vyl.to_string()
+                                } Err(ee) => {
+                                    println!("Error pars ee: {}", ee);
+                                    return ccc
+                                }
+                            }
+                        } else { return strin.to_string() }
+                    })
+                    .unwrap_or_else(|error| {
+                        println!("error");
+                        return entr.clone()
+                    });
+                return par.to_string()
+            };
+            let chtok = |strin: &str| {
+                let untok = Regex::new(r"Parse error: Unexpected token at byte .*")
+                    .map(|regex| {
+                        if regex.is_match(&strin) {
+                            let ccc = entr.clone();
+                            let pos = strin.to_string().chars()
+                                .find(|a| a.is_digit(10))
+                                .and_then(|a| a.to_digit(10)).unwrap() as i32;
+                            let test = |exp: String, pos: i32| {
+                                let mut st = exp;
+                                st.insert(pos.try_into().unwrap(), "*".chars().next().unwrap());
+                                match meval::eval_str(st.clone()) {
+                                    Ok(vyl) => {
+                                        let end = vyl.to_string();
+                                        return [st, end];
+                                    } Err(e) => {
+                                        return [st, e.to_string()];
+                                    }
+                                }
+                            };
+                            let mut stra = test(ccc.clone().to_string(), pos);
+                            let mut iter = 0;
+                            loop {
+                                if regex.is_match(&stra[1]) && iter > 20 {
+                                    let pos = stra[1].to_string().chars()
+                                        .find(|a| a.is_digit(10))
+                                        .and_then(|a| a.to_digit(10)).unwrap() as i32;
+                                    stra = test(stra[0].clone().to_string(), pos);
+                                    iter += 1;
+                                } else {
+                                    return stra[1].to_string()
+                                }
+                            }
+                            return strin.to_string()
+                        } else { return strin.to_string() }
+                    })
+                    .unwrap_or_else(|error| {
+                        println!("error");
+                        strin.to_string()
+                    });
+                return untok.to_string()
+            };
+            let i: String = chpar(&e.to_string());
+            let i: String = chtok(&i.to_string());
+            println!("Error: {}", e);
+            return i
+        }
+    }
+    entr
+}
+
 pub fn wind() -> gtk::Box {
     let cur_conf = conf::get_conf();
     let mut plac = String::new();
@@ -116,90 +198,10 @@ pub fn wind() -> gtk::Box {
         } else if text.contains("clr") {
             entry.set_text("");
         } else {
-            match meval::eval_str(text.clone()) {
-                Ok(vyl) => {
-                    let end = vyl.to_string();
-                    entry.set_text(&end);
-                    return
-                } Err(e) => {
-                    let chpar = |strin: &str| {
-                        let one = "Parse error: Missing 1 right parenthesis.";
-                        let par = Regex::new(r"Parse error: Missing .* right parentheses.")
-                            .map(|regex| {
-                                if regex.is_match(&strin.clone()) || &strin == &one {
-                                    let numb = strin.to_string().chars()
-                                        .find(|a| a.is_digit(10))
-                                        .and_then(|a| a.to_digit(10)).unwrap() as usize;
-                                    let pars = ")".repeat(numb);
-                                    let mut ccc = format!("{}{}", text.clone(), pars);
-                                    match meval::eval_str(ccc.clone()) {
-                                        Ok(vyl) => {
-                                            let end = vyl.to_string();
-                                            entry.set_text(&end);
-                                            entry.set_position(end.len() as i32);
-                                            return 
-                                        } Err(ee) => {
-                                            println!("Error pars ee: {}", ee);
-                                            entry.set_text(&ccc);
-                                            entry.set_position(ccc.len() as i32);
-                                            return
-                                        }
-                                    }
-                                }
-                            })
-                            .unwrap_or_else(|error| {
-                                println!("error");
-                            });
-                    };
-                    let chtok = |strin: &str| {
-                        let untok = Regex::new(r"Parse error: Unexpected token at byte .*")
-                            .map(|regex| {
-                                if regex.is_match(&strin) {
-                                    let ccc = text.clone();
-                                    let pos = strin.to_string().chars()
-                                        .find(|a| a.is_digit(10))
-                                        .and_then(|a| a.to_digit(10)).unwrap() as i32;
-                                    let test = |exp: String, pos: i32| {
-                                        let mut st = exp;
-                                        st.insert(pos.try_into().unwrap(), "*".chars().next().unwrap());
-                                        match meval::eval_str(st.clone()) {
-                                            Ok(vyl) => {
-                                                let end = vyl.to_string();
-                                                entry.set_text(&end);
-                                                entry.set_position(end.len() as i32);
-                                                return [st, end];
-                                            } Err(e) => {
-                                                entry.set_text(&st);
-                                                entry.set_position(st.len() as i32);
-                                                return [st, e.to_string()];
-                                            }
-                                        }
-                                    };
-                                    let mut stra = test(ccc.clone().to_string(), pos);
-                                    let mut iter = 0;
-                                    loop {
-                                        if regex.is_match(&stra[1]) && iter > 20 {
-                                            let pos = stra[1].to_string().chars()
-                                                .find(|a| a.is_digit(10))
-                                                .and_then(|a| a.to_digit(10)).unwrap() as i32;
-                                            stra = test(stra[0].clone().to_string(), pos);
-                                            iter += 1;
-                                        } else {
-                                            break
-                                        }
-                                    }
-                                    return
-                                }
-                            })
-                            .unwrap_or_else(|error| {
-                                println!("error");
-                            });
-                    };
-                    chpar(&e.to_string());
-                    chtok(&e.to_string());
-                    println!("Error: {}", e);
-                }
-        }}
+            let end = calc(entry.text().to_string());
+            entry.set_text(&end);
+            entry.set_position((entry.text().len() as usize).try_into().unwrap());
+        }
     });
     let butclick = move |button: &gtk::Button| {
         let sas = button.label().unwrap();
@@ -237,90 +239,9 @@ pub fn wind() -> gtk::Box {
             } else if cur.contains("clr") {
                 entry.set_text("");
             } else {
-                match meval::eval_str(cur.clone()) {
-                    Ok(vyl) => {
-                        let end = vyl.to_string();
-                        entry.set_text(&end);
-                        return
-                    } Err(e) => {
-                        let chpar = |strin: &str| {
-                            let one = "Parse error: Missing 1 right parenthesis.";
-                            let par = Regex::new(r"Parse error: Missing .* right parentheses.")
-                                .map(|regex| {
-                                    if regex.is_match(&strin.clone()) || &strin == &one {
-                                        let numb = strin.to_string().chars()
-                                            .find(|a| a.is_digit(10))
-                                            .and_then(|a| a.to_digit(10)).unwrap() as usize;
-                                        let pars = ")".repeat(numb);
-                                        let mut ccc = format!("{}{}", cur.clone(), pars);
-                                        match meval::eval_str(ccc.clone()) {
-                                            Ok(vyl) => {
-                                                let end = vyl.to_string();
-                                                entry.set_text(&end);
-                                                entry.set_position(end.len() as i32);
-                                                return 
-                                            } Err(ee) => {
-                                                println!("Error pars ee: {}", ee);
-                                                entry.set_text(&ccc);
-                                                entry.set_position(ccc.len() as i32);
-                                                return
-                                            }
-                                        }
-                                    }
-                                })
-                                .unwrap_or_else(|error| {
-                                    println!("error");
-                                });
-                        };
-                        let chtok = |strin: &str| {
-                            let untok = Regex::new(r"Parse error: Unexpected token at byte .*")
-                                .map(|regex| {
-                                    if regex.is_match(&strin) {
-                                        let ccc = cur.clone();
-                                        let pos = strin.to_string().chars()
-                                            .find(|a| a.is_digit(10))
-                                            .and_then(|a| a.to_digit(10)).unwrap() as i32;
-                                        let test = |exp: String, pos: i32| {
-                                            let mut st = exp;
-                                            st.insert(pos.try_into().unwrap(), "*".chars().next().unwrap());
-                                            match meval::eval_str(st.clone()) {
-                                                Ok(vyl) => {
-                                                    let end = vyl.to_string();
-                                                    entry.set_text(&end);
-                                                    entry.set_position(end.len() as i32);
-                                                    return [st, end];
-                                                } Err(e) => {
-                                                    entry.set_text(&st);
-                                                    entry.set_position(st.len() as i32);
-                                                    return [st, e.to_string()];
-                                                }
-                                            }
-                                        };
-                                        let mut stra = test(ccc.clone().to_string(), pos);
-                                        let mut iter = 0;
-                                        loop {
-                                            if regex.is_match(&stra[1]) && iter > 20 {
-                                                let pos = stra[1].to_string().chars()
-                                                    .find(|a| a.is_digit(10))
-                                                    .and_then(|a| a.to_digit(10)).unwrap() as i32;
-                                                stra = test(stra[0].clone().to_string(), pos);
-                                                iter += 1;
-                                            } else {
-                                                break
-                                            }
-                                        }
-                                        return
-                                    }
-                                })
-                                .unwrap_or_else(|error| {
-                                    println!("error");
-                                });
-                        };
-                        chpar(&e.to_string());
-                        chtok(&e.to_string());
-                        println!("Error: {}", e);
-                    }
-                }
+                let i = calc(cur.to_string());
+                entry.set_text(&i);
+                entry.set_position((entry.text().len() as usize).try_into().unwrap());
             }
         }
     };
