@@ -13,11 +13,8 @@ use std::collections::HashMap;
 use crate::window;
 
 pub fn def_conf() -> HashMap <String, String> {
-    let mut def_conf: HashMap<String, String> = HashMap::new();
-    def_conf.insert("theme".to_string(), "default".to_string());
-    def_conf.insert("placeholder".to_string(), "9+10=21".to_string());
-    def_conf.insert("config button".to_string(), "true".to_string());
-    def_conf
+    let conf = include_str!("./default.cfg");
+    return str_to_conf(conf.to_string())
 }
 
 pub fn init_conf() -> HashMap <String, String> {
@@ -41,11 +38,7 @@ pub fn init_conf() -> HashMap <String, String> {
             let mut fi = File::create(format!("{}/wcalc/css/default.css", h.display())).expect("can't create file");
             fi.write(cs.as_bytes()).expect("can't create file");
             let mut f = File::create(path).expect("can't create file");
-            let cont = format!("//themes {}/wcalc/css
-theme = default
-placeholder = 9+10=21
-config button = true"
-, h.display());
+            let cont = include_str!("./default.cfg").replace("{}", &h.display().to_string());
             f.write(cont.as_bytes()).expect("can't write");
             def_conf()
         },
@@ -79,7 +72,7 @@ pub fn get_conf() -> HashMap<String, String> {
             match File::open(&path) {
                 Ok(f) => {
                     let cont = fs::read_to_string(path).expect("config file");
-                    str_to_conf(cont.to_string())
+                    return str_to_conf(cont.to_string())
                 },
                 _ => {
                     let s = init_conf();
