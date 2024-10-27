@@ -232,20 +232,22 @@ pub fn wind() -> gtk::Box {
             } else {
                 let le: usize = cur.len();
                 if !sas.parse::<i32>().is_ok() {
-                    if le > 1 {
-                        if sas != "(" || sas != ")" {
-                            if &cur[le-1..le] == sas || &cur[le-2..le-1] == sas{
-                                endst = cur.to_string();
+                    if le > 0 {
+                        if sas == "(" || sas == ")" {
+                            endst = format!("{}{}",&cur, &sas);
+                        } else {
+                            if le > 1 {
+                                if &cur[le-1..le] == sas || &cur[le-2..le-1] == sas{
+                                    endst = cur.to_string();
+                                } else { endst = format!("{}{}", &cur, &sas); }
                             } else {
-                                endst = format!("{}{}",&cur, &sas);
+                                if &cur[le-1..le] == sas {
+                                    endst = cur.to_string();
+                                } else { endst = format!("{}{}", &cur, &sas); }
                             }
-                        } else { endst = format!("{}{}",&cur, &sas); }
-                    } else {
-                        endst = format!("{}{}",&cur, &sas);
-                    }
-                } else {
-                    endst = format!("{}{}",&cur, &sas);
-                }
+                        }
+                    } else { endst = format!("{}{}",&cur, &sas); }
+                } else { endst = format!("{}{}",&cur, &sas); }
             }
             entry.set_text(&endst);
             return
