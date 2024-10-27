@@ -5,7 +5,7 @@ use crate::conf;
 fn on_activate(app: &gtk::Application) {
     let mainBox = calc::wind();
     let window = gtk::ApplicationWindow::builder()
-        .title("WCalc")
+        .title("wcalc")
         .resizable(false)
         .application(app)
         .build();
