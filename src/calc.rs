@@ -48,7 +48,12 @@ pub fn calc(entr: String) -> String {
                                 .and_then(|a| a.to_digit(10)).unwrap() as i32;
                             let test = |exp: String, pos: i32| {
                                 let mut st = exp;
-                                st.insert(pos.try_into().unwrap(), "*".chars().next().unwrap());
+                                let pos: usize = pos.try_into().unwrap();
+                                let prev = &st[pos..pos+1];
+                                println!("{}", prev);
+                                if prev != "*" {
+                                    st.insert(pos, "*".chars().next().unwrap());
+                                }
                                 match meval::eval_str(st.clone()) {
                                     Ok(vyl) => {
                                         let end = vyl.to_string();
@@ -61,15 +66,17 @@ pub fn calc(entr: String) -> String {
                             let mut stra = test(ccc.clone().to_string(), pos);
                             let mut iter = 0;
                             loop {
-                                if regex.is_match(&stra[1]) && iter > 20 {
-                                    let pos = stra[1].to_string().chars()
-                                        .find(|a| a.is_digit(10))
-                                        .and_then(|a| a.to_digit(10)).unwrap() as i32;
-                                    stra = test(stra[0].clone().to_string(), pos);
-                                    iter += 1;
-                                } else {
-                                    return stra[1].to_string()
-                                }
+                                if stra[1] != "false" {
+                                    if regex.is_match(&stra[1]) && iter > 20 {
+                                        let pos = stra[1].to_string().chars()
+                                            .find(|a| a.is_digit(10))
+                                            .and_then(|a| a.to_digit(10)).unwrap() as i32;
+                                        stra = test(stra[0].clone().to_string(), pos);
+                                        iter += 1;
+                                    } else {
+                                        return stra[0].to_string()
+                                    }
+                                } else { return stra[0].to_string() }
                             }
                             return strin.to_string()
                         } else { return strin.to_string() }
@@ -223,7 +230,22 @@ pub fn wind() -> gtk::Box {
             if sas == "√" {
                 endst = format!("{}^(1/",&cur);
             } else {
-                endst = format!("{}{}",&cur, &sas);
+                let le: usize = cur.len();
+                if !sas.parse::<i32>().is_ok() {
+                    if le > 1 {
+                        if sas != "(" || sas != ")" {
+                            if &cur[le-1..le] == sas || &cur[le-2..le-1] == sas{
+                                endst = cur.to_string();
+                            } else {
+                                endst = format!("{}{}",&cur, &sas);
+                            }
+                        } else { endst = format!("{}{}",&cur, &sas); }
+                    } else {
+                        endst = format!("{}{}",&cur, &sas);
+                    }
+                } else {
+                    endst = format!("{}{}",&cur, &sas);
+                }
             }
             entry.set_text(&endst);
             return
