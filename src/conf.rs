@@ -166,10 +166,16 @@ pub fn config() {
         .placeholder_text(&*cur_plac)
         .build();
     let placlab = gtk::Label::builder().label("Placeholder").build();
+    let cur_cbut = cur_conf.get("config button").expect("theme").parse::<bool>().expect("bool");
+    let confbut = gtk::Switch::new();
+    confbut.set_active(cur_cbut);
+    let cblab = gtk::Label::builder().label("config button").build();
     wbox.append(&spin_lab);
     wbox.append(&spin);
     wbox.append(&placlab);
     wbox.append(&placent);
+    wbox.append(&cblab);
+    wbox.append(&confbut);
     mb.set_start_widget(Some(&wbox));
     let hcsb = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     hcsb.append(&save);
@@ -180,21 +186,24 @@ pub fn config() {
     save.connect_clicked(move |_| {
         let them = spin.selected() as usize;
         let place = placent.text();
+        let but = confbut.state();
         let t = get_conf();
         let te = t.get("theme").expect("theme conf");
         let tp = t.get("placeholder").expect("placeholder");
-        println!("{:?} == {:?}",place, tp);
+        let tb = t.get("config button").expect("placeholder");
         let mut end = String::new();
         if place == "" {
             end = tp.to_string();
         } else {
             end = place.to_string();
         }
-        if te.to_string() != themes[them].to_string() || tp.to_string() != end.to_string() {
+        if te.to_string() != themes[them].to_string() || 
+            tp.to_string() != end.to_string() ||
+            tb.to_string() != but.to_string() {
             let mut confa = HashMap::new();
             confa.insert("theme", themes[them].to_string());
             confa.insert("placeholder", end.to_string());
-            println!("{:?}",confa);
+            confa.insert("config button", but.to_string());
             save_conf(confa);
             conf_css();
         }

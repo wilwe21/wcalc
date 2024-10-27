@@ -99,6 +99,16 @@ pub fn calc(entr: String) -> String {
 pub fn wind() -> gtk::Box {
     let cur_conf = conf::get_conf();
     let mut plac = String::new();
+    let mut confbut = false;
+    match cur_conf.get("config button") {
+        Some(p) => {
+            match p {
+                _ if p.parse::<bool>().is_ok() => confbut = p.parse().unwrap(),
+                _ => confbut = true
+            }
+        },
+        _ => confbut = true
+    };
     match cur_conf.get("placeholder") {
         Some(p) => plac = p.to_string(),
         _ => plac = "9+10=21".to_string()
@@ -185,6 +195,9 @@ pub fn wind() -> gtk::Box {
     let buttonroot = gtk::Button::builder()
         .label("√")
         .build();
+    let butconf = gtk::Button::builder()
+        .label("󰒓")
+        .build();
     // css related
     topbut.add_css_class("topbut");
     midbut.add_css_class("midbut");
@@ -223,6 +236,10 @@ pub fn wind() -> gtk::Box {
             }
             let new = &cur[..cur.len() -1];
             entry.set_text(new);
+            return
+        }
+        if sas == "󰒓" {
+            conf::config();
             return
         }
         if sas != "=" {
@@ -274,6 +291,7 @@ pub fn wind() -> gtk::Box {
     buttondiv.connect_clicked(butclick.clone());
     buttonmult.connect_clicked(butclick.clone());  
     buttondot.connect_clicked(butclick.clone());
+    butconf.connect_clicked(butclick.clone());
     button0.connect_clicked(butclick.clone());
     button1.connect_clicked(butclick.clone());
     button2.connect_clicked(butclick.clone());
@@ -305,6 +323,9 @@ pub fn wind() -> gtk::Box {
     bbbbut.append(&buttonminus);
     topbut.append(&button0);
     midbut.append(&buttondot);
+    if confbut {
+        botbut.append(&butconf);
+    }
     bbbbut.append(&buttonplus);
     parbox.append(&buttonlefpar);
     parbox.append(&buttonrigpar);
