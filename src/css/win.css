@@ -1,11 +1,23 @@
-.entry {
+entry {
 	margin: 2px;
-	border: 2px solid blue;
+	border: 2px solid red;
+	background: black;
+	color: white;
 }
 button {
 	margin: 2px;
-	border: 2px solid blue;
+	border: 2px solid red;
+	background: black;
+	color: white;
 }
 .botbut {
 	margin-right: 5px;
+}
+box {
+	background: black;
+	color: white;
+}
+headerbar {
+	background: black;
+	color: white;
 }
