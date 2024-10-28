@@ -96,6 +96,60 @@ pub fn calc(entr: String) -> String {
     entr
 }
 
+pub fn ent_str(text: String, button: String) -> String {
+    if button == "Clr" {
+        return "".to_string()
+    }
+    if button == "Del" {
+        if text == "" {
+            return "".to_string()
+        }
+        let new = &text[..text.len() -1];
+        return new.to_string()
+    }
+    if button == "󰒓" {
+        conf::config();
+        return text.to_string()
+    }
+    if button != "=" {
+        let mut endst = String::new();
+        if button == "√" {
+            endst = format!("{}^(1/",&text);
+        } else {
+            let le: usize = text.len();
+            if !button.parse::<i32>().is_ok() {
+                if le > 0 {
+                    if button == "(" || button == ")" {
+                        endst = format!("{}{}",&text, &button); 
+                    } else {
+                        if le > 1 {
+                            if &text[le-1..le] == button || &text[le-2..le-1] == button{
+                                endst = text.to_string();
+                            } else { endst = format!("{}{}", &text, &button); }
+                        } else {
+                            if &text[le-1..le] == button {
+                                endst = text.to_string();
+                            } else { endst = format!("{}{}", &text, &button); }
+                        }
+                    }
+                } else { endst = format!("{}{}",&text, &button); }
+            } else { endst = format!("{}{}",&text, &button); }
+        }
+        return endst.to_string()
+    }
+    if text.contains(":q") {
+        exit(6);
+    } else if text == "conf" {
+        conf::config();
+        return "".to_string()
+    } else if text.contains("clr") {
+        return "".to_string()
+    } else {
+        let end = calc(text.to_string());
+        return end.to_string()
+    }
+}
+
 pub fn wind() -> gtk::Box {
     let cur_conf = conf::get_conf();
     let mut plac = String::new();
@@ -210,81 +264,16 @@ pub fn wind() -> gtk::Box {
     buttonent.add_css_class("enter");
     entry.connect_activate(move |entry| {
         let text = entry.text();
-        if text == "conf" {
-            conf::config();
-            entry.set_text("");
-        } else if text == ":q" {
-            exit(6);
-        } else if text.contains("clr") {
-            entry.set_text("");
-        } else {
-            let end = calc(entry.text().to_string());
-            entry.set_text(&end);
-            entry.set_position((entry.text().len() as usize).try_into().unwrap());
-        }
+        let end = ent_str(text.to_string(), "=".to_string());
+        entry.set_text(&end);
+        entry.set_position((entry.text().len() as usize).try_into().unwrap());
     });
     let butclick = move |button: &gtk::Button| {
         let sas = button.label().unwrap();
         let cur = entry.text();
-        if sas == "Clr" {
-            entry.set_text("");
-            return
-        }
-        if sas == "Del" {
-            if cur == "" {
-                return
-            }
-            let new = &cur[..cur.len() -1];
-            entry.set_text(new);
-            return
-        }
-        if sas == "󰒓" {
-            conf::config();
-            return
-        }
-        if sas != "=" {
-            let mut endst = String::new();
-            if sas == "√" {
-                endst = format!("{}^(1/",&cur);
-            } else {
-                let le: usize = cur.len();
-                if !sas.parse::<i32>().is_ok() {
-                    if le > 0 {
-                        if sas == "(" || sas == ")" {
-                            endst = format!("{}{}",&cur, &sas);
-                        } else {
-                            if le > 1 {
-                                if &cur[le-1..le] == sas || &cur[le-2..le-1] == sas{
-                                    endst = cur.to_string();
-                                } else { endst = format!("{}{}", &cur, &sas); }
-                            } else {
-                                if &cur[le-1..le] == sas {
-                                    endst = cur.to_string();
-                                } else { endst = format!("{}{}", &cur, &sas); }
-                            }
-                        }
-                    } else { endst = format!("{}{}",&cur, &sas); }
-                } else { endst = format!("{}{}",&cur, &sas); }
-            }
-            entry.set_text(&endst);
-            return
-        }
-        if sas == "=" {
-            if cur == "" {
-                return
-            } else if cur == "conf" {
-                conf::config();
-                entry.set_text("");
-            } else if cur == ":q" {
-                exit(6);
-            } else if cur.contains("clr") {
-                entry.set_text("");
-            } else {
-                let i = calc(cur.to_string());
-                entry.set_text(&i);
-                entry.set_position((entry.text().len() as usize).try_into().unwrap());
-            }
-        }
+        let i = ent_str(cur.to_string(), sas.to_string());
+        entry.set_text(&i);
+        entry.set_position((entry.text().len() as usize).try_into().unwrap());
     };
     buttonplus.connect_clicked(butclick.clone());
     buttonminus.connect_clicked(butclick.clone());  
