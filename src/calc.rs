@@ -6,6 +6,7 @@ use meval::eval_str;
 use regex::Regex;
 
 use crate::conf;
+use crate::game;
 
 pub fn calc(entr: String) -> String {
     match meval::eval_str(entr.clone()) {
@@ -136,17 +137,20 @@ pub fn ent_str(text: String, button: String) -> String {
             } else { endst = format!("{}{}",&text, &button); }
         }
         return endst.to_string()
-    }
-    if text.contains(":q") {
-        exit(6);
-    } else if text == "conf" {
-        conf::config();
-        return "".to_string()
-    } else if text.contains("clr") {
-        return "".to_string()
     } else {
-        let end = calc(text.to_string());
-        return end.to_string()
+        if text.contains(":q") {
+            exit(6);
+        } else if text == "conf" {
+            conf::config();
+            return "".to_string()
+        } else if text == "start" || text == "game" {
+            return game::game()
+        } else if text.contains("clr") {
+            return "".to_string()
+        } else {
+            let end = calc(text.to_string());
+            return end.to_string()
+        }
     }
 }
 
