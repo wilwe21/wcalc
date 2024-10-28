@@ -98,58 +98,65 @@ pub fn calc(entr: String) -> String {
 }
 
 pub fn ent_str(text: String, button: String) -> String {
-    if button == "Clr" {
-        return "".to_string()
-    }
-    if button == "Del" {
-        if text == "" {
-            return "".to_string()
-        }
-        let new = &text[..text.len() -1];
-        return new.to_string()
-    }
-    if button == "󰒓" {
-        conf::config();
-        return text.to_string()
-    }
-    if button != "=" {
-        let mut endst = String::new();
-        if button == "√" {
-            endst = format!("{}^(1/",&text);
-        } else {
-            let le: usize = text.len();
-            if !button.parse::<i32>().is_ok() {
-                if le > 0 {
-                    if button == "(" || button == ")" {
-                        endst = format!("{}{}",&text, &button); 
-                    } else {
-                        if le > 1 {
-                            if &text[le-1..le] == button || &text[le-2..le-1] == button{
-                                endst = text.to_string();
-                            } else { endst = format!("{}{}", &text, &button); }
-                        } else {
-                            if &text[le-1..le] == button {
-                                endst = text.to_string();
-                            } else { endst = format!("{}{}", &text, &button); }
-                        }
-                    }
-                } else { endst = format!("{}{}",&text, &button); }
-            } else { endst = format!("{}{}",&text, &button); }
-        }
-        return endst.to_string()
+    let conf = conf::get_conf();
+    let game: bool = conf.get("game").unwrap().to_string().parse().unwrap();
+    if game {
+        println!("chuj");
+        return "chuj".to_string()
     } else {
-        if text.contains(":q") {
-            exit(6);
-        } else if text == "conf" {
+        if button == "Clr" {
+            return "".to_string()
+        }
+        if button == "Del" {
+            if text == "" {
+                return "".to_string()
+            }
+            let new = &text[..text.len() -1];
+            return new.to_string()
+        }
+        if button == "󰒓" {
             conf::config();
-            return "".to_string()
-        } else if text == "start" || text == "game" {
-            return game::game()
-        } else if text.contains("clr") {
-            return "".to_string()
+            return text.to_string()
+        }
+        if button != "=" {
+            let mut endst = String::new();
+            if button == "√" {
+                endst = format!("{}^(1/",&text);
+            } else {
+                let le: usize = text.len();
+                if !button.parse::<i32>().is_ok() {
+                    if le > 0 {
+                        if button == "(" || button == ")" {
+                            endst = format!("{}{}",&text, &button); 
+                        } else {
+                            if le > 1 {
+                                if &text[le-1..le] == button || &text[le-2..le-1] == button{
+                                    endst = text.to_string();
+                                } else { endst = format!("{}{}", &text, &button); }
+                            } else {
+                                if &text[le-1..le] == button {
+                                    endst = text.to_string();
+                                } else { endst = format!("{}{}", &text, &button); }
+                            }
+                        }
+                    } else { endst = format!("{}{}",&text, &button); }
+                } else { endst = format!("{}{}",&text, &button); }
+            }
+            return endst.to_string()
         } else {
-            let end = calc(text.to_string());
-            return end.to_string()
+            if text.contains(":q") {
+                exit(6);
+            } else if text == "conf" {
+                conf::config();
+                return "".to_string()
+            } else if text == "start" || text == "game" {
+                return game::start()
+            } else if text.contains("clr") {
+                return "".to_string()
+            } else {
+                let end = calc(text.to_string());
+                return end.to_string()
+            }
         }
     }
 }

@@ -85,7 +85,7 @@ pub fn get_conf() -> HashMap<String, String> {
     def_conf()
 }
 
-pub fn save_conf(conf: HashMap <&'static str, String>) {
+pub fn save_conf(conf: HashMap <String, String>) {
     match config_dir() {
         Some(h) => {
             let path = format!("{}/wcalc/config.cfg", h.display());
@@ -97,7 +97,7 @@ pub fn save_conf(conf: HashMap <&'static str, String>) {
                     for (key, value) in conf.clone().into_iter() {
                         let cci = co.clone();
                         let ind = cci.iter().enumerate()
-                            .find(|(_, r)| r.to_string().split("=").collect::<Vec<_>>()[0].contains(key) && !(r.to_string().contains("//"))).map(|(i, _)| i);
+                            .find(|(_, r)| r.split("=").collect::<Vec<_>>()[0].contains(&key) && !(r.to_string().contains("//"))).map(|(i, _)| i);
                         match ind {
                             Some(i) => {
                                 let form: String = format!("{} = {}", key, value).to_string();
@@ -201,9 +201,9 @@ pub fn config() {
             tp.to_string() != end.to_string() ||
             tb.to_string() != but.to_string() {
             let mut confa = HashMap::new();
-            confa.insert("theme", themes[them].to_string());
-            confa.insert("placeholder", end.to_string());
-            confa.insert("config button", but.to_string());
+            confa.insert("theme".to_string(), themes[them].to_string());
+            confa.insert("placeholder".to_string(), end.to_string());
+            confa.insert("config button".to_string(), but.to_string());
             save_conf(confa);
             conf_css();
         }
