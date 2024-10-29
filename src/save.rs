@@ -8,18 +8,25 @@ pub fn gen() {
 }
 
 pub fn str_to_conf(config: String) -> HashMap<String, String> {
-    let mut fin: Vec<HashMap> = Vec::new();
+    let mut fin: Vec<HashMap<String, String>> = Vec::new();
     let mut conf = HashMap::new();
-    let settings: Vec<_> = config.split('\n').filter(|x| x.to_string().contains("=") && !(x.to_string().contains("//")))
-        .map(|x| {
-            let spl = x.split("=").collect::<Vec<_>>();
-            let xxx = vec![spl[0].to_string(),spl[1..].join("=").to_string()];
-            xxx.into_iter()
-                .map(|y| y.to_string().trim().to_owned()).collect::<Vec<_>>()
+    let keys: Vec<_> = config.split("[").collect();
+    for key in keys {
+        let mut settings: Vec<_> = key.split('\n').collect();
+        let k = settings[0];
+        let settings = settings.join("\n");
+        let settings = settings.split("\n")
+            .filter(|x| x.to_string().contains("=") && !(x.to_string().contains("//")))
+            .map(|x| {
+                let spl = x.split("=").collect::<Vec<_>>();
+                let xxx = vec![spl[0].to_string(),spl[1..].join("=").to_string()];
+                xxx.into_iter()
+                    .map(|y| y.to_string().trim().to_owned()).collect::<Vec<_>>()
+            }
+            ).collect();
+        for i in settings {
+            conf.insert(i[0].clone(), i[1].clone());
         }
-        ).collect();
-    for i in settings {
-        conf.insert(i[0].clone(), i[1].clone());
     }
     return conf
 }
