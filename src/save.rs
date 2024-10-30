@@ -7,15 +7,14 @@ use std::collections::HashMap;
 pub fn gen() {
 }
 
-pub fn str_to_conf(config: String) -> HashMap<String, String> {
-    let mut fin: Vec<HashMap<String, String>> = Vec::new();
+pub fn str_to_conf(config: String) -> HashMap<String, HashMap<String, String>> {
+    let mut fin = HashMap::new();
     let mut conf = HashMap::new();
     let keys: Vec<_> = config.split("[").collect();
     for key in keys {
         let mut settings: Vec<_> = key.split('\n').collect();
         let k = settings[0];
-        let settings = settings.join("\n");
-        let settings = settings.split("\n")
+        let setting: Vec<_> = key.split("\n")
             .filter(|x| x.to_string().contains("=") && !(x.to_string().contains("//")))
             .map(|x| {
                 let spl = x.split("=").collect::<Vec<_>>();
@@ -24,11 +23,13 @@ pub fn str_to_conf(config: String) -> HashMap<String, String> {
                     .map(|y| y.to_string().trim().to_owned()).collect::<Vec<_>>()
             }
             ).collect();
-        for i in settings {
+        let confi = conf.clone();
+        for i in setting {
             conf.insert(i[0].clone(), i[1].clone());
         }
+        fin.insert(k.to_string(), confi);
     }
-    return conf
+    return fin
 }
 
 pub fn get() {
