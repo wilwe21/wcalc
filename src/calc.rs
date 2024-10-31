@@ -2,14 +2,18 @@ use gtk::prelude::*;
 
 use std::process::exit;
 
-use meval::eval_str;
+use meval::{eval_str_with_context, Context};
 use regex::Regex;
 
 use crate::conf;
 use crate::game;
 
 pub fn calc(entr: String) -> String {
-    match meval::eval_str(entr.clone()) {
+    let mut ctx = Context::new();
+    ctx
+        .funcn("log", |xs| f64::log(xs[0], xs[1]), ..)
+        .funcn("sum", |xs| xs.iter().sum(), ..);
+    match eval_str_with_context(entr.clone(), ctx.clone()) {
         Ok(vyl) => {
             return vyl.to_string()
         } Err(e) => {
@@ -23,7 +27,7 @@ pub fn calc(entr: String) -> String {
                                 .and_then(|a| a.to_digit(10)).unwrap() as usize;
                             let pars = ")".repeat(numb);
                             let mut ccc = format!("{}{}", entr.clone(), pars);
-                            match meval::eval_str(ccc.clone()) {
+                            match eval_str_with_context(ccc.clone(), ctx.clone()) {
                                 Ok(vyl) => {
                                     return vyl.to_string()
                                 } Err(ee) => {
@@ -55,7 +59,7 @@ pub fn calc(entr: String) -> String {
                                 if prev != "*" {
                                     st.insert(pos, "*".chars().next().unwrap());
                                 }
-                                match meval::eval_str(st.clone()) {
+                                match eval_str_with_context(st.clone(), ctx.clone()) {
                                     Ok(vyl) => {
                                         let end = vyl.to_string();
                                         return [st, end];
