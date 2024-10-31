@@ -2,7 +2,7 @@ use gtk::prelude::*;
 
 use std::process::exit;
 
-use meval::{eval_str_with_context, Context};
+use meval::{eval_str_with_context, Context, eval_str};
 use regex::Regex;
 
 use crate::conf;
@@ -11,7 +11,30 @@ use crate::game;
 pub fn calc(entr: String) -> String {
     let mut ctx = Context::new();
     ctx
-        .funcn("log", |xs| f64::log(xs[0], xs[1]), ..)
+        .func2("log", |x,y| f64::log(x, y))
+        .funcn("sub", |xs| {
+            let mut i = xs[0];
+            for j in 1..xs.len() {
+                i -= xs[j];
+            } 
+            i
+        },..)
+        .funcn("div", |xs| {
+            let mut i = xs[0];
+            for j in 1..xs.len() {
+                i = i / xs[j];
+            } 
+            i
+        },..)
+        .func("fact", |x| {
+            let x: i64 = x.round() as i64;
+            let mut i = x.clone();
+            for j in 1..x {
+                i = i*j;
+            }
+            i as f64
+        })
+        .func2("root", |x, y| eval_str(format!("{x}^(1/{y})")).unwrap())
         .funcn("sum", |xs| xs.iter().sum(), ..);
     match eval_str_with_context(entr.clone(), ctx.clone()) {
         Ok(vyl) => {
