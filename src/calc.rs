@@ -11,6 +11,7 @@ use crate::game;
 pub fn calc(entr: String) -> String {
     let mut ctx = Context::new();
     ctx
+        .var("G", 0.915965594177219)
         .func2("log", |x,y| f64::log(x, y))
         .funcn("sub", |xs| {
             let mut i = xs[0];
