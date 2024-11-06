@@ -161,21 +161,52 @@ pub fn config() {
     let cur_theme = cur_conf.get("theme").expect("theme");
     spin.set_selected(themes.clone().iter().position(|r| *r == *cur_theme).unwrap().try_into().unwrap());
     let wbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
-    let cur_plac = cur_conf.get("placeholder").expect("placeholder");
+    let mut cur_plac = "9+10=21".to_string();
+    match cur_conf.get("placeholder"){
+        Some(s) => cur_plac = s.to_string(),
+        _ => println!("no cur plac")
+    };
     let placent = gtk::Entry::builder()
         .placeholder_text(&*cur_plac)
         .build();
     let placlab = gtk::Label::builder().label("Placeholder").build();
-    let cur_cbut = cur_conf.get("config button").expect("theme").parse::<bool>().expect("bool");
+    let mut cur_cbut = true;
+    match cur_conf.get("config button") {
+        Some(s) => match s.parse::<bool>() {
+            Ok(d) => cur_cbut = d,
+            _ => println!("conf but"),
+        },
+        _ => println!("conf but"),
+    }
     let confbut = gtk::Switch::new();
     confbut.set_active(cur_cbut);
     let cblab = gtk::Label::builder().label("config button").build();
+    let mut pi: f64 = 0.0;
+    match cur_conf.get("pi") {
+        Some(s) => match s.parse::<f64>(){
+            Ok(d) => pi = d,
+            _ => println!("no pi")
+        },
+        _ => println!("no pi")
+    };
+    let adj = gtk::Adjustment::new(
+        pi,
+        0.0,
+        16.0,
+        1.0,
+        1.0,
+        1.0
+    );
+    let pispin = gtk::SpinButton::new(Some(&adj), 1.0, 1);
+    let pilab = gtk::Label::builder().label("Pi Rounding").build();
     wbox.append(&spin_lab);
     wbox.append(&spin);
     wbox.append(&placlab);
     wbox.append(&placent);
     wbox.append(&cblab);
     wbox.append(&confbut);
+    wbox.append(&pilab);
+    wbox.append(&pispin);
     mb.set_start_widget(Some(&wbox));
     let hcsb = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     hcsb.append(&save);
@@ -187,10 +218,12 @@ pub fn config() {
         let them = spin.selected() as usize;
         let place = placent.text();
         let but = confbut.state();
+        let pin = pispin.value();
         let t = get_conf();
         let te = t.get("theme").expect("theme conf");
         let tp = t.get("placeholder").expect("placeholder");
         let tb = t.get("config button").expect("placeholder");
+        let tpi = t.get("pi").expect("placeholder");
         let mut end = String::new();
         if place == "" {
             end = tp.to_string();
@@ -199,11 +232,13 @@ pub fn config() {
         }
         if te.to_string() != themes[them].to_string() || 
             tp.to_string() != end.to_string() ||
-            tb.to_string() != but.to_string() {
+            tb.to_string() != but.to_string() ||
+            tpi.to_string() != pin.to_string() {
             let mut confa = HashMap::new();
             confa.insert("theme".to_string(), themes[them].to_string());
             confa.insert("placeholder".to_string(), end.to_string());
             confa.insert("config button".to_string(), but.to_string());
+            confa.insert("pi".to_string(), pin.to_string());
             save_conf(confa);
             conf_css();
         }

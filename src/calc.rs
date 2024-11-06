@@ -9,8 +9,20 @@ use crate::conf;
 use crate::game;
 
 pub fn calc(entr: String) -> String {
+    let conf = conf::get_conf();
+    let mut round = 15_u32;
+    match conf.get("pi") {
+        Some(s) => match s.parse::<u32>() {
+            Ok(d) => round = d,
+            _ => println!("no pi")
+        }
+        _ => println!("no pi")
+    }
+    let zer = 10_i64.pow(round);
+    let pi: f64 = (3.141592653589793 * (zer as f64)).round() / zer as f64;
     let mut ctx = Context::new();
     ctx
+        .var("pi", pi)
         .var("G", 0.915965594177219)
         .func2("log", |x,y| f64::log(x, y))
         .funcn("sub", |xs| {
