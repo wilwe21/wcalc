@@ -4,6 +4,7 @@ use std::process::exit;
 
 use meval::{eval_str_with_context, Context, eval_str};
 use regex::Regex;
+use rand::Rng;
 
 use crate::conf;
 use crate::game;
@@ -139,10 +140,28 @@ pub fn calc(entr: String) -> String {
 
 pub fn ent_str(text: String, button: String) -> String {
     let conf = conf::get_conf();
-    let game: bool = conf.get("game").unwrap().to_string().parse().unwrap();
-    if game {
-        println!("chuj");
-        return "chuj".to_string()
+    let game = conf.get("game").unwrap();
+    if game != "false" {
+        if text.contains(":q"){
+            return game::end()
+        } 
+        if game == "numble" {
+            let rng = game::get_global_rng();
+            match text.parse::<u8>() {
+                Ok(s) => if s > rng {
+                    return "number is lower".to_string()
+                } else if s < rng {
+                    return "number is bigger".to_string()
+                } else {
+                    game::end_silent();
+                    return "win".to_string()
+                },
+                _ => return "not u8".to_string()
+            }
+        } else {
+            println!("{}", game);
+            return "chuj".to_string()
+        }
     } else {
         if button == "Clr" {
             return "".to_string()
@@ -189,6 +208,8 @@ pub fn ent_str(text: String, button: String) -> String {
             } else if text == "conf" {
                 conf::config();
                 return "".to_string()
+            } else if text == "numble" {
+                return game::numble()
             } else if text == "start" || text == "game" {
                 return game::start()
             } else if text.contains("clr") {

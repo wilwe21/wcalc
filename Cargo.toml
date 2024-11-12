@@ -8,5 +8,6 @@ dirs = "5.0.1"
 eval = "0.4.3"
 gtk = { version = "0.9.1", package = "gtk4", features = ["v4_6"] }
 meval = "0.2.0"
+rand = "0.8.5"
 regex = "1.10.6"
 sysinfo = "0.32.0"
