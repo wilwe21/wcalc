@@ -159,8 +159,8 @@ pub fn ent_str(text: String, button: String) -> String {
                 _ => return "not u8".to_string()
             }
         } else {
-            println!("{}", game);
-            return "chuj".to_string()
+            game::end_silent();
+            return "no game".to_string()
         }
     } else {
         if button == "Clr" {
@@ -210,8 +210,8 @@ pub fn ent_str(text: String, button: String) -> String {
                 return "".to_string()
             } else if text == "numble" {
                 return game::numble()
-            } else if text == "start" || text == "game" {
-                return game::start()
+            //} else if text == "start" || text == "game" {
+            //    return game::start()
             } else if text.contains("clr") {
                 return "".to_string()
             } else {
