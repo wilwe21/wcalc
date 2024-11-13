@@ -140,24 +140,22 @@ pub fn calc(entr: String) -> String {
 
 pub fn ent_str(text: String, button: String) -> String {
     let conf = conf::get_conf();
-    let game = conf.get("game").unwrap();
+    let mut game = String::new();
+    match conf.get("game") {
+        Some(s) => game = s.to_string(),
+        _ => game = "false".to_string()
+    };
     if game != "false" {
-        if text.contains(":q"){
+        if text.contains(":q") || button == "Del"{
             return game::end()
         } 
+        if text.contains("clr") || button == "Clr"{
+            return "".to_string()
+        }
         if game == "numble" {
-            let rng = game::get_global_rng();
-            match text.parse::<u8>() {
-                Ok(s) => if s > rng {
-                    return "number is lower".to_string()
-                } else if s < rng {
-                    return "number is bigger".to_string()
-                } else {
-                    game::end_silent();
-                    return "win".to_string()
-                },
-                _ => return "not u8".to_string()
-            }
+            game::numbinp(text.to_string(), button.to_string())
+        } else if game == "rpg" {
+            game::rpginp(text.to_string(), button.to_string())
         } else {
             game::end_silent();
             return "no game".to_string()
@@ -210,8 +208,8 @@ pub fn ent_str(text: String, button: String) -> String {
                 return "".to_string()
             } else if text == "numble" {
                 return game::numble()
-            //} else if text == "start" || text == "game" {
-            //    return game::start()
+            } else if text == "start" || text == "game" {
+                return game::start()
             } else if text.contains("clr") {
                 return "".to_string()
             } else {
