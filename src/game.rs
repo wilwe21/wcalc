@@ -1,10 +1,33 @@
 use gtk::prelude::*;
+
 use rand::Rng;
 use std::sync::Mutex;
+use std::collections::HashMap;
 
 use crate::conf;
+use crate::save;
 
 static mut gm: Option<Mutex<u8>> = None;
+
+static mut stats: Option<Mutex<HashMap<String, HashMap<String, String>>>> = None;
+
+pub fn init_global_stats() {
+    unsafe {
+        let gen = generate();
+        stats = Some(Mutex::new(gen))
+    }
+}
+
+pub fn get_global_stats() -> HashMap<String, HashMap<String, String>> {
+    unsafe {
+        stats.as_ref().unwrap().lock().unwrap().clone()
+    }
+}
+
+pub fn generate() -> HashMap<String, HashMap<String, String>> {
+    let d = include_str!("./stats.cfg");
+    save::str_to_conf(d.to_string())
+}
 
 pub fn start() -> String {
     let mut conf = conf::get_conf();

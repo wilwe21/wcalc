@@ -4,16 +4,18 @@ use dirs::config_dir;
 use std::io::prelude::*;
 use std::collections::HashMap;
 
-pub fn gen() {
-}
+//pub fn gen() {
+//}
 
 pub fn str_to_conf(config: String) -> HashMap<String, HashMap<String, String>> {
     let mut fin = HashMap::new();
-    let mut conf = HashMap::new();
-    let keys: Vec<_> = config.split("[").collect();
+    let mut conf: HashMap<String, HashMap<String, String>> = HashMap::new();
+    let mut keys: Vec<_> = config.split("[").collect();
+    keys.remove(0);
     for key in keys {
-        let mut settings: Vec<_> = key.split('\n').collect();
-        let k = settings[0];
+        let mut hask: HashMap<String, String> = HashMap::new();
+        let mut settings: Vec<_> = key.split('\n').filter(|x| x.to_string() != "").collect();
+        let k = settings[0].replace("]", "");
         let setting: Vec<_> = key.split("\n")
             .filter(|x| x.to_string().contains("=") && !(x.to_string().contains("//")))
             .map(|x| {
@@ -23,11 +25,10 @@ pub fn str_to_conf(config: String) -> HashMap<String, HashMap<String, String>> {
                     .map(|y| y.to_string().trim().to_owned()).collect::<Vec<_>>()
             }
             ).collect();
-        let confi = conf.clone();
         for i in setting {
-            conf.insert(i[0].clone(), i[1].clone());
+            hask.insert(i[0].clone(), i[1].clone());
         }
-        fin.insert(k.to_string(), confi);
+        fin.insert(k.to_string(), hask.clone());
     }
     return fin
 }
