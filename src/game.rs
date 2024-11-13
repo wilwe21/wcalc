@@ -13,7 +13,7 @@ static mut stats: Option<Mutex<HashMap<String, HashMap<String, String>>>> = None
 
 pub fn init_global_stats() {
     unsafe {
-        let gen = generate();
+        let gen = new_conf();
         stats = Some(Mutex::new(gen))
     }
 }
@@ -24,15 +24,24 @@ pub fn get_global_stats() -> HashMap<String, HashMap<String, String>> {
     }
 }
 
-pub fn generate() -> HashMap<String, HashMap<String, String>> {
-    let d = include_str!("./stats.cfg");
+pub fn new_conf() -> HashMap<String, HashMap<String, String>> {
+    let mut d = include_str!("./stats.cfg").to_string();
+    d += &generate(6).to_string();
     save::str_to_conf(d.to_string())
+}
+
+pub fn generate(size: u8) -> String {
+    let leg = include_str!("./legend");
+    "#####\n#xxx#\n#####".to_string()
 }
 
 pub fn start() -> String {
     let mut conf = conf::get_conf();
     conf.insert("game".to_string(),"rpg".to_string());
     conf::save_conf(conf);
+    let mut d = include_str!("./stats.cfg").to_string();
+    d += &generate(6).to_string();
+    save::save(save::str_to_conf(d.to_string()));
     "Game Started".to_string()
 }
 
