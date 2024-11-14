@@ -90,27 +90,36 @@ pub fn generate_room(size: usize, room_id: String) -> String {
     room.to_string()
 }
 
+pub fn generate_rooms(map: HashMap<String, String>) {
+    let mut acount = 0;
+    for i in 1..(map.len()+1) {
+        let line = map.get(&i.to_string()).unwrap().clone();
+        let livec: Vec<_> = line.split("").filter(|&x| x != "").collect::<Vec<_>>();
+        for z in livec {
+            if z == "a" {
+                acount +=1;
+                println!("a{}",acount);
+            } else if z != "#" {
+                println!("{}",z);
+            }
+        }
+    }
+}
+
 pub fn start() -> String {
     /*let mut conf = conf::get_conf();
     conf.insert("game".to_string(),"rpg".to_string());
     conf::save_conf(conf);*/
     init_global_stats(new_conf());
-    let mut s = save::save(get_global_stats());
-    s += "[room0]\nid = 0\n";
-    s += &generate_room(6, "0".to_string());
-    s += "[room1]\nid = 1\n";
-    s += &generate_room(6, "1".to_string());
-    s += "[room2]\nid = 2\n";
-    s += &generate_room(6, "2".to_string());
-    init_global_stats(save::str_to_conf(s));
-    end()
+    let mut s = get_global_stats();
+    generate_rooms(s.get("map").unwrap().clone());
+    "".to_string()
 }
 
 pub fn end() -> String {
     let mut conf = conf::get_conf();
     conf.insert("game".to_string(),false.to_string());
     conf::save_conf(conf);
-    println!("{:?}", get_global_stats());
     "Game Ended".to_string()
 }
 
