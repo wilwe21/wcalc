@@ -13,7 +13,7 @@ pub fn str_to_conf(config: String) -> HashMap<String, HashMap<String, String>> {
         let mut hask: HashMap<String, String> = HashMap::new();
         let mut settings: Vec<_> = key.split('\n').filter(|x| x.to_string() != "").collect();
         let k = settings[0].replace("]", "");
-        if k != "map" {
+        if k != "map" && !(k.starts_with("room")) {
             let setting: Vec<_> = key.split("\n")
                 .filter(|x| x.to_string().contains("=") && !(x.to_string().contains("//")))
                 .map(|x| {
@@ -26,15 +26,29 @@ pub fn str_to_conf(config: String) -> HashMap<String, HashMap<String, String>> {
             for i in setting {
                 hask.insert(i[0].clone(), i[1].clone());
             }
-        } else {
+        } else if k == "map" {
             let map: Vec<_> = key.split("\n").collect();
             for i in 1..(map.len()) {
                 if map[i] != "" {
                     hask.insert(i.to_string(), map[i].clone().to_string());
                 }
             }
+        } else if k.starts_with("room") {
+            let r: Vec<_> = key.split("\n").collect();
+            let id = r[1].split(" = ").collect::<Vec<_>>()[1];
+            hask.insert("id".to_string(), id.to_string());
+            for i in 2..(r.len()) {
+                if r[i] != "" {
+                    hask.insert(i.to_string(), r[i].clone().to_string());
+                }
+            }
         }
-        fin.insert(k.to_string(), hask.clone());
+        if !(k.starts_with("room")) {
+            fin.insert(k.to_string(), hask.clone());
+        } else {
+            let id = hask.get("id").unwrap().clone();
+            fin.insert(format!("room{}",id).to_string(), hask.clone());
+        }
     }
     return fin
 }
@@ -56,19 +70,24 @@ pub fn get() {
     }
 }
 
-pub fn save(config: HashMap<String, HashMap<String, String>>) {
+pub fn save(config: HashMap<String, HashMap<String, String>>) -> String {
     let mut conf = String::new();
     for (k, v) in &config {
         conf += &format!("[{}]\n", k).to_string();
-        if k != "map" {
-            for (l, m) in v {
-                conf += &format!("{}: {}\n", l, m).to_string();
-            }
-        } else {
+        if k == "map" {
             for l in 1..(v.len()+1) {
                 conf += &format!("{}\n",v[&l.to_string()]).to_string();
             }
+        } else if k.starts_with("room") {
+            conf += &format!("id = {}\n", v.get("id").unwrap()).to_string();
+            for l in 2..(v.len()+1) {
+                conf += &format!("{}\n",v[&l.to_string()]).to_string();
+            }
+        } else {
+            for (l, m) in v {
+                conf += &format!("{} = {}\n", l, m).to_string();
+            }
         }
     }
-    println!("{}",conf);
+    conf.to_string()
 }

@@ -11,10 +11,9 @@ static mut gm: Option<Mutex<u8>> = None;
 
 static mut stats: Option<Mutex<HashMap<String, HashMap<String, String>>>> = None;
 
-pub fn init_global_stats() {
+pub fn init_global_stats(conf: HashMap<String, HashMap<String, String>>) {
     unsafe {
-        let gen = new_conf();
-        stats = Some(Mutex::new(gen))
+        stats = Some(Mutex::new(conf))
     }
 }
 
@@ -83,15 +82,27 @@ pub fn generate_map(size: usize) -> String {
     return map2.into_iter().map(|x| x.join("")).collect::<Vec<String>>().join("\n")
 }
 
-pub fn generate_room(size: usize) -> String {
-    "###".to_string()
+pub fn generate_room(size: usize, room_id: String) -> String {
+    let mut room = String::new();
+    for i in 0..(size+1) {
+        room += &format!("{:#^size$}\n","#").to_string();
+    }
+    room.to_string()
 }
 
 pub fn start() -> String {
-    let mut conf = conf::get_conf();
+    /*let mut conf = conf::get_conf();
     conf.insert("game".to_string(),"rpg".to_string());
-    conf::save_conf(conf);
-    init_global_stats();
+    conf::save_conf(conf);*/
+    init_global_stats(new_conf());
+    let mut s = save::save(get_global_stats());
+    s += "[room0]\nid = 0\n";
+    s += &generate_room(6, "0".to_string());
+    s += "[room1]\nid = 1\n";
+    s += &generate_room(6, "1".to_string());
+    s += "[room2]\nid = 2\n";
+    s += &generate_room(6, "2".to_string());
+    init_global_stats(save::str_to_conf(s));
     end()
 }
 
@@ -99,7 +110,7 @@ pub fn end() -> String {
     let mut conf = conf::get_conf();
     conf.insert("game".to_string(),false.to_string());
     conf::save_conf(conf);
-    save::save(get_global_stats());
+    println!("{:?}", get_global_stats());
     "Game Ended".to_string()
 }
 
