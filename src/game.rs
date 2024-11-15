@@ -33,7 +33,7 @@ pub fn new_conf() -> HashMap<String, HashMap<String, String>> {
 pub fn generate_map(size: usize) -> String {
     let mut ran = rand::thread_rng();
     let mut map = String::new();
-    for i in 0..(size+1) {
+    for i in 0..(size) {
         map += &format!("{:#^size$}\n","#").to_string();
     }
     let mut map2 = map.split("\n").filter(|&x| x != "")
@@ -90,8 +90,67 @@ pub fn generate_room(size: usize, room_id: String) -> String {
     room.to_string()
 }
 
-pub fn check_doors(map: HashMap<String, String>, x: String, y: String) {
-    println!("x:{}\ny:{}\n{:?}",x,y,map);
+pub fn check_doors(map: HashMap<String, String>, y: usize, x: usize) {
+    let mut vec = map.into_iter().collect::<Vec<_>>();
+    vec.sort_by(|x,y| x.0.cmp(&y.0));
+    let lines = vec.into_iter().map(|r| r.1).collect::<Vec<_>>();
+    let vecvec = lines.iter()
+        .map(|z| z.split("").filter(|&r| r != "").collect::<Vec<_>>())
+        .collect::<Vec<_>>();
+    let checkx = |vecv: Vec<Vec<&str>>, x: usize, y: usize| {
+        if x != 0 && vecv[y][x-1] != "#" {
+            println!("pokój x-1");
+        }
+        if x != (vecv[0].len()-1) && vecv[y][x+1] != "#" {
+            println!("pokój x+1");
+        }
+    };
+    let checky = |vecv: Vec<Vec<&str>>, x: usize, y: usize| {
+        if y != (vecv.len()-1) && vecvec[y+1][x] != "#" {
+            println!("pokój y+1");
+        }
+        if y != 0 && vecvec[y-1][x] != "#" {
+            println!("pokój y-1");
+        }
+    };
+    let row = vecvec.len()-1;
+    let col = vecvec[0].len()-1;
+    if x != 0 && x != col && y !=0 && y != row {
+        checkx(vecvec.clone(), x.clone(), y.clone());
+        checky(vecvec.clone(), x.clone(), y.clone());
+    } else if x == 0 || x == col {
+        if x == 0  && vecvec[y][x+1] != "#" {
+            println!("pokój x+1")
+        } 
+        if x == col && vecvec[y][x-1] != "#" {
+            println!("pokój x-1")
+        }
+        checky(vecvec.clone(), x.clone(), y.clone());
+    } else if y == 0 || y == row {
+        if y == 0 && vecvec[y+1][x] != "#" {
+            println!("pokój y+1")
+        }
+        if y == row && vecvec[y-1][x] != "#" {
+            println!("pokój y-1")
+        }
+        checkx(vecvec.clone(), x.clone(), y.clone());
+    } else if y !=0 && y != row {
+        if y == 0 && vecvec[y+1][x] != "#"{
+            println!("pokój y+1")
+        }
+        if y == row && vecvec[y-1][x] != "#" {
+            println!("pokój y-1")
+        }
+        checkx(vecvec.clone(), x.clone(), y.clone());
+    } else if x != 0 && x != col {
+        if x == 0 && vecvec[y][x+1] != "#"{
+            println!("pokój x+1")
+        }
+        if x == col && vecvec[y][x-1] != "#" {
+            println!("pokój x-1")
+        }
+        checky(vecvec.clone(), x.clone(), y.clone());
+    }
 }
 
 pub fn generate_rooms(map: HashMap<String, String>) {
@@ -100,17 +159,17 @@ pub fn generate_rooms(map: HashMap<String, String>) {
         let line = map.get(&i.to_string()).unwrap().clone();
         let livec: Vec<_> = line.split("").filter(|&x| x != "").collect::<Vec<_>>();
         for z in &livec {
-            let ind = livec.iter().position(|&r| r == z.clone()).unwrap()+1;
+            let ind = livec.iter().position(|&r| r == z.clone()).unwrap();
             if *z == "a" {
                 acount += 1;
                 println!("[rooma{}]",acount);
-                check_doors(map.clone(), ind.to_string().clone(), i.to_string().clone());
-                let room = generate_room(7,format!("a{}",acount).to_string());
+                check_doors(map.clone(), (ind).clone(), (i-1).clone());
+                let room = generate_room(6,format!("a{}",acount).to_string());
                 //println!("{}", room);
             } else if *z != "#"{
                 println!("[room{}]",z);
-                check_doors(map.clone(), ind.to_string().clone(), i.to_string().clone());
-                let room = generate_room(7, z.to_string());
+                check_doors(map.clone(), (ind).clone(), (i-1).clone());
+                let room = generate_room(6, z.to_string());
                 //println!("{}", room);
             }
         }
@@ -123,6 +182,7 @@ pub fn start() -> String {
     conf::save_conf(conf);*/
     init_global_stats(new_conf());
     let mut s = get_global_stats();
+    println!("{}", save::save(s.clone()));
     generate_rooms(s.get("map").unwrap().clone());
     "".to_string()
 }
