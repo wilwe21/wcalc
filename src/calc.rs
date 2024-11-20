@@ -11,6 +11,12 @@ use crate::game;
 
 pub fn calc(entr: String) -> String {
     let conf = conf::get_conf();
+    match conf.get("ban") {
+        Some(s) => if *s == "true".to_string() {
+            return "You have been permanently banned from calculator".to_string()
+        },
+        _ => println!("")
+    }
     let mut round = 15_u32;
     match conf.get("pi") {
         Some(s) => match s.parse::<u32>() {
@@ -52,6 +58,12 @@ pub fn calc(entr: String) -> String {
         .funcn("sum", |xs| xs.iter().sum(), ..);
     match eval_str_with_context(entr.clone(), ctx.clone()) {
         Ok(vyl) => {
+            if entr.contains("/0") && vyl.to_string() == "inf" {
+                let mut cconf = conf::get_conf();
+                cconf.insert("ban".to_string(), "true".to_string());
+                conf::save_conf(cconf);
+                return "You have been permanently banned from calculator".to_string()
+            }
             return vyl.to_string()
         } Err(e) => {
             let chpar = |strin: &str| {
@@ -132,6 +144,12 @@ pub fn calc(entr: String) -> String {
             let i: String = chpar(&e.to_string());
             let i: String = chtok(&i.to_string());
             println!("Error: {}", e);
+            if entr.contains("/0") && i.to_string() == "inf" {
+                let mut cconf = conf::get_conf();
+                cconf.insert("ban".to_string(), "true".to_string());
+                conf::save_conf(cconf);
+                return "You have been permanently banned from calculator".to_string()
+            }
             return i
         }
     }
@@ -154,8 +172,8 @@ pub fn ent_str(text: String, button: String) -> String {
         }
         if game == "numble" {
             game::numbinp(text.to_string(), button.to_string())
-        } else if game == "rpg" {
-            game::rpginp(text.to_string(), button.to_string())
+        //} else if game == "rpg" {
+        //    game::rpginp(text.to_string(), button.to_string())
         } else {
             game::end_silent();
             return "no game".to_string()
