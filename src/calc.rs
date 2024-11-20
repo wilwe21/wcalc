@@ -11,12 +11,6 @@ use crate::game;
 
 pub fn calc(entr: String) -> String {
     let conf = conf::get_conf();
-    match conf.get("ban") {
-        Some(s) => if *s == "true".to_string() {
-            return "You have been permanently banned from calculator".to_string()
-        },
-        _ => println!("")
-    }
     let mut round = 15_u32;
     match conf.get("pi") {
         Some(s) => match s.parse::<u32>() {
@@ -158,6 +152,12 @@ pub fn calc(entr: String) -> String {
 
 pub fn ent_str(text: String, button: String) -> String {
     let conf = conf::get_conf();
+    match conf.get("ban") {
+        Some(s) => if *s == "true".to_string() {
+            return "You have been permanently banned from calculator".to_string()
+        },
+        _ => println!("")
+    }
     let mut game = String::new();
     match conf.get("game") {
         Some(s) => game = s.to_string(),
