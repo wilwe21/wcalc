@@ -172,8 +172,8 @@ pub fn ent_str(text: String, button: String) -> String {
         }
         if game == "numble" {
             game::numbinp(text.to_string(), button.to_string())
-        //} else if game == "rpg" {
-        //    game::rpginp(text.to_string(), button.to_string())
+        } else if game == "rpg" {
+            game::rpginp(text.to_string(), button.to_string())
         } else {
             game::end_silent();
             return "no game".to_string()

@@ -82,75 +82,73 @@ pub fn generate_map(size: usize) -> String {
     return map2.into_iter().map(|x| x.join("")).collect::<Vec<String>>().join("\n")
 }
 
-pub fn generate_room(size: usize, room_id: String) -> String {
+pub fn generate_room(size: usize, dors: String, room_id: String) -> String {
     let mut room = String::new();
     for i in 0..(size) {
-        room += &format!("{:#^size$}\n","#").to_string();
+        if i > 0 && i < (size-1) {
+            let s2: usize = size - 2;
+            if i == size / 2 {
+                let mut left = String::new();
+                let mut right = String::new();
+                if dors.chars().collect::<Vec<_>>()[3] == '1' {
+                    left = "O".to_string()
+                } else {
+                    left = "#".to_string()
+                }
+                if dors.chars().collect::<Vec<_>>()[2] == '1'{
+                    right = "O".to_string()
+                } else {
+                    right = "#".to_string()
+                }
+                room += &format!("{}{:≈^s2$}{}\n", left,"≈",right).to_string();
+                continue
+            }
+            room += &format!("#{:≈^s2$}#\n","≈").to_string();
+        } else {
+            if i == 0 && dors.chars().collect::<Vec<_>>()[0] == '1' {
+                room += &format!("{:#^size$}\n", "O").to_string();
+                continue
+            } 
+            if i == (size-1) && dors.chars().collect::<Vec<_>>()[1] == '1' {
+                room += &format!("{:#^size$}\n", "O").to_string();
+                continue
+            }
+            room += &format!("{:#^size$}\n","#").to_string();
+        }
     }
     room.to_string()
 }
 
-pub fn check_doors(map: HashMap<String, String>, y: usize, x: usize) {
+pub fn check_doors(map: HashMap<String, String>, y: usize, x: usize) -> String{
     let mut vec = map.into_iter().collect::<Vec<_>>();
     vec.sort_by(|x,y| x.0.cmp(&y.0));
     let lines = vec.into_iter().map(|r| r.1).collect::<Vec<_>>();
     let vecvec = lines.iter()
         .map(|z| z.split("").filter(|&r| r != "").collect::<Vec<_>>())
         .collect::<Vec<_>>();
-    let checkx = |vecv: Vec<Vec<&str>>, x: usize, y: usize| {
+    let checkx = |vecv: Vec<Vec<&str>>, x: usize, y: usize| -> u8 {
+        let mut dor: u8 = 0;
         if x != 0 && vecv[y][x-1] != "#" {
-            println!("pokój x-1");
+            dor += 1
         }
         if x != (vecv[0].len()-1) && vecv[y][x+1] != "#" {
-            println!("pokój x+1");
+            dor += 2
         }
+        return dor
     };
-    let checky = |vecv: Vec<Vec<&str>>, x: usize, y: usize| {
+    let checky = |vecv: Vec<Vec<&str>>, x: usize, y: usize| -> u8{
+        let mut dor: u8 = 0;
         if y != (vecv.len()-1) && vecvec[y+1][x] != "#" {
-            println!("pokój y+1");
+            dor += 4
         }
         if y != 0 && vecvec[y-1][x] != "#" {
-            println!("pokój y-1");
+            dor += 8
         }
+        return dor
     };
-    let row = vecvec.len()-1;
-    let col = vecvec[0].len()-1;
-    if x != 0 && x != col && y !=0 && y != row {
-        checkx(vecvec.clone(), x.clone(), y.clone());
-        checky(vecvec.clone(), x.clone(), y.clone());
-    } else if x == 0 || x == col {
-        if x == 0  && vecvec[y][x+1] != "#" {
-            println!("pokój x+1")
-        } 
-        if x == col && vecvec[y][x-1] != "#" {
-            println!("pokój x-1")
-        }
-        checky(vecvec.clone(), x.clone(), y.clone());
-    } else if y == 0 || y == row {
-        if y == 0 && vecvec[y+1][x] != "#" {
-            println!("pokój y+1")
-        }
-        if y == row && vecvec[y-1][x] != "#" {
-            println!("pokój y-1")
-        }
-        checkx(vecvec.clone(), x.clone(), y.clone());
-    } else if y !=0 && y != row {
-        if y == 0 && vecvec[y+1][x] != "#"{
-            println!("pokój y+1")
-        }
-        if y == row && vecvec[y-1][x] != "#" {
-            println!("pokój y-1")
-        }
-        checkx(vecvec.clone(), x.clone(), y.clone());
-    } else if x != 0 && x != col {
-        if x == 0 && vecvec[y][x+1] != "#"{
-            println!("pokój x+1")
-        }
-        if x == col && vecvec[y][x-1] != "#" {
-            println!("pokój x-1")
-        }
-        checky(vecvec.clone(), x.clone(), y.clone());
-    }
+    let lr = checkx(vecvec.clone(), y.clone(), x.clone());
+    let ud = checky(vecvec.clone(), y.clone(), x.clone());
+    return format!("{:<04b}", (lr+ud)).to_string()
 }
 
 pub fn generate_rooms(map: HashMap<String, String>) {
@@ -163,14 +161,14 @@ pub fn generate_rooms(map: HashMap<String, String>) {
             if *z == "a" {
                 acount += 1;
                 println!("[rooma{}]",acount);
-                check_doors(map.clone(), (ind).clone(), (i-1).clone());
-                let room = generate_room(6,format!("a{}",acount).to_string());
-                //println!("{}", room);
+                let dr = check_doors(map.clone(), (ind).clone(), (i-1).clone());
+                let room = generate_room(7, dr,format!("a{}",acount).to_string());
+                println!("{}", room);
             } else if *z != "#"{
                 println!("[room{}]",z);
-                check_doors(map.clone(), (ind).clone(), (i-1).clone());
-                let room = generate_room(6, z.to_string());
-                //println!("{}", room);
+                let dr = check_doors(map.clone(), (ind).clone(), (i-1).clone());
+                let room = generate_room(7, dr, z.to_string());
+                println!("{}", room);
             }
         }
     }
