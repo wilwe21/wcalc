@@ -156,7 +156,7 @@ pub fn ent_str(text: String, button: String) -> String {
         Some(s) => if *s == "true".to_string() {
             return "You have been permanently banned from calculator".to_string()
         },
-        _ => println!("")
+        _ => {}
     }
     let mut game = String::new();
     match conf.get("game") {
@@ -226,7 +226,7 @@ pub fn ent_str(text: String, button: String) -> String {
                 return "".to_string()
             } else if text == "numble" {
                 return game::numble()
-            } else if text == "start" || text == "game" {
+            } else if text == "start" || text == "game" || text == "rpg" {
                 return game::start()
             } else if text.contains("clr") {
                 return "".to_string()

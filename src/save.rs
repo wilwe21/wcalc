@@ -79,9 +79,8 @@ pub fn save(config: HashMap<String, HashMap<String, String>>) -> String {
                 conf += &format!("{}\n",v[&l.to_string()]).to_string();
             }
         } else if k.starts_with("room") {
-            conf += &format!("id = {}\n", v.get("id").unwrap()).to_string();
-            for l in 2..(v.len()+1) {
-                conf += &format!("{}\n",v[&l.to_string()]).to_string();
+            for l in 0..(v.len()) {
+                conf += &format!("{}\n",v.get(&l.to_string()).unwrap().clone()).to_string();
             }
         } else {
             for (l, m) in v {

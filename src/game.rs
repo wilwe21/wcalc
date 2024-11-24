@@ -157,8 +157,9 @@ pub fn check_doors(map: HashMap<String, String>, y: usize, x: usize) -> String{
     return format!("{:<04b}", (lr+ud)).to_string()
 }
 
-pub fn generate_rooms(map: HashMap<String, String>) {
+pub fn generate_rooms(map: HashMap<String, String>) -> HashMap<String, HashMap<String, String>>{
     let mut acount = 0;
+    let mut rooms: HashMap<String, HashMap<String, String>> = HashMap::new();
     for i in 1..(map.len()+1) {
         let line = map.get(&i.to_string()).unwrap().clone();
         let livec: Vec<_> = line.split("").filter(|&x| x != "").collect::<Vec<_>>();
@@ -166,28 +167,40 @@ pub fn generate_rooms(map: HashMap<String, String>) {
             let ind = livec.iter().position(|&r| r == z.clone()).unwrap();
             if *z == "a" {
                 acount += 1;
-                println!("[rooma{}]",acount);
+                let mut r: HashMap<String,String> = HashMap::new();
                 let dr = check_doors(map.clone(), (ind).clone(), (i-1).clone());
                 let room = generate_room(7, dr,format!("a{}",acount).to_string());
-                println!("{}", room);
+                for (c,d) in room.split("\n").enumerate() {
+                    if d != "" {
+                        r.insert(c.to_string(), d.to_string());
+                    }
+                }
+                rooms.insert(format!("rooma{}",acount).to_string(), r);
             } else if *z != "#"{
-                println!("[room{}]",z);
+                let mut r: HashMap<String,String> = HashMap::new();
                 let dr = check_doors(map.clone(), (ind).clone(), (i-1).clone());
                 let room = generate_room(7, dr, z.to_string());
-                println!("{}", room);
+                for (c,d) in room.split("\n").enumerate() {
+                    if d != "" {
+                        r.insert(c.to_string(), d.to_string());
+                    }
+                }
+                rooms.insert(format!("room{}",z).to_string(), r);
             }
         }
     }
+    return rooms
 }
 
 pub fn start() -> String {
-    /*let mut conf = conf::get_conf();
+    let mut conf = conf::get_conf();
     conf.insert("game".to_string(),"rpg".to_string());
-    conf::save_conf(conf);*/
+    conf::save_conf(conf);
     init_global_stats(new_conf());
     let mut s = get_global_stats();
-    println!("{}", save::save(s.clone()));
-    generate_rooms(s.get("map").unwrap().clone());
+    let rooms = generate_rooms(s.get("map").unwrap().clone());
+    s.extend(rooms);
+    init_global_stats(s);
     "".to_string()
 }
 
@@ -205,14 +218,16 @@ pub fn end_silent() {
 }
 
 pub fn rpginp(text: String, button: String) -> String {
-    if button == "8" {
+    if button == "8" || text.ends_with("8") {
         return "poruszasz się do przodu".to_string()
-    } else if button == "2" {
+    } else if button == "2" || text.ends_with("2") {
         return "poruszasz się do tyłu".to_string()
-    } else if button == "4" {
+    } else if button == "4" || text.ends_with("4") {
         return "poruszasz się w lewo".to_string()
-    } else if button == "6" {
+    } else if button == "6" || text.ends_with("6") {
         return "poruszasz się w prawo".to_string()
+    } else if button == "√" || text.ends_with("map") {
+        return "otwierasz mape".to_string()
     }
     return "".to_string()
 }
