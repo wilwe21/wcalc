@@ -6,6 +6,7 @@ use std::collections::HashMap;
 
 use crate::conf;
 use crate::save;
+use crate::legend;
 
 static mut gm: Option<Mutex<u8>> = None;
 
@@ -84,6 +85,10 @@ pub fn generate_map(size: usize) -> String {
 
 pub fn generate_room(size: usize, dors: String, room_id: String) -> String {
     let mut room = String::new();
+    let st = legend::statics();
+    let wall = st[0].clone();
+    let door = st[1].clone();
+    let floor = st[2].clone();
     for i in 0..(size) {
         if i > 0 && i < (size-1) {
             let s2: usize = size - 2;
@@ -91,29 +96,30 @@ pub fn generate_room(size: usize, dors: String, room_id: String) -> String {
                 let mut left = String::new();
                 let mut right = String::new();
                 if dors.chars().collect::<Vec<_>>()[3] == '1' {
-                    left = "O".to_string()
+                    left = door.clone().to_string()
                 } else {
-                    left = "#".to_string()
+                    left = wall.clone().to_string()
                 }
                 if dors.chars().collect::<Vec<_>>()[2] == '1'{
-                    right = "O".to_string()
+                    right = door.clone().to_string()
                 } else {
-                    right = "#".to_string()
+                    right = wall.clone().to_string()
                 }
-                room += &format!("{}{:≈^s2$}{}\n", left,"≈",right).to_string();
+                room += &format!("{}{}{}\n", left,floor.clone().to_string().repeat(s2),right).to_string();
                 continue
             }
-            room += &format!("#{:≈^s2$}#\n","≈").to_string();
+            room += &format!("{}{}{}\n",wall.clone(),floor.clone().to_string().repeat(s2),wall.clone()).to_string();
         } else {
+            let w = (size - 1) / 2;
             if i == 0 && dors.chars().collect::<Vec<_>>()[0] == '1' {
-                room += &format!("{:#^size$}\n", "O").to_string();
+                room += &format!("{}{}{}\n", wall.clone().to_string().repeat(w),door.clone(),wall.clone().to_string().repeat(w)).to_string();
                 continue
             } 
             if i == (size-1) && dors.chars().collect::<Vec<_>>()[1] == '1' {
-                room += &format!("{:#^size$}\n", "O").to_string();
+                room += &format!("{}{}{}\n", wall.clone().to_string().repeat(w),door.clone(),wall.clone().to_string().repeat(w)).to_string();
                 continue
             }
-            room += &format!("{:#^size$}\n","#").to_string();
+            room += &format!("{}\n",wall.clone().to_string().repeat(size)).to_string();
         }
     }
     room.to_string()
