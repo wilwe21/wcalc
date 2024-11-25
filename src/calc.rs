@@ -8,6 +8,7 @@ use rand::Rng;
 
 use crate::conf;
 use crate::game;
+use crate::rpgmove;
 
 pub fn calc(entr: String) -> String {
     let conf = conf::get_conf();
@@ -173,7 +174,7 @@ pub fn ent_str(text: String, button: String) -> String {
         if game == "numble" {
             game::numbinp(text.to_string(), button.to_string())
         } else if game == "rpg" {
-            game::rpginp(text.to_string(), button.to_string())
+            rpgmove::rpginp(text.to_string(), button.to_string())
         } else {
             game::end_silent();
             return "no game".to_string()
