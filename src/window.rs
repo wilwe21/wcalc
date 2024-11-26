@@ -16,7 +16,7 @@ fn on_activate(app: &gtk::Application) {
 
 pub fn load() {
     let app = gtk::Application::builder()
-        .application_id("com.github.wilwe21.Calc")
+        .application_id("com.github.wilwe21.wcalc")
         .build();
     app.connect_activate(on_activate);
     app.run();

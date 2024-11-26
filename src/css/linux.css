@@ -13,6 +13,6 @@ box {
 .botbut {
 	margin-right: 5px;
 }
-.enter {
-	color: lime;
+.Map > label {
+	color: black;
 }

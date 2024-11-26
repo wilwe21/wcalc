@@ -7,6 +7,7 @@ mod save;
 mod legend;
 mod generate;
 mod rpgmove;
+mod map;
 
 fn main() {
     window::load();
