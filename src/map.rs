@@ -1,7 +1,6 @@
 use gtk::prelude::*;
 use std::sync::Mutex;
 use std::collections::HashMap;
-use std::time::Duration;
 
 use crate::game;
 use crate::legend;
@@ -51,7 +50,7 @@ pub fn update() {
     let mbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     mbox.add_css_class("Map");
     let name = gtk::Label::builder().label("Room Map").build();
-    let lab = gtk::Label::builder().label(&s).build();
+    let lab = gtk::Label::builder().label(&s).justify(gtk::Justification::Center).build();
     mbox.append(&name);
     mbox.append(&lab);
     m.set_child(Some(&mbox));

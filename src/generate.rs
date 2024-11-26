@@ -98,6 +98,8 @@ pub fn generate_room(size: usize, dors: String, room_id: String) -> String {
 }
 
 pub fn check_doors(map: HashMap<String, String>, y: usize, x: usize) -> String{
+    // 0011 left right
+    // 1100 down  up
     let mut vec = map.into_iter().collect::<Vec<_>>();
     vec.sort_by(|x,y| x.0.cmp(&y.0));
     let lines = vec.into_iter().map(|r| r.1).collect::<Vec<_>>();
