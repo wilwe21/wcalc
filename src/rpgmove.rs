@@ -5,10 +5,6 @@ use crate::game;
 use crate::legend;
 use crate::map;
 
-// fix moving when a is near a
-// error valid room a in same line 
-// going only to 1st in line
-
 pub fn movevalid(pos: Vec<u8>, room: HashMap<String, String>) -> Option<char> {
     let forw = room.get(&pos[1].to_string()).unwrap().chars().nth(pos[0].into());
     forw
@@ -21,14 +17,27 @@ pub fn validaroom(map: HashMap<String,String>, le: usize, ri: usize) -> String {
     // ri = left right
     // starts with 0 becouse why not
     let room = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
-    let mut ac = 1;
     if room == "a".to_string() {
-        for i in 1..le {
-            if i != le {
-                ac += map.get(&i.to_string()).unwrap().chars().filter(|c| *c == 'a').count()
-            } else {
-                ac += map.get(&i.to_string()).unwrap().chars().enumerate().filter(|(j,r)| *j > ri && r.to_string() == "a".to_string()).count()
+        let mut ac = 1;
+        if le != 1 {
+            for i in 1..(le+1) {
+                if i != le {
+                    let sl = map.get(&i.to_string()).unwrap().chars().filter(|c| *c == 'a').count();
+                    ac += sl;
+                } else {
+                    let sl = map.get(&i.to_string()).unwrap().chars().enumerate()
+                        .filter(|(j,r)| *j < ri)
+                        .filter(|(j,r)| *r == 'a')
+                        .count();
+                    ac += sl;
+                }
             }
+        } else {
+            let sl = map.get(&"1".to_string()).unwrap().chars().enumerate()
+                .filter(|(j,r)| *j < ri)
+                .filter(|(j,r)| *r == 'a')
+                .count();
+            ac += sl;
         }
         return format!("a{}",ac).to_string()
     }

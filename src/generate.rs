@@ -137,10 +137,12 @@ pub fn generate_rooms(map: HashMap<String, String>, width: usize) -> HashMap<Str
     for i in 1..(map.len()+1) {
         let line = map.get(&i.to_string()).unwrap().clone();
         let livec: Vec<_> = line.split("").filter(|&x| x != "").collect::<Vec<_>>();
+        let mut llc: Vec<_> = livec.clone();
         for z in &livec {
-            let ind = livec.iter().position(|&r| r == z.clone()).unwrap();
+            let ind = llc.iter().position(|&r| r == z.clone()).unwrap();
             if *z == "a" {
                 acount += 1;
+                llc[ind] = "h";
                 let mut r: HashMap<String,String> = HashMap::new();
                 let dr = check_doors(map.clone(), (ind).clone(), (i-1).clone());
                 let room = generate_room(width, dr,format!("a{}",acount).to_string());
