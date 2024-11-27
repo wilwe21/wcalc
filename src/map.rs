@@ -35,6 +35,12 @@ pub fn use_map() -> gtk::Window {
 
 pub fn update() {
     let stats = game::get_global_stats();
+    let fmap = stats.get("map").unwrap();
+    let mut flma = HashMap::new();
+    flma.insert("map".to_string(), fmap.clone());
+    let fmap: String = save::save(flma).split("\n").enumerate()
+        .map(|(i, r)| if i != 0 { format!("{}\n", r) } else { "".to_string() })
+        .collect();
     let rid = stats.get("player").unwrap().get("room").unwrap();
     let pos: Vec<usize> = stats.get("player").unwrap().get("position").unwrap().split("x").map(|r| r.parse::<usize>().unwrap()).collect();
     let room = stats.get(&format!("room{}",rid)).unwrap();
@@ -49,10 +55,14 @@ pub fn update() {
     let m = use_map();
     let mbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     mbox.add_css_class("Map");
-    let name = gtk::Label::builder().label("Room Map").build();
-    let lab = gtk::Label::builder().label(&s).justify(gtk::Justification::Center).build();
-    mbox.append(&name);
-    mbox.append(&lab);
+    let fm = gtk::Label::builder().label("Floor Map").build();
+    let floor = gtk::Label::builder().label(&fmap).justify(gtk::Justification::Center).build();
+    let florin = gtk::Label::builder().label(format!("Room {}",rid)).build();
+    let room = gtk::Label::builder().label(&s).justify(gtk::Justification::Center).build();
+    mbox.append(&fm);
+    mbox.append(&floor);
+    mbox.append(&florin);
+    mbox.append(&room);
     m.set_child(Some(&mbox));
     up_map(m);
 }
