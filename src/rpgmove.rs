@@ -6,6 +6,8 @@ use crate::legend;
 use crate::map;
 
 // fix moving when a is near a
+// error valid room a in same line 
+// going only to 1st in line
 
 pub fn movevalid(pos: Vec<u8>, room: HashMap<String, String>) -> Option<char> {
     let forw = room.get(&pos[1].to_string()).unwrap().chars().nth(pos[0].into());
