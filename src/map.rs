@@ -38,20 +38,20 @@ pub fn update() {
     let fmap = stats.get("map").unwrap();
     let mut flma = HashMap::new();
     flma.insert("map".to_string(), fmap.clone());
-    let fmap: String = save::save(flma).split("\n").enumerate()
+    let fmap: String = save::conf_to_str(flma).split("\n").enumerate()
         .map(|(i, r)| if i != 0 { format!("{}\n", r) } else { "".to_string() })
         .collect();
     let rid = stats.get("player").unwrap().get("room").unwrap();
     let pos: Vec<usize> = stats.get("player").unwrap().get("position").unwrap().split("x").map(|r| r.parse::<usize>().unwrap()).collect();
     let room = stats.get(&format!("room{}",rid)).unwrap();
-    let player = legend::statics()[3];
+    let player = legend::player;
     let mut sus = HashMap::new();
     let mut display = room.clone();
     let pro = room.get(&pos[1].to_string()).unwrap();
     let pru: String = pro.chars().enumerate().map(|(i,r)| if i == pos[0] { player } else { r }).collect();
     display.insert(pos[1].to_string(), pru);
     sus.insert("roomcur".to_string(), display);
-    let s: String = save::save(sus).split("\n").enumerate().map(|(i, r)| if i != 0 { format!("{}\n",r) } else { "".to_string() } ).collect();
+    let s: String = save::conf_to_str(sus).split("\n").enumerate().map(|(i, r)| if i != 0 { format!("{}\n",r) } else { "".to_string() } ).collect();
     let m = use_map();
     let mbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     mbox.add_css_class("Map");

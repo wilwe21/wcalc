@@ -1,6 +1,5 @@
 use std::collections::HashMap;
 
-use crate::save;
 use crate::game;
 use crate::legend;
 use crate::map;
@@ -75,10 +74,10 @@ pub fn rpginp(text: String, button: String) -> String {
         if pos[1] > 0 {
             pos[1] -= 1;
             let nex = movevalid(pos.clone(),room.clone());
-            if nex == Some(legend::statics()[0]) {
+            if nex == Some(legend::wall) {
                 return "can't move".to_string()
             }
-            if nex == Some(legend::statics()[1]) {
+            if nex == Some(legend::door) {
                 let map = s.get("map").unwrap();
                 let cur = player.get("room").unwrap();
                 if !(cur.starts_with("a")) {
@@ -119,10 +118,10 @@ pub fn rpginp(text: String, button: String) -> String {
         if pos[1] < mx {
             pos[1] += 1;
             let nex = movevalid(pos.clone(),room.clone());
-            if nex == Some(legend::statics()[0]) {
+            if nex == Some(legend::wall) {
                 return "can't move".to_string()
             }
-            if nex == Some(legend::statics()[1]) {
+            if nex == Some(legend::door) {
                 let map = s.get("map").unwrap();
                 let cur = player.get("room").unwrap();
                 if !(cur.starts_with("a")) {
@@ -162,10 +161,10 @@ pub fn rpginp(text: String, button: String) -> String {
         if pos[0] > 0 {
             pos[0] -= 1;
             let nex = movevalid(pos.clone(),room.clone());
-            if nex == Some(legend::statics()[0]) {
+            if nex == Some(legend::wall) {
                 return "can't move".to_string()
             }
-            if nex == Some(legend::statics()[1]) {
+            if nex == Some(legend::door) {
                 let map = s.get("map").unwrap();
                 let cur = player.get("room").unwrap();
                 if !(cur.starts_with("a")) {
@@ -205,10 +204,10 @@ pub fn rpginp(text: String, button: String) -> String {
         if pos[0] < my {
             pos[0] += 1;
             let nex = movevalid(pos.clone(),room.clone());
-            if nex == Some(legend::statics()[0]) {
+            if nex == Some(legend::wall) {
                 return "can't move".to_string()
             }
-            if nex == Some(legend::statics()[1]) {
+            if nex == Some(legend::door) {
                 let map = s.get("map").unwrap();
                 let cur = player.get("room").unwrap();
                 if !(cur.starts_with("a")) {

@@ -1,8 +1,4 @@
-pub fn statics() -> Vec<char> {
-    let wall = '#';
-    let door = 'O';
-    let floor = '≈';
-    let player = 'P';
-		let mut st = vec!(wall,door,floor,player);
-		return st
-}
+pub static wall: char = '#';
+pub static door: char = 'O';
+pub static floor: char = '≈';
+pub static player: char = 'P';

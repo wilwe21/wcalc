@@ -70,7 +70,7 @@ pub fn get() {
     }
 }
 
-pub fn save(config: HashMap<String, HashMap<String, String>>) -> String {
+pub fn conf_to_str(config: HashMap<String, HashMap<String, String>>) -> String {
     let mut conf = String::new();
     for (k, v) in &config {
         conf += &format!("[{}]\n", k).to_string();

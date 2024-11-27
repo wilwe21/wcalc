@@ -57,10 +57,9 @@ pub fn generate_map(size: usize) -> String {
 
 pub fn generate_room(size: usize, dors: String, room_id: String) -> String {
     let mut room = String::new();
-    let st = legend::statics();
-    let wall = st[0].clone();
-    let door = st[1].clone();
-    let floor = st[2].clone();
+    let wall = legend::wall.clone();
+    let door = legend::door.clone();
+    let floor = legend::floor.clone();
     for i in 0..(size) {
         if i > 0 && i < (size-1) {
             let s2: usize = size - 2;

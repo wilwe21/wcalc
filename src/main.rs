@@ -2,6 +2,7 @@
 mod conf;
 mod calc;
 mod window;
+mod tplayer;
 mod game;
 mod save;
 mod legend;

@@ -2,6 +2,7 @@ use rand::Rng;
 use std::sync::Mutex;
 use std::collections::HashMap;
 
+use crate::tplayer::Player;
 use crate::conf;
 use crate::save;
 use crate::generate;
@@ -10,6 +11,8 @@ use crate::map;
 static mut gm: Option<Mutex<u8>> = None;
 
 static mut stats: Option<Mutex<HashMap<String, HashMap<String, String>>>> = None;
+
+static mut player: Option<Mutex<Player>> = None;
 
 pub fn init_global_stats(conf: HashMap<String, HashMap<String, String>>) {
     unsafe {
@@ -25,6 +28,24 @@ pub fn get_global_stats() -> HashMap<String, HashMap<String, String>> {
             let d = new_conf(6,7);
             init_global_stats(d.clone());
             d
+        }
+    }
+}
+
+pub fn init_player(c: usize, pos: String, room: String) {
+    unsafe {
+        player = Some(Mutex::new(Player::new(c,pos,room)));
+    }
+}
+
+pub fn get_player() -> Player {
+    unsafe {
+        if let Some(ref mut p) = player {
+            p.lock().unwrap().clone()
+        } else {
+            let pp = Player::new(0, "5x5".to_string(), "0".to_string());
+            init_player(0, "5x5".to_string(), "0".to_string());
+            pp
         }
     }
 }
