@@ -41,8 +41,8 @@ pub fn update() {
     let fmap: String = save::conf_to_str(flma).split("\n").enumerate()
         .map(|(i, r)| if i != 0 { format!("{}\n", r) } else { "".to_string() })
         .collect();
-    let rid = stats.get("player").unwrap().get("room").unwrap();
-    let pos: Vec<usize> = stats.get("player").unwrap().get("position").unwrap().split("x").map(|r| r.parse::<usize>().unwrap()).collect();
+    let rid = game::get_player().room;
+    let pos: Vec<usize> = game::get_player().position.split("x").map(|r| r.parse::<usize>().unwrap()).collect();
     let room = stats.get(&format!("room{}",rid)).unwrap();
     let player = legend::player;
     let mut sus = HashMap::new();

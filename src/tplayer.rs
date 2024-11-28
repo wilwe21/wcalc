@@ -2,13 +2,13 @@ use crate::save;
 
 #[derive(Clone, Debug)]
 pub struct Player {
-    character: String,
-    attacks: Vec<String>,
-    position: String,
-    health: usize,
-    lvl: usize,
-    score: usize,
-    room: String
+    pub character: String,
+    pub attacks: Vec<String>,
+    pub position: String,
+    pub health: usize,
+    pub lvl: usize,
+    pub score: usize,
+    pub room: String
 }
 
 impl Player {

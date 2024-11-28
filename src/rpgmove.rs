@@ -63,11 +63,11 @@ pub fn finda(map: HashMap<String, String>, find: usize) -> Vec<usize> {
 
 pub fn rpginp(text: String, button: String) -> String {
     let mut s = game::get_global_stats();
-    let mut player = s.get("player").unwrap().clone();
-    let mut roomid = player.get("room").unwrap().clone();
+    let mut player = game::get_player();
+    let mut roomid = player.room.clone().clone();
     let orid = roomid.clone();
     let room = s.get(&format!("room{}",roomid).to_string()).unwrap().clone();
-    let mut pos: Vec<u8> = player.get("position").unwrap().split("x").map(|r| r.parse::<u8>().unwrap()).collect();
+    let mut pos: Vec<u8> = player.position.split("x").map(|r| r.parse::<u8>().unwrap()).collect();
     let mx: u8 = (room.get(&"0".to_string()).unwrap().len() -1).try_into().unwrap();
     let my: u8 = (room.len()-1).try_into().unwrap();
     if button == "8" || (button == "=" && text.ends_with("8")) {
@@ -79,11 +79,11 @@ pub fn rpginp(text: String, button: String) -> String {
             }
             if nex == Some(legend::door) {
                 let map = s.get("map").unwrap();
-                let cur = player.get("room").unwrap();
+                let cur = player.room.clone();
                 if !(cur.starts_with("a")) {
                     for i in 1..(map.len()+1) {
                         let row = map.get(&i.to_string()).unwrap();
-                        if let Some(ind) = row.find(cur) {
+                        if let Some(ind) = row.find(&cur) {
                             pos[1] = (map.len()-1) as u8;
                             let le = i-1;
                             let ri = ind;
@@ -101,10 +101,9 @@ pub fn rpginp(text: String, button: String) -> String {
                     roomid = validaroom(map.clone(), le.clone(), ri.clone());
                 }
             }
-            player.insert("room".to_string(), roomid.to_string());
-            player.insert("position".to_string(), format!("{}x{}", pos[0], pos[1]).to_string());
-            s.insert("player".to_string(), player);
-            game::init_global_stats(s);
+            player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
+            player.move_room(roomid.to_string());
+            game::update_player(player);
             map::update();
             if roomid == orid {
                 return "move up".to_string()
@@ -123,10 +122,10 @@ pub fn rpginp(text: String, button: String) -> String {
             }
             if nex == Some(legend::door) {
                 let map = s.get("map").unwrap();
-                let cur = player.get("room").unwrap();
+                let cur = player.room.clone();
                 if !(cur.starts_with("a")) {
                     for i in 1..(map.len()+1) {
-                        if let Some(ind) = map.get(&i.to_string()).unwrap().find(cur) {
+                        if let Some(ind) = map.get(&i.to_string()).unwrap().find(&cur) {
                             pos[1] = 1;
                             let le = i+1;
                             let ri = ind;
@@ -144,10 +143,9 @@ pub fn rpginp(text: String, button: String) -> String {
                     roomid = validaroom(map.clone(), le.clone(), ri.clone());
                 }
             }
-            player.insert("room".to_string(), roomid.to_string());
-            player.insert("position".to_string(), format!("{}x{}", pos[0], pos[1]).to_string());
-            s.insert("player".to_string(), player);
-            game::init_global_stats(s);
+            player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
+            player.move_room(roomid.to_string());
+            game::update_player(player);
             map::update();
             if roomid == orid {
                 return "move down".to_string()
@@ -166,10 +164,10 @@ pub fn rpginp(text: String, button: String) -> String {
             }
             if nex == Some(legend::door) {
                 let map = s.get("map").unwrap();
-                let cur = player.get("room").unwrap();
+                let cur = player.room.clone();
                 if !(cur.starts_with("a")) {
                     for i in 1..(map.len()+1) {
-                        if let Some(ind) = map.get(&i.to_string()).unwrap().find(cur) {
+                        if let Some(ind) = map.get(&i.to_string()).unwrap().find(&cur) {
                             pos[0] = (map.get(&i.to_string()).unwrap().len()-1) as u8;
                             let le = i;
                             let ri = ind-1;
@@ -187,10 +185,9 @@ pub fn rpginp(text: String, button: String) -> String {
                     roomid = validaroom(map.clone(), le.clone(), ri.clone());
                 }
             }
-            player.insert("room".to_string(), roomid.to_string());
-            player.insert("position".to_string(), format!("{}x{}", pos[0], pos[1]).to_string());
-            s.insert("player".to_string(), player);
-            game::init_global_stats(s);
+            player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
+            player.move_room(roomid.to_string());
+            game::update_player(player);
             map::update();
             if roomid == orid {
                 return "move left".to_string()
@@ -209,10 +206,10 @@ pub fn rpginp(text: String, button: String) -> String {
             }
             if nex == Some(legend::door) {
                 let map = s.get("map").unwrap();
-                let cur = player.get("room").unwrap();
+                let cur = player.room.clone();
                 if !(cur.starts_with("a")) {
                     for i in 1..(map.len()+1) {
-                        if let Some(ind) = map.get(&i.to_string()).unwrap().find(cur) {
+                        if let Some(ind) = map.get(&i.to_string()).unwrap().find(&cur) {
                             pos[0] = 1;
                             let le = i;
                             let ri = ind+1;
@@ -230,10 +227,9 @@ pub fn rpginp(text: String, button: String) -> String {
                     roomid = validaroom(map.clone(), le.clone(), ri.clone());
                 }
             }
-            player.insert("room".to_string(), roomid.to_string());
-            player.insert("position".to_string(), format!("{}x{}", pos[0], pos[1]).to_string());
-            s.insert("player".to_string(), player);
-            game::init_global_stats(s);
+            player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
+            player.move_room(roomid.to_string());
+            game::update_player(player);
             map::update();
             if roomid == orid {
                 return "move right".to_string()

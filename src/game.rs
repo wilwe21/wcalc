@@ -38,6 +38,12 @@ pub fn init_player(c: String, pos: String, room: String) {
     }
 }
 
+pub fn update_player(pl: Player) {
+    unsafe {
+        player = Some(Mutex::new(pl));
+    }
+}
+
 pub fn get_player() -> Player {
     unsafe {
         if let Some(ref mut p) = player {
@@ -51,13 +57,13 @@ pub fn get_player() -> Player {
 }
 
 pub fn new_conf(mw: usize, rw: usize) -> HashMap<String, HashMap<String, String>> {
-    init_player("0".to_string(), "5x5".to_string(), "0".to_string());
+    let spawn = rw/2;
+    init_player("0".to_string(), format!("{}x{}", spawn,spawn).to_string(), "0".to_string());
     let mut p = get_player();
     let mut d = p.to_string();
     d += &"[map]\n".to_string();
     d += &generate::generate_map(mw).to_string();
     let mut s = save::str_to_conf(d.to_string());
-    println!("{:?}",s);
     let rooms = generate::generate_rooms(s.get("map").unwrap().clone(), rw.clone());
     s.get_mut("player").unwrap().insert("position".to_string(), format!("{}x{}", (rw)/2, (rw)/2));
     s.extend(rooms);
@@ -69,7 +75,7 @@ pub fn start() -> String {
     let mut conf = conf::get_conf();
     conf.insert("game".to_string(),"rpg".to_string());
     conf::save_conf(conf);
-    let rw: usize = 8;
+    let rw: usize = 7;
     let mw: usize = 6;
     init_global_stats(new_conf(mw, rw));
     "".to_string()
