@@ -2,7 +2,7 @@ use rand::Rng;
 use std::sync::Mutex;
 use std::collections::HashMap;
 
-use crate::tplayer::Player;
+use crate::tentity::Entity;
 use crate::conf;
 use crate::save;
 use crate::generate;
@@ -12,7 +12,7 @@ static mut gm: Option<Mutex<u8>> = None;
 
 static mut stats: Option<Mutex<HashMap<String, HashMap<String, String>>>> = None;
 
-static mut player: Option<Mutex<Player>> = None;
+static mut player: Option<Mutex<Entity>> = None;
 
 pub fn init_global_stats(conf: HashMap<String, HashMap<String, String>>) {
     unsafe {
@@ -34,23 +34,23 @@ pub fn get_global_stats() -> HashMap<String, HashMap<String, String>> {
 
 pub fn init_player(c: String, pos: String, room: String) {
     unsafe {
-        player = Some(Mutex::new(Player::new(c,pos,room)));
+        player = Some(Mutex::new(Entity::new_player(c,pos,room)));
     }
 }
 
-pub fn update_player(pl: Player) {
+pub fn update_player(pl: Entity) {
     unsafe {
         player = Some(Mutex::new(pl));
     }
 }
 
-pub fn get_player() -> Player {
+pub fn get_player() -> Entity {
     unsafe {
         if let Some(ref mut p) = player {
             p.lock().unwrap().clone()
         } else {
-            let pp = Player::new("0".to_string(), "5x5".to_string(), "0".to_string());
-            init_player("0".to_string(), "5x5".to_string(), "0".to_string());
+            let pp = Entity::new_player("Player".to_string(), "5x5".to_string(), "0".to_string());
+            init_player("Player".to_string(), "5x5".to_string(), "0".to_string());
             pp
         }
     }
@@ -58,7 +58,7 @@ pub fn get_player() -> Player {
 
 pub fn new_conf(mw: usize, rw: usize) -> HashMap<String, HashMap<String, String>> {
     let spawn = rw/2;
-    init_player("0".to_string(), format!("{}x{}", spawn,spawn).to_string(), "0".to_string());
+    init_player("Player".to_string(), format!("{}x{}", spawn,spawn).to_string(), "0".to_string());
     let mut p = get_player();
     let mut d = p.to_string();
     d += &"[map]\n".to_string();

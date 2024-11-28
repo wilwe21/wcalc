@@ -4,6 +4,8 @@ use crate::game;
 use crate::legend;
 use crate::map;
 
+use crate::tattacks::Attack;
+
 pub fn movevalid(pos: Vec<u8>, room: HashMap<String, String>) -> Option<char> {
     let forw = room.get(&pos[1].to_string()).unwrap().chars().nth(pos[0].into());
     forw
@@ -239,9 +241,15 @@ pub fn rpginp(text: String, button: String) -> String {
         } else {
             return "can't move".to_string()
         }
-    } else if button == "√" || text.ends_with("map") {
+    } else if button == "√" || (button == "=" && text.ends_with("map")) {
         return map::toggle_map()
+    } else if button == "5" || (button == "=" && text.ends_with("5")) {
+        let mut pl = game::get_player().clone();
+        let at = Attack::get_by_name("Substract");
+        match at {
+            Some(at) => return at.r#use(game::get_player().clone(), pl),
+            _ => return "unknown".to_string()
+        }
     }
     return "".to_string()
 }
-

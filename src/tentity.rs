@@ -1,7 +1,7 @@
 use crate::save;
 
 #[derive(Clone, Debug)]
-pub struct Player {
+pub struct Entity {
     pub character: String,
     pub attacks: Vec<String>,
     pub position: String,
@@ -11,9 +11,9 @@ pub struct Player {
     pub room: String
 }
 
-impl Player {
-    pub fn new(character: String, position: String, room: String) -> Self {
-        let attacks: Vec<String> = vec!("dupa".to_string(), "kutas".to_string(), "".to_string(), "".to_string());
+impl Entity {
+    pub fn new_player(character: String, position: String, room: String) -> Self {
+        let attacks: Vec<String> = vec!("bite".to_string(), "divide".to_string(), "".to_string(), "".to_string());
         let health: usize = 100;
         let lvl: usize = 0;
         let score: usize = 0;
@@ -26,6 +26,23 @@ impl Player {
             score,
             room
         }
+    }
+
+    pub fn new(character: String, attacks: Vec<String>, health: usize, lvl: usize) -> Self {
+        Self {
+            character,
+            attacks,
+            position: "None".to_string(),
+            health,
+            lvl,
+            score: 0,
+            room: "None".to_string()
+        }
+    }
+
+    pub fn enemy_list() -> Vec<Self> {
+        let snake = Self::new("Snake".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
+        return vec!(snake)
     }
 
     pub fn from_str(st: String) -> Self {
