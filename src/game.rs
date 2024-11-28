@@ -51,10 +51,13 @@ pub fn get_player() -> Player {
 }
 
 pub fn new_conf(mw: usize, rw: usize) -> HashMap<String, HashMap<String, String>> {
-    let mut d = include_str!("./stats.cfg").to_string();
+    init_player(0, "5x5".to_string(), "0".to_string());
+    let mut p = get_player();
+    let mut d = p.to_string();
     d += &"[map]\n".to_string();
     d += &generate::generate_map(mw).to_string();
     let mut s = save::str_to_conf(d.to_string());
+    println!("{:?}",s);
     let rooms = generate::generate_rooms(s.get("map").unwrap().clone(), rw.clone());
     s.get_mut("player").unwrap().insert("position".to_string(), format!("{}x{}", (rw)/2, (rw)/2));
     s.extend(rooms);

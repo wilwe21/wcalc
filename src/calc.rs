@@ -190,7 +190,7 @@ pub fn ent_str(text: String, button: String) -> String {
             let new = &text[..text.len() -1];
             return new.to_string()
         }
-        if button == "󰒓" {
+        if button == "" {
             conf::config();
             return text.to_string()
         }
@@ -339,7 +339,7 @@ pub fn wind() -> gtk::Box {
         .label("√")
         .build();
     let butconf = gtk::Button::builder()
-        .label("󰒓")
+        .label("")
         .build();
     // css related
     topbut.add_css_class("topbut");
