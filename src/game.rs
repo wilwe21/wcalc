@@ -32,7 +32,7 @@ pub fn get_global_stats() -> HashMap<String, HashMap<String, String>> {
     }
 }
 
-pub fn init_player(c: usize, pos: String, room: String) {
+pub fn init_player(c: String, pos: String, room: String) {
     unsafe {
         player = Some(Mutex::new(Player::new(c,pos,room)));
     }
@@ -43,15 +43,15 @@ pub fn get_player() -> Player {
         if let Some(ref mut p) = player {
             p.lock().unwrap().clone()
         } else {
-            let pp = Player::new(0, "5x5".to_string(), "0".to_string());
-            init_player(0, "5x5".to_string(), "0".to_string());
+            let pp = Player::new("0".to_string(), "5x5".to_string(), "0".to_string());
+            init_player("0".to_string(), "5x5".to_string(), "0".to_string());
             pp
         }
     }
 }
 
 pub fn new_conf(mw: usize, rw: usize) -> HashMap<String, HashMap<String, String>> {
-    init_player(0, "5x5".to_string(), "0".to_string());
+    init_player("0".to_string(), "5x5".to_string(), "0".to_string());
     let mut p = get_player();
     let mut d = p.to_string();
     d += &"[map]\n".to_string();

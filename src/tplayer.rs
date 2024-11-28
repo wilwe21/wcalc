@@ -1,6 +1,8 @@
+use crate::save;
+
 #[derive(Clone, Debug)]
 pub struct Player {
-    character: usize,
+    character: String,
     attacks: Vec<String>,
     position: String,
     health: usize,
@@ -10,7 +12,7 @@ pub struct Player {
 }
 
 impl Player {
-    pub fn new(character: usize, position: String, room: String) -> Self {
+    pub fn new(character: String, position: String, room: String) -> Self {
         let attacks: Vec<String> = vec!("dupa".to_string(), "kutas".to_string(), "".to_string(), "".to_string());
         let health: usize = 100;
         let lvl: usize = 0;
@@ -25,6 +27,32 @@ impl Player {
             room
         }
     }
+
+    pub fn from_str(st: String) -> Self {
+        let s = save::str_to_conf(st);
+        let s = s.get("player").unwrap();
+        let character = s.get("character").unwrap().to_string();
+        let a1 = s.get("attack1").unwrap().to_string();
+        let a2 = s.get("attack2").unwrap().to_string();
+        let a3 = s.get("attack3").unwrap().to_string();
+        let a4 = s.get("attack4").unwrap().to_string();
+        let attacks: Vec<String> = vec!(a1,a2,a3,a4);
+        let position = s.get("position").unwrap().to_string();
+        let health = s.get("health").unwrap().parse::<usize>().unwrap();
+        let lvl = s.get("lvl").unwrap().parse::<usize>().unwrap();
+        let score = s.get("score").unwrap().parse::<usize>().unwrap();
+        let room = s.get("room").unwrap().to_string();
+        Self {
+            character,
+            attacks,
+            position,
+            health,
+            lvl,
+            score,
+            room
+        }
+    }
+
     pub fn to_string(self) -> String {
         let mut st = "[player]\n".to_string();
         st += &format!("character = {}\n", self.character);
