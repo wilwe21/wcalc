@@ -11,6 +11,7 @@ mod generate;
 mod rpgmove;
 mod map;
 mod fight;
+mod fui;
 
 fn main() {
     window::load();
