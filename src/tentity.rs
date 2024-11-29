@@ -8,7 +8,8 @@ pub struct Entity {
     pub health: usize,
     pub lvl: usize,
     pub score: usize,
-    pub room: String
+    pub room: String,
+    pub mode: String
 }
 
 impl Entity {
@@ -24,7 +25,8 @@ impl Entity {
             health,
             lvl,
             score,
-            room
+            room,
+            mode: "None".to_string()
         }
     }
 
@@ -36,7 +38,8 @@ impl Entity {
             health,
             lvl,
             score: 0,
-            room: "None".to_string()
+            room: "None".to_string(),
+            mode: "None".to_string()
         }
     }
 
@@ -59,6 +62,7 @@ impl Entity {
         let lvl = s.get("lvl").unwrap().parse::<usize>().unwrap();
         let score = s.get("score").unwrap().parse::<usize>().unwrap();
         let room = s.get("room").unwrap().to_string();
+        let mode = s.get("mode").unwrap().to_string();
         Self {
             character,
             attacks,
@@ -66,7 +70,8 @@ impl Entity {
             health,
             lvl,
             score,
-            room
+            room,
+            mode
         }
     }
 
@@ -82,6 +87,7 @@ impl Entity {
         st += &format!("lvl = {}\n", self.lvl);
         st += &format!("score = {}\n", self.score);
         st += &format!("room = {}\n", self.room);
+        st += &format!("mode = {}\n", self.mode);
         return st
     }
     pub fn get_dmg(&mut self, amount: usize) {
@@ -92,5 +98,8 @@ impl Entity {
     }
     pub fn move_room(&mut self, room: String) {
         self.room = room;
+    }
+    pub fn change_mode(&mut self, mode: String) {
+        self.mode = mode
     }
 }
