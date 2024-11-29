@@ -1,4 +1,5 @@
 use crate::tentity::Entity;
+use crate::fight;
 
 #[derive(Clone, Debug)]
 pub struct Attack {
@@ -31,8 +32,8 @@ impl Attack {
         None
     }
 
-    pub fn r#use(&self, who: Entity, mut tar: Entity) -> String {
+    pub fn r#use(&self, who: Entity, mut tar: Entity) -> (String, Entity) {
         tar.get_dmg(self.dmg);
-        return format!("{} used {} and deal {} damage", who.character, self.name, self.dmg)
+        return (format!("{} used {} and deal {} damage", who.character, self.name, self.dmg), tar)
     }
 }

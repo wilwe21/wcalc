@@ -48,6 +48,16 @@ impl Entity {
         return vec!(snake)
     }
 
+    pub fn get_by_name(name: &str) -> Option<Self> {
+        let list = Self::enemy_list();
+        for i in list {
+            if i.character == name.to_string() {
+                return Some(i)
+            }
+        }
+        None
+    }
+
     pub fn from_str(st: String) -> Self {
         let s = save::str_to_conf(st);
         let s = s.get("player").unwrap();
@@ -91,7 +101,11 @@ impl Entity {
         return st
     }
     pub fn get_dmg(&mut self, amount: usize) {
-        self.health -= amount;
+        if self.health < amount {
+            self.health = 0;
+        } else {
+            self.health -= amount;
+        }
     }
     pub fn move_to(&mut self, position: String) {
         self.position = position;

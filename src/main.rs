@@ -10,6 +10,7 @@ mod legend;
 mod generate;
 mod rpgmove;
 mod map;
+mod fight;
 
 fn main() {
     window::load();

@@ -5,6 +5,7 @@ use crate::legend;
 use crate::map;
 
 use crate::tattacks::Attack;
+use crate::fight;
 
 pub fn movevalid(pos: Vec<u8>, room: HashMap<String, String>) -> Option<char> {
     let forw = room.get(&pos[1].to_string()).unwrap().chars().nth(pos[0].into());
@@ -67,7 +68,7 @@ pub fn rpginp(text: String, button: String) -> String {
     let mut s = game::get_global_stats();
     let mut player = game::get_player();
     if player.mode == "fight".to_string() {
-        return "fight".to_string()
+        return fight::moves(text.clone(), button.clone())
     } else {
         let mut roomid = player.room.clone().clone();
         let orid = roomid.clone();
@@ -250,7 +251,7 @@ pub fn rpginp(text: String, button: String) -> String {
             let mut pl = game::get_player().clone();
             pl.change_mode("fight".to_string());
             game::update_player(pl).clone();
-            return "Entering Fight mode".to_string()
+            return fight::start()
         }
         return "".to_string()
     }
