@@ -46,7 +46,7 @@ pub fn get_status() -> Option<HashMap<String,String>> {
     }
 }
 
-pub fn create_status(selected: Option<String>, dialog: Option<String>) -> HashMap<String,String> {
+pub fn create_status(selected: Option<String>, dialog: Option<String>, menu: Option<String>) -> HashMap<String,String> {
     let mut sta = HashMap::new();
     match selected {
         Some(s) => sta.insert("selected".to_string(), s.to_string()),
@@ -56,14 +56,48 @@ pub fn create_status(selected: Option<String>, dialog: Option<String>) -> HashMa
         Some(d) => sta.insert("dialog".to_string(), d.to_string()),
         _ => sta.insert("dialog".to_string(), "...".to_string())
     };
+    match menu {
+        Some(m) => sta.insert("menu".to_string(), m.to_string()),
+        _ => sta.insert("menu".to_string(), "base".to_string())
+    };
     return sta
-    
+}
+
+pub fn get_menu() -> Vec<String> {
+    let stat = get_status();
+    let mut menu = vec!();
+    match stat {
+        Some(s) => {
+            let m = s.get("menu").unwrap();
+            if *m == "base".to_string() {
+                menu.push("Attack".to_string());
+                menu.push("A".to_string());
+                menu.push("Bag".to_string());
+                menu.push("Run".to_string());
+            }        
+            if *m == "Attack".to_string() {  
+                let pl = game::get_player().clone();
+                let at = pl.attacks;    
+                menu.push(at[0].to_string());
+                menu.push(at[2].to_string());
+                menu.push(at[1].to_string());
+                menu.push(at[3].to_string());
+            }
+        },
+        _ => {
+            menu.push("Attack".to_string());
+            menu.push("A".to_string());
+            menu.push("Bag".to_string());
+            menu.push("Run".to_string());
+        }
+    };
+    menu
 }
 
 pub fn start() -> String {
     let en = Entity::get_by_name("Snake").unwrap();
     let pl = game::get_player().clone();
-    set_status(Some(create_status(None, Some(format!("{} appeard from dark", en.character).to_string()))));
+    set_status(Some(create_status(None, Some(format!("{} appeard from dark", en.character).to_string()), None)));
     set_enemy(Some(en.clone()));
     fui::update(pl.clone(), en.clone());
     fui::open();
@@ -110,9 +144,9 @@ pub fn moves(text: String, button: String) -> String {
             Some(s) => {
                 let sel = s.get("selected").unwrap();
                 if sel == "2" {
-                    set_status(Some(create_status(Some("0".to_string()), Some("Attacks".to_string()))))
+                    set_status(Some(create_status(Some("0".to_string()), Some("Attacks".to_string()), None)))
                 } else if sel == "3" {
-                    set_status(Some(create_status(Some("1".to_string()), Some("Bag".to_string()))))
+                    set_status(Some(create_status(Some("1".to_string()), Some("Bag".to_string()), None)))
                 }
             },
             _ => {}
@@ -124,9 +158,9 @@ pub fn moves(text: String, button: String) -> String {
             Some(s) => {
                 let sel = s.get("selected").unwrap();
                 if sel == "0" {
-                    set_status(Some(create_status(Some("2".to_string()), Some("A".to_string()))))
+                    set_status(Some(create_status(Some("2".to_string()), Some("A".to_string()), None)))
                 } else if sel == "1" {
-                    set_status(Some(create_status(Some("3".to_string()), Some("Run".to_string()))))
+                    set_status(Some(create_status(Some("3".to_string()), Some("Run".to_string()), None)))
                 }
             },
             _ => {}
@@ -138,9 +172,9 @@ pub fn moves(text: String, button: String) -> String {
             Some(s) =>  {
                 let sel = s.get("selected").unwrap();
                 if sel == "1" {
-                    set_status(Some(create_status(Some("0".to_string()), Some("Attacks".to_string()))))
+                    set_status(Some(create_status(Some("0".to_string()), Some("Attacks".to_string()), None)))
                 } else if sel == "3" {
-                    set_status(Some(create_status(Some("2".to_string()), Some("A".to_string()))))
+                    set_status(Some(create_status(Some("2".to_string()), Some("A".to_string()), None)))
                 }
             },
             _ => {}
@@ -152,14 +186,34 @@ pub fn moves(text: String, button: String) -> String {
             Some(s) => {
                 let sel = s.get("selected").unwrap();
                 if sel == "0" {
-                    set_status(Some(create_status(Some("1".to_string()), Some("Bag".to_string()))))
+                    set_status(Some(create_status(Some("1".to_string()), Some("Bag".to_string()), None)))
                 } else if sel == "2" {
-                    set_status(Some(create_status(Some("3".to_string()), Some("Run".to_string()))))
+                    set_status(Some(create_status(Some("3".to_string()), Some("Run".to_string()), None)))
                 }
             },
             _ => {}
         }
         fui::update(pl.clone(),en.clone());
+    } else if button == "5" || (button == "=" && text.ends_with("5")) {
+        let stat = get_status();
+        match stat {
+            Some(s) => {
+                let sel = s.get("selected").unwrap();
+                let men = s.get("menu").unwrap();
+                if *men == "base".to_string() {
+                    if *sel == "0".to_string() {
+                        println!("attack");
+                    } else if *sel == "1".to_string() {
+                        println!("bag");
+                    } else if *sel == "2".to_string() {
+                        println!("a");
+                    } else if *sel == "3".to_string() {
+                        println!("run");
+                    }
+                }
+            },
+            _ => {}
+        }
     }
     return format!("player: {}hp, Enemy: {}hp", pl.health, en.health).to_string() 
 }

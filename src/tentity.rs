@@ -6,6 +6,7 @@ pub struct Entity {
     pub attacks: Vec<String>,
     pub position: String,
     pub health: usize,
+    pub maxhealth: usize,
     pub lvl: usize,
     pub score: usize,
     pub room: String,
@@ -23,6 +24,7 @@ impl Entity {
             attacks,
             position,
             health,
+            maxhealth: health,
             lvl,
             score,
             room,
@@ -36,6 +38,7 @@ impl Entity {
             attacks,
             position: "None".to_string(),
             health,
+            maxhealth: health,
             lvl,
             score: 0,
             room: "None".to_string(),
@@ -69,6 +72,7 @@ impl Entity {
         let attacks: Vec<String> = vec!(a1,a2,a3,a4);
         let position = s.get("position").unwrap().to_string();
         let health = s.get("health").unwrap().parse::<usize>().unwrap();
+        let maxhealth = s.get("maxhealth").unwrap().parse::<usize>().unwrap();
         let lvl = s.get("lvl").unwrap().parse::<usize>().unwrap();
         let score = s.get("score").unwrap().parse::<usize>().unwrap();
         let room = s.get("room").unwrap().to_string();
@@ -78,6 +82,7 @@ impl Entity {
             attacks,
             position,
             health,
+            maxhealth,
             lvl,
             score,
             room,
@@ -94,6 +99,7 @@ impl Entity {
         st += &format!("attack4 = {}\n", self.attacks[3]);
         st += &format!("position = {}\n", self.position);
         st += &format!("health = {}\n", self.health);
+        st += &format!("maxhealth = {}\n", self.maxhealth);
         st += &format!("lvl = {}\n", self.lvl);
         st += &format!("score = {}\n", self.score);
         st += &format!("room = {}\n", self.room);

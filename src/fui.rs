@@ -89,11 +89,12 @@ pub fn update(pl: Entity, en: Entity) {
         },
         _ => {}
     }
+    let menu = fight::get_menu();
     let op0 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let op00 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     op00.set_valign(gtk::Align::Center);
     op00.set_vexpand(true);
-    let op0lab = gtk::Label::builder().label("Atack").build();
+    let op0lab = gtk::Label::builder().label(menu[0].clone()).build();
     op0.set_hexpand(true);
     op0.set_vexpand(true);
     op0.append(&op00);
@@ -103,7 +104,7 @@ pub fn update(pl: Entity, en: Entity) {
     let op11 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     op11.set_valign(gtk::Align::Center);
     op11.set_vexpand(true);
-    let op1lab = gtk::Label::builder().label("Bag").build();
+    let op1lab = gtk::Label::builder().label(menu[1].clone()).build();
     op1.set_hexpand(true);
     op1.set_vexpand(true);
     op1.append(&op11);
@@ -113,7 +114,7 @@ pub fn update(pl: Entity, en: Entity) {
     let op22 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     op22.set_valign(gtk::Align::Center);
     op22.set_vexpand(true);
-    let op2lab = gtk::Label::builder().label("A").build();
+    let op2lab = gtk::Label::builder().label(menu[2].clone()).build();
     op2.set_hexpand(true);
     op2.set_vexpand(true);
     op2.append(&op22);
@@ -123,7 +124,7 @@ pub fn update(pl: Entity, en: Entity) {
     let op33 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     op33.set_valign(gtk::Align::Center);
     op33.set_vexpand(true);
-    let op3lab = gtk::Label::builder().label("Run").build();
+    let op3lab = gtk::Label::builder().label(menu[3].clone()).build();
     op3.set_hexpand(true);
     op3.set_vexpand(true);
     op3.append(&op33);
@@ -154,17 +155,45 @@ pub fn update(pl: Entity, en: Entity) {
     b32.append(&bb2);
     let plbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let plname = gtk::Label::builder().label(format!("{}", pl.character)).build();
-    let plhp = gtk::Label::builder().label(format!("{}hp", pl.health)).build();
+    plname.set_halign(gtk::Align::Start);
+    let plfrac = (pl.health.clone() as f64)/(pl.maxhealth.clone() as f64);
+    let plprogress = gtk::ProgressBar::builder()
+        .fraction(plfrac.clone())
+        .build();
+    plprogress.add_css_class("playerprogress");
+    if plfrac.clone() <= 0.25 {
+        plprogress.add_css_class("low");
+        println!("low hp");
+    } else if plfrac.clone() <= 0.5 {
+        plprogress.add_css_class("mid");
+        println!("mid hp");
+    }
+    let plhp = gtk::Label::builder().label(format!("{}/{}hp", pl.health, pl.maxhealth)).build();
+    plhp.set_halign(gtk::Align::End);
     plbox.add_css_class("playerbox");
     plbox.append(&plname);
+    plbox.append(&plprogress);
     plbox.append(&plhp);
     let enbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let enemigoname = gtk::Label::builder().label(format!("{}", en.character)).build();
-    let enemigohp = gtk::Label::builder().label(format!("{}hp", en.health)).build();
+    enemigoname.set_halign(gtk::Align::Start);
+    let enfrac = (en.health.clone() as f64)/(en.maxhealth.clone() as f64);
+    let enemigoprogress = gtk::ProgressBar::builder()
+        .fraction(enfrac.clone())
+        .build();
+    enemigoprogress.add_css_class("enemyprogress");
+    if enfrac.clone() <= 0.25 {
+        enemigoprogress.add_css_class("low");
+    } else if enfrac.clone() <= 0.5 {
+        enemigoprogress.add_css_class("mid");
+    }
+    let enemigohp = gtk::Label::builder().label(format!("{}/{}hp", en.health, en.maxhealth)).build();
+    enemigohp.set_halign(gtk::Align::End);
     enbox.set_width_request(150);
     plbox.set_width_request(150);
     enbox.add_css_class("enemybox");
     enbox.append(&enemigoname);
+    enbox.append(&enemigoprogress);
     enbox.append(&enemigohp);
     b.append(&b1);
     b.append(&b2);

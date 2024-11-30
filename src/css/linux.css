@@ -23,11 +23,13 @@ box {
 	margin: 10px;
 	border: 2px solid @accent_bg_color;
 	border-radius: 7px;
+	padding: 5px;
 }
 .playerbox {
 	margin: 10px;
 	border: 2px solid @accent_bg_color;
 	border-radius: 7px;
+	padding: 5px;
 }
 .box3 {
 	padding-bottom: 1px;
@@ -52,4 +54,13 @@ box {
 .selected {
 	background: @accent_bg_color;
 	color: @accent_fg_color;
+}
+progressbar progress{
+  background-image: linear-gradient(90deg, lime, lime);
+}
+progressbar.mid trough progress {
+  background-image: linear-gradient(90deg, orange, orange);
+} 
+progressbar.low trough progress { 
+  background-image: linear-gradient(90deg, red, red);
 }
