@@ -2,6 +2,7 @@ use gtk::prelude::*;
 use std::sync::Mutex;
 
 use crate::tentity::Entity;
+use crate::fight;
 
 static mut fightwin: Option<Mutex<gtk::Window>> = None;
 static mut vis: Option<Mutex<bool>> = None;
@@ -41,6 +42,7 @@ pub fn get_fw() -> gtk::Window {
 
 pub fn update(pl: Entity, en: Entity) {
     let win = get_fw();
+    let stat = fight::get_status();
     let b = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let b1 = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     let b11 = gtk::Box::new(gtk::Orientation::Vertical, 1);
@@ -79,6 +81,77 @@ pub fn update(pl: Entity, en: Entity) {
     b12.set_hexpand(true);
     b22.set_hexpand(true);
     b32.set_hexpand(true);
+    match stat.clone() {
+        Some(sta) => {
+            let dial = sta.get("dialog").unwrap();
+            let dilab = gtk::Label::builder().label(&*dial).build();
+            b31.append(&dilab);
+        },
+        _ => {}
+    }
+    let op0 = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let op00 = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    op00.set_valign(gtk::Align::Center);
+    op00.set_vexpand(true);
+    let op0lab = gtk::Label::builder().label("Atack").build();
+    op0.set_hexpand(true);
+    op0.set_vexpand(true);
+    op0.append(&op00);
+    op00.append(&op0lab);
+    op0.add_css_class("option0");
+    let op1 = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let op11 = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    op11.set_valign(gtk::Align::Center);
+    op11.set_vexpand(true);
+    let op1lab = gtk::Label::builder().label("Bag").build();
+    op1.set_hexpand(true);
+    op1.set_vexpand(true);
+    op1.append(&op11);
+    op11.append(&op1lab);
+    op1.add_css_class("option1");
+    let op2 = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let op22 = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    op22.set_valign(gtk::Align::Center);
+    op22.set_vexpand(true);
+    let op2lab = gtk::Label::builder().label("A").build();
+    op2.set_hexpand(true);
+    op2.set_vexpand(true);
+    op2.append(&op22);
+    op22.append(&op2lab);
+    op2.add_css_class("option2");
+    let op3 = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let op33 = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    op33.set_valign(gtk::Align::Center);
+    op33.set_vexpand(true);
+    let op3lab = gtk::Label::builder().label("Run").build();
+    op3.set_hexpand(true);
+    op3.set_vexpand(true);
+    op3.append(&op33);
+    op33.append(&op3lab);
+    op3.add_css_class("option3");
+    match stat.clone() {
+        Some(s) => {
+            let sel = s.get("selected").unwrap();
+            match sel {
+                _ if *sel == "0".to_string() => op0.add_css_class("selected"),
+                _ if *sel == "1".to_string() => op1.add_css_class("selected"),
+                _ if *sel == "2".to_string() => op2.add_css_class("selected"),
+                _ if *sel == "3".to_string() => op3.add_css_class("selected"),
+                _ => {}
+            }
+        },
+        _ => {}
+    }
+    let bb1 = gtk::Box::new(gtk::Orientation::Horizontal, 1);
+    let bb2 = gtk::Box::new(gtk::Orientation::Horizontal, 1);
+    bb1.set_homogeneous(true);
+    bb2.set_homogeneous(true);
+    bb1.append(&op0);
+    bb1.append(&op2);
+    bb2.append(&op1);
+    bb2.append(&op3);
+    b32.append(&bb1);
+    b32.append(&bb2);
     let plbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let plname = gtk::Label::builder().label(format!("{}", pl.character)).build();
     let plhp = gtk::Label::builder().label(format!("{}hp", pl.health)).build();

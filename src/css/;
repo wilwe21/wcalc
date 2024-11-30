@@ -16,23 +16,21 @@ box {
 .Map > label {
 	color: @accent_fg_color;
 }
-.fightbox > box > box > box > label, .fightbox > box > box > label, .fightbox > box > box > box > box > label, .fightbox > box > box > box > box > box > label {
+.fightbox > box > box > box > label {
+	color: @accent_fg_color;
+}
+.fightbox > box > box > box > box > label {
 	color: @accent_fg_color;
 }
 .enemybox {
-	margin: 10px;
 	border: 2px solid @accent_bg_color;
 	border-radius: 7px;
 }
 .playerbox {
-	margin: 10px;
 	border: 2px solid @accent_bg_color;
 	border-radius: 7px;
 }
 .box3 {
-	padding-bottom: 1px;
-	padding-left: 1px;
-	padding-right: 1px;
 	border: 2px solid @accent_bg_color;
 	border-radius: 7px;
 }
@@ -41,15 +39,4 @@ box {
 	border-left: 2px solid @accent_bg_color;
 	border-radius: 7px;
 	padding-left: 5px;	
-}
-.option0, .option1, .option2, .option3 {
-	margin-top: 5px;
-	margin-bottom: 5px;
-	margin-right: 5px;
-	border: 2px solid @accent_bg_color;
-	border-radius: 7px;
-}
-.selected {
-	background: @accent_bg_color;
-	color: @accent_fg_color;
 }
