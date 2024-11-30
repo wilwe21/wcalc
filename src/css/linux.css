@@ -14,5 +14,16 @@ box {
 	margin-right: 5px;
 }
 .Map > label {
-	color: black;
+	color: @accent_fg_color;
+}
+.fightbox > box > box > box > label {
+	color: @accent_fg_color;
+}
+.enemybox {
+	border: 2px solid @accent_bg_color;
+	border-radius: 7px;
+}
+.playerbox {
+	border: 2px solid @accent_bg_color;
+	border-radius: 7px;
 }
