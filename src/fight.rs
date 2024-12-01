@@ -7,6 +7,7 @@ use crate::tattacks::Attack;
 use crate::game;
 use crate::fui;
 use crate::tbutton::Button;
+use crate::bag::Item;
 
 // make ui button as struct
 
@@ -117,7 +118,7 @@ pub fn moves(text: String, button: String) -> String {
             if turn {
                 if button == "^" || (button == "=" && text.ends_with("^")) {
                     end();
-                    return "escaping from battle".to_string()
+                    return "Escaped from battle".to_string()
                 } else if button == "4" || (button == "=" && text.ends_with("4")) {
                     let stat = get_status();
                     match stat {
@@ -193,14 +194,34 @@ pub fn moves(text: String, button: String) -> String {
                                 set_status(Some(create_status(None, Some(s.clone()), Some("base".to_string()), Some(false))));
                                 fui::update(pl.clone(),t.clone());
                                 return s
+                            } else if button.action.starts_with("item ") {
+                                let itname = button.action.replace("item ", "");
+                                let it = Item::get_by_id(&itname).unwrap();
+                                let (s, w, t) = it.r#use(pl.clone(), en.clone());
+                                if t.health == 0 {
+                                    end();
+                                    return "Enemy defeated".to_string()
+                                }
+                                game::update_player(w.clone());
+                                set_enemy(Some(t.clone()));
+                                set_status(Some(create_status(None, Some(s.clone()), Some("base".to_string()), Some(false))));
+                                fui::update(w.clone(),t.clone());
+                                return format!("used {}", it.name)
                             } else if button.action == "open_attack" {
                                 set_status(Some(create_status(None, None, Some("Attack".to_string()), None)));
                                 fui::update(pl.clone(),en.clone());
                                 return "Opening attack list".to_string()
+                            } else if button.action == "open_bag" {
+                                set_status(Some(create_status(None, None, Some("Bag".to_string()), None)));
+                                fui::update(pl.clone(),en.clone());
+                                return "Opening bag".to_string()
                             } else if button.action == "scream" {
                                 set_status(Some(create_status(None, Some("AAAAAAA".to_string()), None, None)));
                                 fui::update(pl.clone(),en.clone());
                                 return "AAAAA".to_string()
+                            } else if button.action == "run" {
+                                end();
+                                return "Escaped from battle".to_string()
                             }
                         },
                         _ => {}

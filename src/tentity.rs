@@ -1,4 +1,6 @@
 use crate::save;
+use crate::bag::Item;
+use crate::bag::Bag;
 
 #[derive(Clone, Debug)]
 pub struct Entity {
@@ -7,6 +9,7 @@ pub struct Entity {
     pub position: String,
     pub health: usize,
     pub maxhealth: usize,
+    pub bag: Option<Bag>,
     pub status: Option<Vec<String>>,
     pub lvl: usize,
     pub score: usize,
@@ -17,6 +20,8 @@ pub struct Entity {
 impl Entity {
     pub fn new_player(character: String, position: String, room: String) -> Self {
         let attacks: Vec<String> = vec!("bite".to_string(), "divide".to_string(), "".to_string(), "".to_string());
+        let potion = Item::get_by_id("potionHP").unwrap();
+        let bag = Bag::new(Some((potion, 5)), None, None, None);
         let health: usize = 100;
         Self {
             character,
@@ -24,6 +29,7 @@ impl Entity {
             position,
             health,
             maxhealth: health,
+            bag: Some(bag),
             status: None,
             lvl: 0,
             score: 0,
@@ -39,6 +45,7 @@ impl Entity {
             position: "None".to_string(),
             health,
             maxhealth: health,
+            bag: None,
             status: None,
             lvl,
             score: 0,
@@ -75,6 +82,51 @@ impl Entity {
         let position = s.get("position").unwrap().to_string();
         let health = s.get("health").unwrap().parse::<usize>().unwrap();
         let maxhealth = s.get("maxhealth").unwrap().parse::<usize>().unwrap();
+        let bag = s.get("bag").unwrap().parse::<bool>().unwrap();
+        let baggy = Bag::new(None, None, None, None);
+        if bag {
+            let s0v = s.get("item0").unwrap();
+            let s0: Option<(Item, usize)> = None;
+            if s0v != "None" {
+                let sus = s0v.split(", ").collect::<Vec<_>>();
+                let is = Item::get_by_id(sus[0]);
+                let am = sus[1].parse::<usize>();
+                let s0 = Some((is, am));
+            } else {
+                let s0: Option<(Item, usize)> = None;
+            }
+            let s1v = s.get("item0").unwrap();
+            let s1: Option<(Item, usize)> = None;
+            if s1v != "None" {
+                let sus = s1v.split(", ").collect::<Vec<_>>();
+                let is = Item::get_by_id(sus[0]);
+                let am = sus[1].parse::<usize>();
+                let s1 = Some((is, am));
+            } else {
+                let s1: Option<(Item, usize)> = None;
+            }
+            let s2v = s.get("item0").unwrap();
+            let s2: Option<(Item, usize)> = None;
+            if s2v != "None" {
+                let sus = s2v.split(", ").collect::<Vec<_>>();
+                let is = Item::get_by_id(sus[0]);
+                let am = sus[1].parse::<usize>();
+                let s2 = Some((is, am));
+            } else {
+                let s2: Option<(Item, usize)> = None;
+            }
+            let s3v = s.get("item3").unwrap();
+            let s3: Option<(Item, usize)> = None;
+            if s3v != "None" {
+                let sus = s3v.split(", ").collect::<Vec<_>>();
+                let is = Item::get_by_id(sus[0]);
+                let am = sus[1].parse::<usize>();
+                let s3 = Some((is, am));
+            } else {
+                let s3: Option<(Item, usize)> = None;
+            }
+            let baggy = Bag::new(s0, s1, s2, s3);
+        }
         let stat = s.get("status").unwrap();
         let status = None;
         if stat != "None" {
@@ -90,6 +142,7 @@ impl Entity {
             position,
             health,
             maxhealth,
+            bag: Some(baggy),
             status,
             lvl,
             score,
@@ -108,6 +161,22 @@ impl Entity {
         st += &format!("position = {}\n", self.position);
         st += &format!("health = {}\n", self.health);
         st += &format!("maxhealth = {}\n", self.maxhealth);
+        st += &format!("bag = ");
+        match self.bag {
+            Some(b) => {
+                st += &format!("true\n");
+                for j in 0..4 {
+                    st += &format!("item{} = ", j);
+                    match b.get_by_id(j) {
+                        Some(bi) => {
+                            st += &format!("{}, {}\n", bi.0.id, bi.1);
+                        },
+                        _ => st += &format!("None\n"),
+                    }
+                }
+            },
+            _ => st += &format!("false\n")
+        }
         st += &format!("status = ");
         match self.status {
             Some(s) => {
@@ -135,6 +204,13 @@ impl Entity {
             self.health = 0;
         } else {
             self.health -= amount;
+        }
+    }
+    pub fn heal(&mut self, amount: usize) {
+        if self.health + amount > self.maxhealth {
+            self.health = self.maxhealth;
+        } else {
+            self.health += amount;
         }
     }
     pub fn move_to(&mut self, position: String) {

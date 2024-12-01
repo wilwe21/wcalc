@@ -44,6 +44,46 @@ impl Button {
             buttons.push(at1b);
             buttons.push(at2b);
             buttons.push(at3b);
+        } else if menu == "Bag".to_string() {
+            let pl = game::get_player().clone();
+            let bag = pl.bag.unwrap();
+            let at0 = bag.get_by_id(0);
+            let mut at0b = Self::new("", "", 0, "Don't have this item");
+            match at0 {
+                Some(a0) => {
+                    at0b = Self::new(&a0.0.name, &format!("item {}", a0.0.id), 0, &format!("{}\nAmount: {}",a0.0.desc,a0.1));
+                },
+                _ => {}
+            };
+            let at1 = bag.get_by_id(1);
+            let mut at1b = Self::new("", "", 1, "Don't have this item");
+            match at1 {
+                Some(a1) => {
+                    at1b = Self::new(&a1.0.name, &format!("item {}", a1.0.id), 2, &format!("{}\nAmount: {}",a1.0.desc,a1.1));
+                },
+                _ => {}
+            }
+            let at2 = bag.get_by_id(2);
+            let mut at2b = Self::new("", "", 2, "Don't have this item");
+            match at2 {
+                Some(a2) => {
+                    at2b = Self::new(&a2.0.name, &format!("item {}", a2.0.id), 1, &format!("{}\nAmount: {}",a2.0.desc,a2.1));
+                },
+                _ => {}
+            }
+            let at3 = bag.get_by_id(3);
+            let mut at3b = Self::new("", "", 3, "Don't have this item");
+            match at3 {
+                Some(a3) => {
+                    at3b = Self::new(&a3.0.name, &format!("item {}", a3.0.id), 3, &format!("{}\nAmount: {}",a3.0.desc,a3.1));
+                },
+                _ => {}
+            }
+            buttons.push(at0b);
+            buttons.push(at1b);
+            buttons.push(at2b);
+            buttons.push(at3b);
+            
         }
         return buttons
     }

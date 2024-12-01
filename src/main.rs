@@ -13,6 +13,7 @@ mod map;
 mod fight;
 mod fui;
 mod tbutton;
+mod bag;
 
 fn main() {
     window::load();
