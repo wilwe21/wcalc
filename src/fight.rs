@@ -8,6 +8,7 @@ use crate::game;
 use crate::fui;
 use crate::tbutton::Button;
 use crate::bag::Item;
+use crate::bag::Bag;
 
 // make ui button as struct
 
@@ -198,14 +199,24 @@ pub fn moves(text: String, button: String) -> String {
                                 let itname = button.action.replace("item ", "");
                                 let it = Item::get_by_id(&itname).unwrap();
                                 let (s, w, t) = it.r#use(pl.clone(), en.clone());
+                                let mut plbag = pl.clone().bag.unwrap();
+                                let itid = Bag::find_index_by_item(&plbag, it.clone()).unwrap();
+                                plbag.rm_item(itid, 1);
+                                let mut plne = w.clone();
+                                plne.change_bag(plbag);
+                                game::update_player(plne.clone());
                                 if t.health == 0 {
                                     end();
                                     return "Enemy defeated".to_string()
                                 }
-                                game::update_player(w.clone());
+                                if plne.health == 0 {
+                                    end();
+                                    game::end_silent();
+                                    return "You dead".to_string()
+                                }
                                 set_enemy(Some(t.clone()));
                                 set_status(Some(create_status(None, Some(s.clone()), Some("base".to_string()), Some(false))));
-                                fui::update(w.clone(),t.clone());
+                                fui::update(plne.clone(),t.clone());
                                 return format!("used {}", it.name)
                             } else if button.action == "open_attack" {
                                 set_status(Some(create_status(None, None, Some("Attack".to_string()), None)));

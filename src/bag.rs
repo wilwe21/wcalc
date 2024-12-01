@@ -38,6 +38,89 @@ impl Bag {
             return None
         }
     }
+    pub fn find_index_by_item(&self, item: Item) -> Option<usize> {
+        match &self.s0 {
+            Some(s) => {
+                if s.0.id == item.id {
+                    return Some(0)
+                }
+            },
+            _ => {}
+        };
+        match &self.s1 {
+            Some(s) => {
+                if s.0.id == item.id {
+                    return Some(1)
+                }
+            },
+            _ => {}
+        };
+        match &self.s2 {
+            Some(s) => {
+                if s.0.id == item.id {
+                    return Some(2)
+                }
+            },
+            _ => {}
+        };
+        match &self.s3 {
+            Some(s) => {
+                if s.0.id == item.id {
+                    return Some(3)
+                }
+            },
+            _ => {}
+        };
+        return None
+    }
+
+    pub fn rm_item(&mut self, id: usize, amount: usize) {
+        if id == 0 {
+            match &self.s0 {
+                Some(s) => {
+                    if s.1.clone() - amount.clone() > 0 {
+                        self.s0 = Some((s.0.clone(), s.1.clone() - amount));
+                    } else { 
+                        self.s0 = None 
+                    } 
+                },
+                _ => {}
+            }
+        } else if id == 1 { 
+            match &self.s1 {
+                Some(s) => {
+                    if s.1.clone() - amount.clone() > 0 {
+                        self.s1 = Some((s.0.clone(), s.1.clone() - amount));
+                    } else { 
+                        self.s1 = None 
+                    } 
+                },
+                _ => {}
+            }
+        } else if id == 2 {
+            match &self.s2 {
+                Some(s) => {
+                    if s.1.clone() - amount > 0 {
+                        self.s2 = Some((s.0.clone(), s.1.clone() - amount));
+                    } else { 
+                        self.s2 = None 
+                    } 
+                },
+                _ => {}
+            }
+        } else if id == 3 {
+            match &self.s3 {
+                Some(s) => {
+                    if s.1.clone() - amount > 0 {
+                        self.s3 = Some((s.0.clone(), s.1.clone() - amount));
+                    } else { 
+                        self.s3 = None 
+                    } 
+                },
+                _ => {}
+            }
+        }
+    }
 }
 
 impl Item {

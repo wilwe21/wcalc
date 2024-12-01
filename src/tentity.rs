@@ -232,4 +232,7 @@ impl Entity {
             _ => self.status = Some(vec!(status))
         }
     }
+    pub fn change_bag(&mut self, bag: Bag) {
+        self.bag = Some(bag);
+    }
 }
