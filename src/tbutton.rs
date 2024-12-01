@@ -32,14 +32,14 @@ impl Button {
         } else if menu == "Attack".to_string() {
             let pl = game::get_player().clone();
             let ats = pl.attacks;
-            let at0 = Attack::get_by_name(&ats[0]).unwrap();
-            let at1 = Attack::get_by_name(&ats[2]).unwrap();
-            let at2 = Attack::get_by_name(&ats[1]).unwrap();
-            let at3 = Attack::get_by_name(&ats[3]).unwrap();
-            let at0b = Self::new(&at0.name, &format!("use {}", at0.name), 0, &at0.desc);
-            let at1b = Self::new(&at1.name, &format!("use {}", at1.name), 1, &at1.desc);
-            let at2b = Self::new(&at2.name, &format!("use {}", at2.name), 2, &at2.desc);
-            let at3b = Self::new(&at3.name, &format!("use {}", at3.name), 3, &at3.desc);
+            let at0 = Attack::get_by_id(&ats[0]).unwrap();
+            let at1 = Attack::get_by_id(&ats[2]).unwrap();
+            let at2 = Attack::get_by_id(&ats[1]).unwrap();
+            let at3 = Attack::get_by_id(&ats[3]).unwrap();
+            let at0b = Self::new(&at0.name, &format!("use {}", at0.id), 0, &at0.desc);
+            let at1b = Self::new(&at1.name, &format!("use {}", at1.id), 1, &at1.desc);
+            let at2b = Self::new(&at2.name, &format!("use {}", at2.id), 2, &at2.desc);
+            let at3b = Self::new(&at3.name, &format!("use {}", at3.id), 3, &at3.desc);
             buttons.push(at0b);
             buttons.push(at1b);
             buttons.push(at2b);

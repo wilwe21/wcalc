@@ -79,9 +79,10 @@ pub fn create_status(selected: Option<String>, dialog: Option<String>, menu: Opt
 }
 
 pub fn start() -> String {
-    let en = Entity::get_by_name("Snake").unwrap();
+    let enlist = Entity::enemy_list();
+    let en = enlist.choose(&mut rand::thread_rng()).unwrap();
     let pl = game::get_player().clone();
-    set_status(Some(create_status(None, Some(format!("{} appeard from dark", en.character).to_string()), None, None)));
+    set_status(Some(create_status(None, Some(format!("{} appeard from dark", en.character).to_string()), Some("base".to_string()), None)));
     set_enemy(Some(en.clone()));
     fui::update(pl.clone(), en.clone());
     fui::open();
@@ -182,7 +183,7 @@ pub fn moves(text: String, button: String) -> String {
                             let button = Button::get_position(men, sel);
                             if button.action.starts_with("use") {
                                 let atname = button.action.replace("use ", "");
-                                let at = Attack::get_by_name(&atname).unwrap();
+                                let at = Attack::get_by_id(&atname).unwrap();
                                 let (s, t) = at.r#use(pl.clone(), en.clone());
                                 if t.health == 0 {
                                     end();
@@ -212,7 +213,7 @@ pub fn moves(text: String, button: String) -> String {
             } else {
                 let attacks = en.attacks.clone().into_iter().filter(|r| r != "").collect::<Vec<_>>();
                 let atname = attacks.choose(&mut rand::thread_rng()).unwrap();
-                let at = Attack::get_by_name(&atname).unwrap();
+                let at = Attack::get_by_id(&atname).unwrap();
                 let (s, t) = at.r#use(en.clone(), pl.clone());
                 if t.health == 0 {
                     end();

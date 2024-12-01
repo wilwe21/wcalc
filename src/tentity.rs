@@ -16,7 +16,7 @@ pub struct Entity {
 
 impl Entity {
     pub fn new_player(character: String, position: String, room: String) -> Self {
-        let attacks: Vec<String> = vec!("Bite".to_string(), "Divide".to_string(), "".to_string(), "".to_string());
+        let attacks: Vec<String> = vec!("bite".to_string(), "divide".to_string(), "".to_string(), "".to_string());
         let health: usize = 100;
         Self {
             character,
@@ -48,8 +48,9 @@ impl Entity {
     }
 
     pub fn enemy_list() -> Vec<Self> {
-        let snake = Self::new("Snake".to_string(), vec!("Bite".to_string(),"Venom".to_string(), "".to_string(),"".to_string()), 100, 1);
-        return vec!(snake)
+        let snake = Self::new("Snake".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
+        let horse = Self::new("Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
+        return vec!(snake, horse)
     }
 
     pub fn get_by_name(name: &str) -> Option<Self> {
