@@ -3,6 +3,7 @@ use std::sync::Mutex;
 
 use crate::tentity::Entity;
 use crate::fight;
+use crate::tbutton::Button;
 
 static mut fightwin: Option<Mutex<gtk::Window>> = None;
 static mut vis: Option<Mutex<bool>> = None;
@@ -81,20 +82,48 @@ pub fn update(pl: Entity, en: Entity) {
     b12.set_hexpand(true);
     b22.set_hexpand(true);
     b32.set_hexpand(true);
+    let mut men = "base".to_string();
     match stat.clone() {
         Some(sta) => {
             let dial = sta.get("dialog").unwrap();
-            let dilab = gtk::Label::builder().label(&*dial).build();
-            b31.append(&dilab);
+            men = sta.get("menu").unwrap().to_string();
+            if dial != "None" {
+                let dilab = gtk::Label::builder()
+                    .label(&*dial)
+                    .hexpand(true)
+                    .vexpand(true)
+                    .valign(gtk::Align::Start)
+                    .justify(gtk::Justification::Center)
+                    .width_chars(20)
+                    .wrap(true)
+                    .wrap_mode(gtk::pango::WrapMode::WordChar)
+                    .build();
+                b31.append(&dilab);
+            } else {
+                let sel = sta.get("selected").unwrap().parse::<usize>().unwrap();
+                let list = Button::get_position(&men, sel);
+                let d = &list.desc;
+                let dilab = gtk::Label::builder()
+                    .label(&*d)
+                    .hexpand(true)
+                    .vexpand(true)
+                    .valign(gtk::Align::Start)
+                    .justify(gtk::Justification::Center)
+                    .width_chars(20)
+                    .wrap(true)
+                    .wrap_mode(gtk::pango::WrapMode::WordChar)
+                    .build();
+                b31.append(&dilab);
+            }
         },
         _ => {}
     }
-    let menu = fight::get_menu();
+    let menu = Button::button_list(men.to_string());
     let op0 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let op00 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     op00.set_valign(gtk::Align::Center);
     op00.set_vexpand(true);
-    let op0lab = gtk::Label::builder().label(menu[0].clone()).build();
+    let op0lab = gtk::Label::builder().label(menu[0].label.clone()).build();
     op0.set_hexpand(true);
     op0.set_vexpand(true);
     op0.append(&op00);
@@ -104,7 +133,7 @@ pub fn update(pl: Entity, en: Entity) {
     let op11 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     op11.set_valign(gtk::Align::Center);
     op11.set_vexpand(true);
-    let op1lab = gtk::Label::builder().label(menu[1].clone()).build();
+    let op1lab = gtk::Label::builder().label(menu[1].label.clone()).build();
     op1.set_hexpand(true);
     op1.set_vexpand(true);
     op1.append(&op11);
@@ -114,7 +143,7 @@ pub fn update(pl: Entity, en: Entity) {
     let op22 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     op22.set_valign(gtk::Align::Center);
     op22.set_vexpand(true);
-    let op2lab = gtk::Label::builder().label(menu[2].clone()).build();
+    let op2lab = gtk::Label::builder().label(menu[2].label.clone()).build();
     op2.set_hexpand(true);
     op2.set_vexpand(true);
     op2.append(&op22);
@@ -124,7 +153,7 @@ pub fn update(pl: Entity, en: Entity) {
     let op33 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     op33.set_valign(gtk::Align::Center);
     op33.set_vexpand(true);
-    let op3lab = gtk::Label::builder().label(menu[3].clone()).build();
+    let op3lab = gtk::Label::builder().label(menu[3].label.clone()).build();
     op3.set_hexpand(true);
     op3.set_vexpand(true);
     op3.append(&op33);
@@ -163,10 +192,8 @@ pub fn update(pl: Entity, en: Entity) {
     plprogress.add_css_class("playerprogress");
     if plfrac.clone() <= 0.25 {
         plprogress.add_css_class("low");
-        println!("low hp");
     } else if plfrac.clone() <= 0.5 {
         plprogress.add_css_class("mid");
-        println!("mid hp");
     }
     let plhp = gtk::Label::builder().label(format!("{}/{}hp", pl.health, pl.maxhealth)).build();
     plhp.set_halign(gtk::Align::End);

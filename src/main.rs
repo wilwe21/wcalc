@@ -12,6 +12,7 @@ mod rpgmove;
 mod map;
 mod fight;
 mod fui;
+mod tbutton;
 
 fn main() {
     window::load();
