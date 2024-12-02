@@ -1,7 +1,9 @@
 use rand::Rng;
+use rand::seq::SliceRandom;
 use std::collections::HashMap;
 
 use crate::legend;
+use crate::tentity::Entity;
 
 pub fn generate_map(size: usize) -> String {
     let mut ran = rand::thread_rng();
@@ -55,6 +57,38 @@ pub fn generate_map(size: usize) -> String {
     return map2.into_iter().map(|x| x.join("")).collect::<Vec<String>>().join("\n")
 }
 
+pub fn add_enemys(room: &str) -> String {
+    let enemys = Entity::enemy_list().into_iter().map(|r| r.display.to_string()).collect::<Vec<String>>();
+    let ro = room.split("\n").filter(|r| *r != "").collect::<Vec<_>>();
+    let midy = (ro.len()-1)/2;
+    let midx = (ro[0].len()-1)/2;
+    let mx = vec!((midy,midx),(1, midx), (ro.len()-2, midx), (midy, 1), (midy, ro[0].len()-2));
+    let mut r2 = format!("{}\n", ro[0]).to_string();
+    for i in 1..(ro.len()-1) {
+        let mut row = ro[i].split("").filter(|r| *r != "").map(|r| r.to_string()).collect::<Vec<String>>();
+        let mut encount = 0;
+        for j in 1..(row.len()-1) {
+            if let Some(_) = mx.iter().find(|&(x,y)| *x == i && *y == j) {
+            } else {
+                if encount > 3 {
+                    break;
+                }
+                let ene = enemys.clone();
+                let encho = ene.choose(&mut rand::thread_rng()).unwrap().clone();
+                if rand::thread_rng().gen::<bool>() {
+                    if rand::thread_rng().gen::<bool>() {
+                        encount += 1;
+                        row[j] = encho.to_string();
+                    }
+                }
+            }
+        }
+        r2 += &format!("{}\n",row.join(""));
+    }
+    r2 += &format!("{}\n", ro[ro.len()-1]);
+    r2.to_string()
+}
+
 pub fn generate_room(size: usize, dors: String, room_id: String) -> String {
     let mut room = String::new();
     let wall = legend::wall.clone();
@@ -93,7 +127,7 @@ pub fn generate_room(size: usize, dors: String, room_id: String) -> String {
             room += &format!("{}\n",wall.clone().to_string().repeat(size)).to_string();
         }
     }
-    room.to_string()
+    add_enemys(&room)
 }
 
 pub fn check_doors(map: HashMap<String, String>, y: usize, x: usize) -> String{

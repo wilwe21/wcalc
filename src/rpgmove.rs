@@ -4,6 +4,7 @@ use crate::game;
 use crate::legend;
 use crate::map;
 
+use crate::tentity::Entity;
 use crate::tattacks::Attack;
 use crate::fight;
 
@@ -64,6 +65,19 @@ pub fn finda(map: HashMap<String, String>, find: usize) -> Vec<usize> {
     return fond
 }
 
+pub fn check_entity(nex: Option<char>, pos: (u8,u8)) -> Option<String> {
+    let p = Entity::get_by_display(&nex.unwrap().to_string());
+    match p {
+        Some(en) => {
+            let mut pl = game::get_player().clone();
+            pl.change_mode("fight".to_string());
+            game::update_player(pl).clone();
+            return Some(fight::start(en, pos))
+        },
+        _ => return None
+    }
+}
+
 pub fn rpginp(text: String, button: String) -> String {
     let mut s = game::get_global_stats();
     let mut player = game::get_player();
@@ -82,8 +96,7 @@ pub fn rpginp(text: String, button: String) -> String {
                 let nex = movevalid(pos.clone(),room.clone());
                 if nex == Some(legend::wall) {
                     return "can't move".to_string()
-                }
-                if nex == Some(legend::door) {
+                } else if nex == Some(legend::door) {
                     let map = s.get("map").unwrap();
                     let cur = player.room.clone();
                     if !(cur.starts_with("a")) {
@@ -106,6 +119,11 @@ pub fn rpginp(text: String, button: String) -> String {
                         roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
                         roomid = validaroom(map.clone(), le.clone(), ri.clone());
                     }
+                } else {
+                    match check_entity(nex, (pos[0],pos[1])) {
+                        Some(s) => return s,
+                        _ => {}
+                    };
                 }
                 player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
                 player.move_room(roomid.to_string());
@@ -125,8 +143,7 @@ pub fn rpginp(text: String, button: String) -> String {
                 let nex = movevalid(pos.clone(),room.clone());
                 if nex == Some(legend::wall) {
                     return "can't move".to_string()
-                }
-                if nex == Some(legend::door) {
+                } else if nex == Some(legend::door) {
                     let map = s.get("map").unwrap();
                     let cur = player.room.clone();
                     if !(cur.starts_with("a")) {
@@ -148,6 +165,11 @@ pub fn rpginp(text: String, button: String) -> String {
                         roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
                         roomid = validaroom(map.clone(), le.clone(), ri.clone());
                     }
+                } else {
+                    match check_entity(nex, (pos[0],pos[1])) {
+                        Some(s) => return s,
+                        _ => {}
+                    };
                 }
                 player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
                 player.move_room(roomid.to_string());
@@ -167,8 +189,7 @@ pub fn rpginp(text: String, button: String) -> String {
                 let nex = movevalid(pos.clone(),room.clone());
                 if nex == Some(legend::wall) {
                     return "can't move".to_string()
-                }
-                if nex == Some(legend::door) {
+                } else if nex == Some(legend::door) {
                     let map = s.get("map").unwrap();
                     let cur = player.room.clone();
                     if !(cur.starts_with("a")) {
@@ -190,6 +211,11 @@ pub fn rpginp(text: String, button: String) -> String {
                         roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
                         roomid = validaroom(map.clone(), le.clone(), ri.clone());
                     }
+                } else {
+                    match check_entity(nex, (pos[0],pos[1])) {
+                        Some(s) => return s,
+                        _ => {}
+                    };
                 }
                 player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
                 player.move_room(roomid.to_string());
@@ -209,8 +235,7 @@ pub fn rpginp(text: String, button: String) -> String {
                 let nex = movevalid(pos.clone(),room.clone());
                 if nex == Some(legend::wall) {
                     return "can't move".to_string()
-                }
-                if nex == Some(legend::door) {
+                } else if nex == Some(legend::door) {
                     let map = s.get("map").unwrap();
                     let cur = player.room.clone();
                     if !(cur.starts_with("a")) {
@@ -232,6 +257,11 @@ pub fn rpginp(text: String, button: String) -> String {
                         roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
                         roomid = validaroom(map.clone(), le.clone(), ri.clone());
                     }
+                } else {
+                    match check_entity(nex, (pos[0],pos[1])) {
+                        Some(s) => return s,
+                        _ => {}
+                    };
                 }
                 player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
                 player.move_room(roomid.to_string());
@@ -247,11 +277,6 @@ pub fn rpginp(text: String, button: String) -> String {
             }
         } else if button == "√" || (button == "=" && text.ends_with("map")) {
             return map::toggle_map()
-        } else if button == "5" || (button == "=" && text.ends_with("5")) {
-            let mut pl = game::get_player().clone();
-            pl.change_mode("fight".to_string());
-            game::update_player(pl).clone();
-            return fight::start()
         }
         return "".to_string()
     }

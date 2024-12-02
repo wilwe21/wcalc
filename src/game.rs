@@ -90,6 +90,7 @@ pub fn end() -> String {
 
 pub fn end_silent() {
     let mut conf = conf::get_conf();
+    map::close_map();
     conf.insert("game".to_string(),false.to_string());
     conf::save_conf(conf);
 }

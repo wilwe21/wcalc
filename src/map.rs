@@ -44,7 +44,7 @@ pub fn update() {
     let rid = game::get_player().room;
     let pos: Vec<usize> = game::get_player().position.split("x").map(|r| r.parse::<usize>().unwrap()).collect();
     let room = stats.get(&format!("room{}",rid)).unwrap();
-    let player = legend::player;
+    let player = game::get_player().display;
     let mut sus = HashMap::new();
     let mut display = room.clone();
     let pro = room.get(&pos[1].to_string()).unwrap();

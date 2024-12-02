@@ -4,6 +4,7 @@ use crate::bag::Bag;
 
 #[derive(Clone, Debug)]
 pub struct Entity {
+    pub display: char,
     pub character: String,
     pub attacks: Vec<String>,
     pub position: String,
@@ -24,6 +25,7 @@ impl Entity {
         let bag = Bag::new(Some((potion, 5)), None, None, None);
         let health: usize = 100;
         Self {
+            display: 'P',
             character,
             attacks,
             position,
@@ -39,7 +41,9 @@ impl Entity {
     }
 
     pub fn new(character: String, attacks: Vec<String>, health: usize, lvl: usize) -> Self {
+        let display = character.chars().collect::<Vec<char>>()[0];
         Self {
+            display,
             character,
             attacks,
             position: "None".to_string(),
@@ -56,8 +60,9 @@ impl Entity {
 
     pub fn enemy_list() -> Vec<Self> {
         let snake = Self::new("Snake".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
+        let rock = Self::new("Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
         let horse = Self::new("Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
-        return vec!(snake, horse)
+        return vec!(snake, rock, horse)
     }
 
     pub fn get_by_name(name: &str) -> Option<Self> {
@@ -70,10 +75,21 @@ impl Entity {
         None
     }
 
+    pub fn get_by_display(dis: &str) -> Option<Self> {
+        let list = Self::enemy_list();
+        for i in list {
+            if i.display.to_string() == dis.to_string() {
+                return Some(i)
+            }
+        }
+        None
+    }
+
     pub fn from_str(st: String) -> Self {
         let s = save::str_to_conf(st);
         let s = s.get("player").unwrap();
         let character = s.get("character").unwrap().to_string();
+        let display = character.chars().collect::<Vec<char>>()[0];
         let a1 = s.get("attack1").unwrap().to_string();
         let a2 = s.get("attack2").unwrap().to_string();
         let a3 = s.get("attack3").unwrap().to_string();
@@ -137,6 +153,7 @@ impl Entity {
         let room = s.get("room").unwrap().to_string();
         let mode = s.get("mode").unwrap().to_string();
         Self {
+            display,
             character,
             attacks,
             position,
