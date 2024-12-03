@@ -59,7 +59,7 @@ impl Entity {
     }
 
     pub fn enemy_list() -> Vec<Self> {
-        let snake = Self::new("Snake".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
+        let snake = Self::new("Three".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
         let rock = Self::new("Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
         let horse = Self::new("Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
         return vec!(snake, rock, horse)
