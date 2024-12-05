@@ -1,6 +1,6 @@
 # Wcalc
 simple calculater\
-created with rust and gtk4\
+created with rust and gtk4
 
 # Future update
 Rpg game\
