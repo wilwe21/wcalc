@@ -8,7 +8,7 @@ using C.H.U.I\
 C alcuator\
 H (is silent)\
 U ser\
-I nterface\
+I nterface
 
 
 This game is basing on pokémon and the binding of isaac
