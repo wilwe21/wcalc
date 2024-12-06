@@ -58,10 +58,11 @@ impl Entity {
     }
 
     pub fn enemy_list() -> Vec<Self> {
-        let snake = Self::new('3', "Three".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
+        let three = Self::new('3', "Three".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
         let rock = Self::new('r', "Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
         let horse = Self::new('h', "Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
-        return vec!(snake, rock, horse)
+        let duck = Self::new('D', "Quark".to_string(), vec!("quack".to_string(), "i".to_string(), "quack".to_string(),"".to_string()), 100, 1);
+        return vec!(three, rock, horse, duck)
     }
 
     pub fn get_by_name(name: &str) -> Option<Self> {

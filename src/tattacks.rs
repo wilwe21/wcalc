@@ -29,8 +29,10 @@ impl Attack {
         let venom = Self::new("Venom", "venom", 5, "Deal 5 dmg and give emeny poison", "{} applay venom on {} and deal {} damage");
         let kick = Self::new("Kick", "kick", 25, "Deal 25 dmg to your oponent", "{} kick {} and deal {} damage");
         let stand = Self::new("Stand Still", "standStill", 0, "Sand and stare at your oponent", "{} stare at {}");
+        let quack = Self::new("Quack", "quack", 5, "Quack at enemy", "{} quack at {}");
+        let i = Self::new("Imaginary", "i", 75, "Shoot at your oponent imaginary bullet", "{} shoot at {} imaginary bullet and deal {} damage");
         let none = Self::new("", "", 0, "You don't have this attack", "");
-        return vec!(bite, divide, substract, venom, kick, stand, none)
+        return vec!(bite, divide, substract, venom, kick, stand, quack, i, none)
     }
     pub fn get_by_id(id: &str) -> Option<Self> {
         let list = Self::list();
