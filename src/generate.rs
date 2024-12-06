@@ -91,6 +91,7 @@ pub fn add_enemys(room: &str) -> String {
 
 pub fn generate_room(size: usize, dors: String, room_id: String) -> String {
     let mut room = String::new();
+    let end = dors.chars().filter(|&r| r == '1').count();
     let wall = legend::wall.clone();
     let door = legend::door.clone();
     let floor = legend::floor.clone();
@@ -110,7 +111,16 @@ pub fn generate_room(size: usize, dors: String, room_id: String) -> String {
                 } else {
                     right = wall.clone().to_string()
                 }
-                room += &format!("{}{}{}\n", left,floor.clone().to_string().repeat(s2),right).to_string();
+                if !room_id.starts_with("a") && room_id != "0" && end == 1 {
+                    room += &format!("{}{}{}{}{}\n", 
+                        left,
+                        floor.clone().to_string().repeat((s2-1)/2),
+                        legend::trap,
+                        floor.clone().to_string().repeat((s2-1)/2),
+                        right).to_string();
+                } else {
+                    room += &format!("{}{}{}\n", left,floor.clone().to_string().repeat(s2),right).to_string();
+                }
                 continue
             }
             room += &format!("{}{}{}\n",wall.clone(),floor.clone().to_string().repeat(s2),wall.clone()).to_string();

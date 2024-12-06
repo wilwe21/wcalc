@@ -8,6 +8,10 @@ use crate::save;
 use crate::generate;
 use crate::map;
 
+pub static roomwidth: usize = 7;
+pub static mapwidth: usize = 6;
+pub static spawn: usize = roomwidth/2;
+
 static mut gm: Option<Mutex<u8>> = None;
 
 static mut stats: Option<Mutex<HashMap<String, HashMap<String, String>>>> = None;
@@ -25,7 +29,7 @@ pub fn get_global_stats() -> HashMap<String, HashMap<String, String>> {
         if let Some(ref mut s) = stats {
             s.lock().unwrap().clone()
         } else {
-            let d = new_conf(6,7);
+            let d = new_conf();
             init_global_stats(d.clone());
             d
         }
@@ -56,18 +60,20 @@ pub fn get_player() -> Entity {
     }
 }
 
-pub fn new_conf(mw: usize, rw: usize) -> HashMap<String, HashMap<String, String>> {
-    let spawn = rw/2;
+pub fn new_conf() -> HashMap<String, HashMap<String, String>> {
     init_player("Player".to_string(), format!("{}x{}", spawn,spawn).to_string(), "0".to_string());
-    let mut p = get_player();
-    let mut d = p.to_string();
-    d += &"[map]\n".to_string();
-    d += &generate::generate_map(mw).to_string();
-    let mut s = save::str_to_conf(d.to_string());
-    let rooms = generate::generate_rooms(s.get("map").unwrap().clone(), rw.clone());
-    s.get_mut("player").unwrap().insert("position".to_string(), format!("{}x{}", (rw)/2, (rw)/2));
-    s.extend(rooms);
+    let s = new_map();
     map::init_map();
+    s
+}
+
+pub fn new_map() -> HashMap<String, HashMap<String, String>>{
+    let mut d = String::new();
+    d += &"[map]\n".to_string();
+    d += &generate::generate_map(mapwidth).to_string();
+    let mut s = save::str_to_conf(d.to_string());
+    let rooms = generate::generate_rooms(s.get("map").unwrap().clone(), roomwidth.clone());
+    s.extend(rooms);
     s
 }
 
@@ -75,9 +81,7 @@ pub fn start() -> String {
     let mut conf = conf::get_conf();
     conf.insert("game".to_string(),"rpg".to_string());
     conf::save_conf(conf);
-    let rw: usize = 7;
-    let mw: usize = 6;
-    init_global_stats(new_conf(mw, rw));
+    init_global_stats(new_conf());
     "".to_string()
 }
 

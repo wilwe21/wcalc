@@ -15,6 +15,7 @@ pub struct Entity {
     pub lvl: usize,
     pub score: usize,
     pub room: String,
+    pub floor: Option<usize>,
     pub mode: String
 }
 
@@ -36,6 +37,7 @@ impl Entity {
             lvl: 0,
             score: 0,
             room: "0".to_string(),
+            floor: Some(0),
             mode: "None".to_string()
         }
     }
@@ -53,6 +55,7 @@ impl Entity {
             lvl,
             score: 0,
             room: "None".to_string(),
+            floor: None,
             mode: "None".to_string()
         }
     }
@@ -151,6 +154,11 @@ impl Entity {
         let lvl = s.get("lvl").unwrap().parse::<usize>().unwrap();
         let score = s.get("score").unwrap().parse::<usize>().unwrap();
         let room = s.get("room").unwrap().to_string();
+        let fldata = s.get("floor").unwrap().to_string();
+        let mut floor: Option<usize> = None;
+        if fldata != "None" {
+            floor = Some(fldata.parse::<usize>().unwrap());
+        }
         let mode = s.get("mode").unwrap().to_string();
         Self {
             display,
@@ -164,6 +172,7 @@ impl Entity {
             lvl,
             score,
             room,
+            floor,
             mode
         }
     }
@@ -213,6 +222,10 @@ impl Entity {
         st += &format!("lvl = {}\n", self.lvl);
         st += &format!("score = {}\n", self.score);
         st += &format!("room = {}\n", self.room);
+        match self.floor {
+            Some(f) => st += &format!("floor = {}\n", f),
+            _ => st += &format!("floor = None\n"),
+        };
         st += &format!("mode = {}\n", self.mode);
         return st
     }
@@ -230,11 +243,11 @@ impl Entity {
             self.health += amount;
         }
     }
-    pub fn move_to(&mut self, position: String) {
-        self.position = position;
+    pub fn move_to(&mut self, position: &str) {
+        self.position = position.to_string();
     }
-    pub fn move_room(&mut self, room: String) {
-        self.room = room;
+    pub fn move_room(&mut self, room: &str) {
+        self.room = room.to_string();
     }
     pub fn change_mode(&mut self, mode: String) {
         self.mode = mode;
@@ -251,5 +264,8 @@ impl Entity {
     }
     pub fn change_bag(&mut self, bag: Bag) {
         self.bag = Some(bag);
+    }
+    pub fn change_floor(&mut self, floor: usize) {
+        self.floor = Some(floor);
     }
 }

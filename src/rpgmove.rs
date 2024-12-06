@@ -66,15 +66,27 @@ pub fn finda(map: HashMap<String, String>, find: usize) -> Vec<usize> {
 }
 
 pub fn check_entity(nex: Option<char>, pos: (u8,u8)) -> Option<String> {
-    let p = Entity::get_by_display(&nex.unwrap().to_string());
-    match p {
-        Some(en) => {
-            let mut pl = game::get_player().clone();
-            pl.change_mode("fight".to_string());
-            game::update_player(pl).clone();
-            return Some(fight::start(en, pos))
-        },
-        _ => return None
+    if nex.unwrap() == legend::trap {
+        let mut pl = game::get_player();
+        let fl = pl.floor.unwrap().clone() + 1;
+        pl.change_floor(fl);
+        pl.move_room("0");
+        pl.move_to(&format!("{}x{}",game::spawn, game::spawn));
+        game::update_player(pl.clone());
+        game::init_global_stats(game::new_map());
+        map::update();
+        return Some("entering new floor".to_string())
+    } else {
+        let p = Entity::get_by_display(&nex.unwrap().to_string());
+        match p {
+            Some(en) => {
+                let mut pl = game::get_player().clone();
+                pl.change_mode("fight".to_string());
+                game::update_player(pl).clone();
+                return Some(fight::start(en, pos))
+            },
+            _ => return None
+        }
     }
 }
 
@@ -125,8 +137,8 @@ pub fn rpginp(text: String, button: String) -> String {
                         _ => {}
                     };
                 }
-                player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
-                player.move_room(roomid.to_string());
+                player.move_to(&format!("{}x{}",pos[0],pos[1]));
+                player.move_room(&roomid);
                 game::update_player(player);
                 map::update();
                 if roomid == orid {
@@ -171,8 +183,8 @@ pub fn rpginp(text: String, button: String) -> String {
                         _ => {}
                     };
                 }
-                player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
-                player.move_room(roomid.to_string());
+                player.move_to(&format!("{}x{}",pos[0],pos[1]));
+                player.move_room(&roomid);
                 game::update_player(player);
                 map::update();
                 if roomid == orid {
@@ -217,8 +229,8 @@ pub fn rpginp(text: String, button: String) -> String {
                         _ => {}
                     };
                 }
-                player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
-                player.move_room(roomid.to_string());
+                player.move_to(&format!("{}x{}",pos[0],pos[1]));
+                player.move_room(&roomid);
                 game::update_player(player);
                 map::update();
                 if roomid == orid {
@@ -263,8 +275,8 @@ pub fn rpginp(text: String, button: String) -> String {
                         _ => {}
                     };
                 }
-                player.move_to(format!("{}x{}",pos[0],pos[1]).to_string());
-                player.move_room(roomid.to_string());
+                player.move_to(&format!("{}x{}",pos[0],pos[1]));
+                player.move_room(&roomid);
                 game::update_player(player);
                 map::update();
                 if roomid == orid {

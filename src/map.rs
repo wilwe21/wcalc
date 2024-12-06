@@ -55,10 +55,13 @@ pub fn update() {
     let m = use_map();
     let mbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     mbox.add_css_class("Map");
-    let fm = gtk::Label::builder().label("Floor Map").build();
+    let fli = game::get_player().floor.unwrap();
+    let flinfo = gtk::Label::builder().label(format!("{} floor", fli)).build();
+    let fm = gtk::Label::builder().label("Map").build();
     let floor = gtk::Label::builder().label(&fmap).justify(gtk::Justification::Center).build();
     let florin = gtk::Label::builder().label(format!("Room {}",rid)).build();
     let room = gtk::Label::builder().label(&s).justify(gtk::Justification::Center).build();
+    mbox.append(&flinfo);
     mbox.append(&fm);
     mbox.append(&floor);
     mbox.append(&florin);
