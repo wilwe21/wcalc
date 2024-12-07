@@ -87,11 +87,23 @@ pub fn update(pl: Entity, en: Entity) {
     let plimage = gtk::Picture::for_filename(pl.image.clone());
     plimage.set_hexpand(true);
     plimage.set_vexpand(true);
+    plimage.add_css_class("player_image");
     b21.append(&plimage);
     let enimage = gtk::Picture::for_filename(en.image.clone());
     enimage.set_hexpand(true);
     enimage.set_vexpand(true);
+    enimage.add_css_class("enemy_image");
     b12.append(&enimage);
+    if *stat.clone().unwrap().get("turn").unwrap() == "false".to_string() 
+    && *stat.clone().unwrap().get("anim").unwrap() == "attack".to_string() {
+        plimage.add_css_class("attacking");
+        enimage.add_css_class("dmg");
+    }  
+    if *stat.clone().unwrap().get("turn").unwrap() == "true".to_string()
+    && *stat.clone().unwrap().get("anim").unwrap() == "attack".to_string() {
+        enimage.add_css_class("attacking");
+        plimage.add_css_class("dmg");
+    }
     let mut men = "base".to_string();
     match stat.clone() {
         Some(sta) => {

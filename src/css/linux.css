@@ -7,6 +7,40 @@
 	--hp_mid: orange;
 	--hp_low: red;
 }
+.attacking {
+	animation: attack 0.3s;
+}
+
+.dmg {
+	animation: dmg 0.6s;
+}
+
+@keyframes attack {
+	0% {
+		transform: translatex(0px);
+	} 25% {
+		transform: translatex(-40px);
+	} 50% {
+		transform: translatex(0px);
+	} 75% {
+		transform: translatex(40px);
+	}  100% {
+		transform: translatex(0px);
+	}
+}
+
+@keyframes dmg {
+	0% {
+		filter: contrast(100%) invert(0%) hue-rotate(0deg);
+	} 50% {
+		filter: contrast(100%) invert(0%) hue-rotate(0deg);
+	} 75% {
+		filter: contrast(200%) invert(100%) hue-rotate(180deg);
+	} 100% {
+		filter: contrast(100%) invert(0%) hue-rotate(360deg);
+	}
+}
+
 entry {
 	margin: 2px;
 	border: 2px solid var(--accent);
@@ -14,6 +48,12 @@ entry {
 button {
 	margin: 2px;
 	border: 2px solid var(--accent);
+}
+entry > * {
+	color: var(--fg-color);
+}
+button > * {
+	color: var(--fg-color);
 }
 box {
 	background-color: var(--bg);
@@ -60,7 +100,7 @@ box {
 	border: 2px solid var(--accent);
 	border-radius: 7px;
 }
-.selected {
+.selected > *, .selected {
 	background: var(--accent);
 	color: var(--map_fg);
 }

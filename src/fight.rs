@@ -54,7 +54,7 @@ pub fn get_status() -> Option<HashMap<String,String>> {
     }
 }
 
-pub fn create_status(position: Option<(u8,u8)>, selected: Option<String>, dialog: Option<String>, menu: Option<String>, turn: Option<bool>) -> HashMap<String,String> {
+pub fn create_status(position: Option<(u8,u8)>, selected: Option<String>, dialog: Option<String>, menu: Option<String>, turn: Option<bool>, at: Option<String>) -> HashMap<String,String> {
     let mut sta = HashMap::new();
     match position {
         Some(p) => sta.insert("position".to_string(),format!("{}x{}",p.0,p.1)),
@@ -88,12 +88,16 @@ pub fn create_status(position: Option<(u8,u8)>, selected: Option<String>, dialog
         Some(t) => sta.insert("turn".to_string(), t.to_string()),
         _ => sta.insert("turn".to_string(), "true".to_string())
     };
+    match at {
+        Some(at) => sta.insert("anim".to_string(), at.to_string()),
+        _ => sta.insert("anim".to_string(), "None".to_string())
+    };
     return sta
 }
 
 pub fn start(en: Entity, pos: (u8,u8)) -> String {
     let pl = game::get_player().clone();
-    set_status(Some(create_status(Some(pos), None, Some(format!("{} appeard from dark", en.character).to_string()), Some("base".to_string()), None)));
+    set_status(Some(create_status(Some(pos), None, Some(format!("{} appeard from dark", en.character).to_string()), Some("base".to_string()), None, None)));
     set_enemy(Some(en.clone()));
     fui::update(pl.clone(), en.clone());
     fui::open();
@@ -153,9 +157,9 @@ pub fn moves(text: String, button: String) -> String {
                         Some(s) => {
                             let sel = s.get("selected").unwrap();
                             if sel == "2" {
-                                set_status(Some(create_status(None, Some("0".to_string()), None, None, None)))
+                                set_status(Some(create_status(None, Some("0".to_string()), None, None, None, None)))
                             } else if sel == "3" {
-                                set_status(Some(create_status(None, Some("1".to_string()), None, None, None)))
+                                set_status(Some(create_status(None, Some("1".to_string()), None, None, None, None)))
                             }
                         },
                         _ => {}
@@ -167,9 +171,9 @@ pub fn moves(text: String, button: String) -> String {
                         Some(s) => {
                             let sel = s.get("selected").unwrap();
                             if sel == "0" {
-                                set_status(Some(create_status(None, Some("2".to_string()), None, None, None)))
+                                set_status(Some(create_status(None, Some("2".to_string()), None, None, None, None)))
                             } else if sel == "1" {
-                                set_status(Some(create_status(None, Some("3".to_string()), None, None, None)))
+                                set_status(Some(create_status(None, Some("3".to_string()), None, None, None, None)))
                             }
                         },
                         _ => {}
@@ -181,9 +185,9 @@ pub fn moves(text: String, button: String) -> String {
                         Some(s) =>  {
                             let sel = s.get("selected").unwrap();
                             if sel == "1" {
-                                set_status(Some(create_status(None, Some("0".to_string()), None, None, None)))
+                                set_status(Some(create_status(None, Some("0".to_string()), None, None, None, None)))
                             } else if sel == "3" {
-                                set_status(Some(create_status(None, Some("2".to_string()), None, None, None)))
+                                set_status(Some(create_status(None, Some("2".to_string()), None, None, None, None)))
                             }
                         },
                         _ => {}
@@ -195,9 +199,9 @@ pub fn moves(text: String, button: String) -> String {
                         Some(s) => {
                             let sel = s.get("selected").unwrap();
                             if sel == "0" {
-                                set_status(Some(create_status(None, Some("1".to_string()), None, None, None)))
+                                set_status(Some(create_status(None, Some("1".to_string()), None, None, None, None)))
                             } else if sel == "2" {
-                                set_status(Some(create_status(None, Some("3".to_string()), None, None, None)))
+                                set_status(Some(create_status(None, Some("3".to_string()), None, None, None, None)))
                             }
                         },
                         _ => {}
@@ -214,13 +218,13 @@ pub fn moves(text: String, button: String) -> String {
                                 let atname = button.action.replace("use ", "");
                                 if atname != "" {
                                     let at = Attack::get_by_id(&atname).unwrap();
-                                    let (s, t) = at.r#use(pl.clone(), en.clone());
+                                    let (s, t, anim) = at.r#use(pl.clone(), en.clone());
                                     if t.health == 0 {
                                         end(true);
                                         return "Enemy defeated".to_string()
                                     }
                                     set_enemy(Some(t.clone()));
-                                    set_status(Some(create_status(None, None, Some(s.clone()), Some("base".to_string()), Some(false))));
+                                    set_status(Some(create_status(None, None, Some(s.clone()), Some("base".to_string()), Some(false), Some(anim))));
                                     fui::update(pl.clone(),t.clone());
                                     return s
                                 }
@@ -244,19 +248,19 @@ pub fn moves(text: String, button: String) -> String {
                                     return "You dead".to_string()
                                 }
                                 set_enemy(Some(t.clone()));
-                                set_status(Some(create_status(None, None, Some(s.clone()), Some("base".to_string()), Some(false))));
+                                set_status(Some(create_status(None, None, Some(s.clone()), Some("base".to_string()), Some(false), None)));
                                 fui::update(plne.clone(),t.clone());
                                 return format!("used {}", it.name)
                             } else if button.action == "open_attack" {
-                                set_status(Some(create_status(None, None, None, Some("Attack".to_string()), None)));
+                                set_status(Some(create_status(None, None, None, Some("Attack".to_string()), None, None)));
                                 fui::update(pl.clone(),en.clone());
                                 return "Opening attack list".to_string()
                             } else if button.action == "open_bag" {
-                                set_status(Some(create_status(None, None, None, Some("Bag".to_string()), None)));
+                                set_status(Some(create_status(None, None, None, Some("Bag".to_string()), None, None)));
                                 fui::update(pl.clone(),en.clone());
                                 return "Opening bag".to_string()
                             } else if button.action == "scream" {
-                                set_status(Some(create_status(None, None, Some("AAAAAAA".to_string()), None, None)));
+                                set_status(Some(create_status(None, None, Some("AAAAAAA".to_string()), None, None, None)));
                                 fui::update(pl.clone(),en.clone());
                                 return "AAAAA".to_string()
                             } else if button.action == "run" {
@@ -267,7 +271,7 @@ pub fn moves(text: String, button: String) -> String {
                         _ => {}
                     }
                 } else if button == "3" || (button == "=" && text.ends_with("3")) {
-                    set_status(Some(create_status(None, None, None, Some("base".to_string()), None)));
+                    set_status(Some(create_status(None, None, None, Some("base".to_string()), None, None)));
                     fui::update(pl.clone(),en.clone());
                     return "Back".to_string()
                 }
@@ -275,14 +279,14 @@ pub fn moves(text: String, button: String) -> String {
                 let attacks = en.attacks.clone().into_iter().filter(|r| r != "").collect::<Vec<_>>();
                 let atname = attacks.choose(&mut rand::thread_rng()).unwrap();
                 let at = Attack::get_by_id(&atname).unwrap();
-                let (s, t) = at.r#use(en.clone(), pl.clone());
+                let (s, t, anim) = at.r#use(en.clone(), pl.clone());
                 if t.health == 0 {
                     end(false);
                     game::end_silent();
                     return "You dead".to_string()
                 }
                 game::update_player(t.clone());
-                set_status(Some(create_status(None, None, Some(s.clone()), Some("base".to_string()), Some(true))));
+                set_status(Some(create_status(None, None, Some(s.clone()), Some("base".to_string()), Some(true), Some(anim))));
                 fui::update(t.clone(),en.clone());
                 return s
             }
