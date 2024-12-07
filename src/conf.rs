@@ -17,26 +17,64 @@ pub fn def_conf() -> HashMap <String, String> {
     return str_to_conf(conf.to_string())
 }
 
+pub fn in_css(conf_dir: &str) {
+    match fs::create_dir(format!("{}/wcalc/css", conf_dir)) {
+        Ok(()) => println!("Created css path"),
+        _ => println!("Can't create css path")
+    };
+    let mut cs = String::new();
+    if System::name().unwrap() == "Windows" {
+        cs = include_str!("./css/win.css").to_string();
+    } else {
+        cs = include_str!("./css/linux.css").to_string();
+    }
+    let mut fi = File::create(format!("{}/wcalc/css/default.css", conf_dir)).expect("can't create file");
+    fi.write(cs.as_bytes()).expect("can't create file");
+}
+
+pub fn def_path(conf_dir: &str) {
+    match fs::create_dir(format!("{}/wcalc", conf_dir)) {
+        Ok(()) => println!("create config path"),
+        _ => println!("can't create config path")
+    };
+}
+
+pub fn in_assets() {
+    match assets_path() {
+        Some(path) => {
+            match fs::create_dir(format!("{}", path)) {
+                Ok(()) => println!("Created assets path"),
+                _ => println!("Can't create assets path")
+            };
+            let names: Vec<&str> = vec!("horse.jpg", "burg.png");
+            let hb = include_bytes!("./assets/horse.jpg");
+            let bb = include_bytes!("./assets/burg.png");
+            save_file(names[0], hb, &path);
+            save_file(names[1], bb, &path);
+        },
+        _ => {}
+    }
+}
+
+pub fn save_file(name: &str, bytes: &[u8], path: &str) {
+    let mut hrf = File::create(format!("{}/{}", path, name)).expect("can't create file");
+    hrf.write(&bytes).expect("can't write");
+}
+
+pub fn assets_path() -> Option<String> {
+    match config_dir() {
+        Some(h) => Some(format!("{}/wcalc/assets", h.display())),
+        _ => None
+    }
+}
+
 pub fn init_conf() -> HashMap <String, String> {
-    match config_dir(){
+    match config_dir() {
         Some(h) => {
             let path = format!("{}/wcalc/config.cfg", h.display());
-            match fs::create_dir(format!("{}/wcalc", h.display())) {
-                Ok(()) => println!("create"),
-                _ => println!("some error")
-            };
-            match fs::create_dir(format!("{}/wcalc/css", h.display())) {
-                Ok(()) => println!("Created path"),
-                _ => println!("Can't create css path")
-            }
-            let mut cs = String::new();
-            if System::name().unwrap() == "Windows" {
-                cs = include_str!("./css/win.css").to_string();
-            } else {
-                cs = include_str!("./css/linux.css").to_string();
-            }
-            let mut fi = File::create(format!("{}/wcalc/css/default.css", h.display())).expect("can't create file");
-            fi.write(cs.as_bytes()).expect("can't create file");
+            def_path(&h.display().to_string());
+            in_css(&h.display().to_string());
+            in_assets();
             let mut f = File::create(path).expect("can't create file");
             let cont = include_str!("./default.cfg").replace("{}", &h.display().to_string());
             f.write(cont.as_bytes()).expect("can't write");

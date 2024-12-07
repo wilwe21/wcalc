@@ -1,6 +1,8 @@
 use gtk::prelude::*;
 use std::sync::Mutex;
 
+use crate::conf;
+
 use crate::tentity::Entity;
 use crate::fight;
 use crate::tbutton::Button;
@@ -82,6 +84,14 @@ pub fn update(pl: Entity, en: Entity) {
     b12.set_hexpand(true);
     b22.set_hexpand(true);
     b32.set_hexpand(true);
+    let plimage = gtk::Picture::for_filename(pl.image.clone());
+    plimage.set_hexpand(true);
+    plimage.set_vexpand(true);
+    b21.append(&plimage);
+    let enimage = gtk::Picture::for_filename(en.image.clone());
+    enimage.set_hexpand(true);
+    enimage.set_vexpand(true);
+    b12.append(&enimage);
     let mut men = "base".to_string();
     match stat.clone() {
         Some(sta) => {

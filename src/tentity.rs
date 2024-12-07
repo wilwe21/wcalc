@@ -2,9 +2,12 @@ use crate::save;
 use crate::bag::Item;
 use crate::bag::Bag;
 
+use crate::conf;
+
 #[derive(Clone, Debug)]
 pub struct Entity {
     pub display: char,
+    pub image: String,
     pub character: String,
     pub attacks: Vec<String>,
     pub position: String,
@@ -20,13 +23,19 @@ pub struct Entity {
 }
 
 impl Entity {
-    pub fn new_player(character: String, position: String, room: String) -> Self {
+    pub fn new_player(character: String, image: Option<String>, position: String, room: String) -> Self {
+        let mut im = String::new();
+        match image {
+            Some(s) => im = format!("{}/{}", conf::assets_path().unwrap(), s),
+            _ => im = format!("{}/burg.png", conf::assets_path().unwrap())
+        };
         let attacks: Vec<String> = vec!("bite".to_string(), "divide".to_string(), "".to_string(), "".to_string());
         let potion = Item::get_by_id("potionHP").unwrap();
         let bag = Bag::new(Some((potion, 5)), None, None, None);
         let health: usize = 100;
         Self {
             display: 'P',
+            image: im,
             character,
             attacks,
             position,
@@ -42,9 +51,15 @@ impl Entity {
         }
     }
 
-    pub fn new(display: char, character: String, attacks: Vec<String>, health: usize, lvl: usize) -> Self {
+    pub fn new(display: char, image: Option<String>, character: String, attacks: Vec<String>, health: usize, lvl: usize) -> Self {
+        let mut im = String::new();
+        match image {
+            Some(s) => im = format!("{}/{}", conf::assets_path().unwrap(), s),
+            _ => im = format!("{}/horse.jpg", conf::assets_path().unwrap())
+        };
         Self {
             display,
+            image: im,
             character,
             attacks,
             position: "None".to_string(),
@@ -61,10 +76,10 @@ impl Entity {
     }
 
     pub fn enemy_list() -> Vec<Self> {
-        let three = Self::new('3', "Three".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
-        let rock = Self::new('r', "Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
-        let horse = Self::new('h', "Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
-        let duck = Self::new('D', "Quark".to_string(), vec!("quack".to_string(), "i".to_string(), "quack".to_string(),"".to_string()), 100, 1);
+        let three = Self::new('3', None, "Three".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
+        let rock = Self::new('r', None, "Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
+        let horse = Self::new('h', None, "Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
+        let duck = Self::new('D', None, "Quark".to_string(), vec!("quack".to_string(), "i".to_string(), "quack".to_string(),"".to_string()), 100, 1);
         return vec!(three, rock, horse, duck)
     }
 
@@ -93,6 +108,8 @@ impl Entity {
         let s = s.get("player").unwrap();
         let character = s.get("character").unwrap().to_string();
         let display = character.chars().collect::<Vec<char>>()[0];
+        let image = s.get("image").unwrap().to_string();
+        let im = format!("{}/{}", conf::assets_path().unwrap(), image).to_string();
         let a1 = s.get("attack1").unwrap().to_string();
         let a2 = s.get("attack2").unwrap().to_string();
         let a3 = s.get("attack3").unwrap().to_string();
@@ -162,6 +179,7 @@ impl Entity {
         let mode = s.get("mode").unwrap().to_string();
         Self {
             display,
+            image: im,
             character,
             attacks,
             position,
@@ -180,6 +198,10 @@ impl Entity {
     pub fn to_string(self) -> String {
         let mut st = "[player]\n".to_string();
         st += &format!("character = {}\n", self.character);
+        let imag = self.image.clone();
+        let imagi = imag.split("/").collect::<Vec<_>>();
+        let ima = imagi[imagi.len()-1];
+        st += &format!("image = {}",ima);
         st += &format!("attack1 = {}\n", self.attacks[0]);
         st += &format!("attack2 = {}\n", self.attacks[1]);
         st += &format!("attack3 = {}\n", self.attacks[2]);

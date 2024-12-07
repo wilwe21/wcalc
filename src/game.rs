@@ -36,9 +36,9 @@ pub fn get_global_stats() -> HashMap<String, HashMap<String, String>> {
     }
 }
 
-pub fn init_player(c: String, pos: String, room: String) {
+pub fn init_player(c: String, img: Option<String>, pos: String, room: String) {
     unsafe {
-        player = Some(Mutex::new(Entity::new_player(c,pos,room)));
+        player = Some(Mutex::new(Entity::new_player(c, img, pos, room)));
     }
 }
 
@@ -53,15 +53,15 @@ pub fn get_player() -> Entity {
         if let Some(ref mut p) = player {
             p.lock().unwrap().clone()
         } else {
-            let pp = Entity::new_player("Player".to_string(), "5x5".to_string(), "0".to_string());
-            init_player("Player".to_string(), "5x5".to_string(), "0".to_string());
+            let pp = Entity::new_player("Player".to_string(), None, "5x5".to_string(), "0".to_string());
+            init_player("Player".to_string(), None, "5x5".to_string(), "0".to_string());
             pp
         }
     }
 }
 
 pub fn new_conf() -> HashMap<String, HashMap<String, String>> {
-    init_player("Player".to_string(), format!("{}x{}", spawn,spawn).to_string(), "0".to_string());
+    init_player("Player".to_string(), None, format!("{}x{}", spawn,spawn).to_string(), "0".to_string());
     let s = new_map();
     map::init_map();
     s
