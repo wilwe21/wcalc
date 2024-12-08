@@ -139,6 +139,11 @@ pub fn moves(text: String, button: String) -> String {
         }
     }
     let mut en = get_enemy().unwrap();
+    if pl.health == 0 {
+        end(false);
+        game::end_silent();
+        return "You dead".to_string()
+    }
     if en.health == 0 {
         end(true);
         return "Enemy defeated".to_string()
@@ -219,11 +224,12 @@ pub fn moves(text: String, button: String) -> String {
                                 if atname != "" {
                                     let at = Attack::get_by_id(&atname).unwrap();
                                     let (s, t, anim) = at.r#use(pl.clone(), en.clone());
+                                    set_enemy(Some(t.clone()));
                                     if t.health == 0 {
-                                        end(true);
+                                        set_status(Some(create_status(None, None, Some("Enemy defeated".to_string()), Some("base".to_string()), Some(false), Some(anim))));
+                                        fui::update(pl.clone(),t.clone());
                                         return "Enemy defeated".to_string()
                                     }
-                                    set_enemy(Some(t.clone()));
                                     set_status(Some(create_status(None, None, Some(s.clone()), Some("base".to_string()), Some(false), Some(anim))));
                                     fui::update(pl.clone(),t.clone());
                                     return s
@@ -238,16 +244,17 @@ pub fn moves(text: String, button: String) -> String {
                                 let mut plne = w.clone();
                                 plne.change_bag(plbag);
                                 game::update_player(plne.clone());
+                                set_enemy(Some(t.clone()));
                                 if t.health == 0 {
-                                    end(true);
+                                    set_status(Some(create_status(None, None, Some("Enemy defeated".to_string()), Some("base".to_string()), Some(false), None)));
+                                    fui::update(plne.clone(),t.clone());
                                     return "Enemy defeated".to_string()
                                 }
                                 if plne.health == 0 {
-                                    end(false);
-                                    game::end_silent();
+                                    set_status(Some(create_status(None, None, Some("You dead".to_string()), Some("base".to_string()), Some(false), None)));
+                                    fui::update(plne.clone(),t.clone());
                                     return "You dead".to_string()
                                 }
-                                set_enemy(Some(t.clone()));
                                 set_status(Some(create_status(None, None, Some(s.clone()), Some("base".to_string()), Some(false), None)));
                                 fui::update(plne.clone(),t.clone());
                                 return format!("used {}", it.name)
@@ -280,12 +287,12 @@ pub fn moves(text: String, button: String) -> String {
                 let atname = attacks.choose(&mut rand::thread_rng()).unwrap();
                 let at = Attack::get_by_id(&atname).unwrap();
                 let (s, t, anim) = at.r#use(en.clone(), pl.clone());
+                game::update_player(t.clone());
+                fui::update(t.clone(),en.clone());
                 if t.health == 0 {
-                    end(false);
-                    game::end_silent();
+                    set_status(Some(create_status(None, None, Some("You dead".to_string()), Some("base".to_string()), Some(true), Some(anim))));
                     return "You dead".to_string()
                 }
-                game::update_player(t.clone());
                 set_status(Some(create_status(None, None, Some(s.clone()), Some("base".to_string()), Some(true), Some(anim))));
                 fui::update(t.clone(),en.clone());
                 return s
