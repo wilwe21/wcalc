@@ -18,6 +18,7 @@ pub fn set_fw(win: Option<gtk::Window>) {
                 let win = gtk::Window::builder()
                     .title("Wcalc Fight")
                     .resizable(false)
+                    .deletable(false)
                     .build();
                 win.set_default_size(200, 200);
                 fightwin = Some(Mutex::new(win));

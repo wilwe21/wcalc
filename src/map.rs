@@ -14,6 +14,7 @@ pub fn init_map() {
         let mwin = gtk::Window::builder()
             .title("Map")
             .resizable(false)
+            .deletable(false)
             .build();
         mwin.set_default_size(200, 200);
         let mbox = gtk::Box::new(gtk::Orientation::Vertical, 0);
