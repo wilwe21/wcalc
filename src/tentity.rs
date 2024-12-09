@@ -77,8 +77,8 @@ impl Entity {
 
     pub fn enemy_list() -> Vec<Self> {
         let three = Self::new('3', None, "Three".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
-        let rock = Self::new('r', None, "Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
-        let horse = Self::new('h', None, "Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
+        let rock = Self::new('Q', None, "Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
+        let horse = Self::new('h', None, "El Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
         let duck = Self::new('D', None, "Quark".to_string(), vec!("quack".to_string(), "i".to_string(), "quack".to_string(),"".to_string()), 100, 1);
         return vec!(three, rock, horse, duck)
     }
