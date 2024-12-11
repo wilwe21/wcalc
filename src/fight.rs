@@ -99,6 +99,7 @@ pub fn start(en: Entity, pos: (u8,u8)) -> String {
     let pl = game::get_player().clone();
     set_status(Some(create_status(Some(pos), None, Some(format!("{} appeard from dark", en.character).to_string()), Some("base".to_string()), None, None)));
     set_enemy(Some(en.clone()));
+    println!("{}",en);
     fui::update(pl.clone(), en.clone());
     fui::open();
     return format!("{} appeard from dark", en.character);

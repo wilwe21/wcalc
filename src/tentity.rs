@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::save;
 use crate::bag::Item;
 use crate::bag::Bag;
@@ -20,6 +22,12 @@ pub struct Entity {
     pub room: String,
     pub floor: Option<usize>,
     pub mode: String
+}
+
+impl fmt::Display for Entity {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Name: {}, HP: {}/{}", self.character, self.health, self.maxhealth)
+    }
 }
 
 impl Entity {
