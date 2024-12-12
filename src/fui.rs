@@ -85,24 +85,44 @@ pub fn update(pl: Entity, en: Entity) {
     b12.set_hexpand(true);
     b22.set_hexpand(true);
     b32.set_hexpand(true);
+    let plimgbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let plimage = gtk::Picture::for_filename(pl.image.clone());
-    plimage.set_hexpand(true);
-    plimage.set_vexpand(true);
+    let g1 = gtk::Picture::for_filename(format!("{}/ground.png", conf::assets_path().unwrap()));
+    let g2 = gtk::Picture::for_filename(format!("{}/ground.png", conf::assets_path().unwrap()));
+    let over1 = gtk::Overlay::new();
+    over1.set_child(Some(&g1));
+    let over2 = gtk::Overlay::new();
+    over2.set_child(Some(&g2));
+    over1.set_hexpand(true);
+    over1.set_vexpand(true);
+    over2.set_hexpand(true);
+    over2.set_vexpand(true);
     plimage.add_css_class("player_image");
-    b21.append(&plimage);
+    plimgbox.add_css_class("imgbox");
+    plimage.set_size_request(50, 50);
+    plimage.set_hexpand(false);
+    plimage.set_vexpand(false);
+    plimgbox.append(&plimage);
+    over1.add_overlay(&plimgbox);
+    b21.append(&over1);
+    let enimgbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let enimage = gtk::Picture::for_filename(en.image.clone());
-    enimage.set_hexpand(true);
-    enimage.set_vexpand(true);
     enimage.add_css_class("enemy_image");
-    b12.append(&enimage);
+    enimgbox.add_css_class("imgbox");
+    enimage.set_size_request(50, 50);
+    enimage.set_hexpand(false);
+    enimage.set_vexpand(false);
+    enimgbox.append(&enimage);
+    over2.add_overlay(&enimgbox);
+    b12.append(&over2);
     if *stat.clone().unwrap().get("turn").unwrap() == "false".to_string() 
     && *stat.clone().unwrap().get("anim").unwrap() == "attack".to_string() {
-        plimage.add_css_class("attacking");
+        plimage.add_css_class("attacking_p");
         enimage.add_css_class("dmg");
     }  
     if *stat.clone().unwrap().get("turn").unwrap() == "true".to_string()
     && *stat.clone().unwrap().get("anim").unwrap() == "attack".to_string() {
-        enimage.add_css_class("attacking");
+        enimage.add_css_class("attacking_e");
         plimage.add_css_class("dmg");
     }
     let mut men = "base".to_string();
