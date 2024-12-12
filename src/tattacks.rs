@@ -1,3 +1,5 @@
+use std::fmt;
+
 use crate::tentity::Entity;
 use crate::fight;
 
@@ -11,6 +13,17 @@ pub struct Attack {
     pub anim: String,
     //pub effect: String
 }
+
+impl fmt::Display for Attack {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.alternate() {
+            write!(f, "id: {}, dmg: {}", self.id, self.dmg)
+        } else {
+            write!(f, "{}, {}", self.id, self.dmg)
+        }
+    }
+}
+
 impl Attack {
     pub fn new(name: &str, id: &str, dmg: usize, desc: &str, dial: &str, anim: &str/*, effect: String*/) -> Self {
         Self {

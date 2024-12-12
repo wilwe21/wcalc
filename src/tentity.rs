@@ -26,7 +26,11 @@ pub struct Entity {
 
 impl fmt::Display for Entity {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(f, "Name: {}, HP: {}/{}", self.character, self.health, self.maxhealth)
+        if f.alternate() {
+            write!(f, "Name: {}, HP: {}/{}", self.character, self.health, self.maxhealth)
+        } else {
+            write!(f, "{}, {}/{}", self.character, self.health, self.maxhealth)
+        }
     }
 }
 
