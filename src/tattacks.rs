@@ -16,7 +16,7 @@ pub struct Attack {
 
 impl fmt::Display for Attack {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.alternate() {
+        if f.alternate() {
             write!(f, "id: {}, dmg: {}", self.id, self.dmg)
         } else {
             write!(f, "{}, {}", self.id, self.dmg)
