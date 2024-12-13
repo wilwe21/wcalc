@@ -1,4 +1,5 @@
 use std::fmt;
+use std::path::Path;
 
 use crate::save;
 use crate::bag::Item;
@@ -34,19 +35,29 @@ impl fmt::Display for Entity {
     }
 }
 
+pub fn check_player_sprite(sprite: &str) -> String{
+    let path = format!("{}/{}_player.png", conf::assets_path().unwrap(), sprite);
+    let p = Path::new(&path);
+    if p.is_file() {
+        return path.to_string();
+    } else {
+        return format!("{}/{}.png", conf::assets_path().unwrap(), sprite)
+    }
+}
+
 impl Entity {
     pub fn new_player(character: String, image: Option<String>, position: String, room: String) -> Self {
         let mut im = String::new();
         match image {
-            Some(s) => im = format!("{}/{}", conf::assets_path().unwrap(), s),
-            _ => im = format!("{}/one.png", conf::assets_path().unwrap())
+            Some(s) => im = check_player_sprite(&s),
+            _ => im = check_player_sprite("one")
         };
         let attacks: Vec<String> = vec!("bite".to_string(), "divide".to_string(), "".to_string(), "".to_string());
         let potion = Item::get_by_id("potionHP").unwrap();
         let bag = Bag::new(Some((potion, 5)), None, None, None);
         let health: usize = 100;
         Self {
-            display: 'P',
+            display: '1',
             image: im,
             character,
             attacks,

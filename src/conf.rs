@@ -46,17 +46,19 @@ pub fn in_assets() {
                 Ok(()) => println!("Created assets path"),
                 _ => println!("Can't create assets path")
             };
-            let names: Vec<&str> = vec!("horse.jpg", "one.png", "ground.png", "three.png", "duck.png");
+            let names: Vec<&str> = vec!("horse.jpg", "one.png", "oneplayer.png", "three.png", "three_player.png", "duck.png");
             let hb = include_bytes!("./assets/horse.png");
             let bb = include_bytes!("./assets/one.png");
-            let gb = include_bytes!("./assets/ground.png");
+            let bp = include_bytes!("./assets/one_player.png");
             let tb = include_bytes!("./assets/three.png");
+            let tp = include_bytes!("./assets/three_player.png");
             let db = include_bytes!("./assets/duck.png");
             save_file(names[0], hb, &path);
             save_file(names[1], bb, &path);
-            save_file(names[2], gb, &path);
+            save_file(names[2], bp, &path);
             save_file(names[3], tb, &path);
-            save_file(names[4], db, &path);
+            save_file(names[4], tp, &path);
+            save_file(names[5], db, &path);
         },
         _ => {}
     }
