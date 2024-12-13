@@ -20,7 +20,7 @@ pub fn set_fw(win: Option<gtk::Window>) {
                     .resizable(false)
                     .deletable(false)
                     .build();
-                win.set_default_size(200, 200);
+                win.set_default_size(250, 250);
                 fightwin = Some(Mutex::new(win));
             }
         }
@@ -57,6 +57,7 @@ pub fn update(pl: Entity, en: Entity) {
     let b3 = gtk::Box::new(gtk::Orientation::Horizontal, 1);
     let b31 = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let b32 = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    b3.set_size_request(110, 110);
     b1.add_css_class("box1");
     b2.add_css_class("box2");
     b3.add_css_class("box3");
@@ -66,10 +67,8 @@ pub fn update(pl: Entity, en: Entity) {
     b11.set_halign(gtk::Align::Start);
     b21.set_halign(gtk::Align::Start);
     b31.set_halign(gtk::Align::Start);
-    b12.set_halign(gtk::Align::End);
     b22.set_halign(gtk::Align::End);
     b32.set_halign(gtk::Align::End);
-    b21.set_valign(gtk::Align::End);
     b22.set_valign(gtk::Align::End);
     b12.add_css_class("box12");
     b22.add_css_class("box22");
@@ -87,34 +86,22 @@ pub fn update(pl: Entity, en: Entity) {
     b32.set_hexpand(true);
     let plimgbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let plimage = gtk::Picture::for_filename(pl.image.clone());
-    let g1 = gtk::Picture::for_filename(format!("{}/ground.png", conf::assets_path().unwrap()));
-    let g2 = gtk::Picture::for_filename(format!("{}/ground.png", conf::assets_path().unwrap()));
-    let over1 = gtk::Overlay::new();
-    over1.set_child(Some(&g1));
-    let over2 = gtk::Overlay::new();
-    over2.set_child(Some(&g2));
-    over1.set_hexpand(true);
-    over1.set_vexpand(true);
-    over2.set_hexpand(true);
-    over2.set_vexpand(true);
     plimage.add_css_class("player_image");
     plimgbox.add_css_class("imgbox");
     plimage.set_size_request(50, 50);
-    plimage.set_hexpand(false);
-    plimage.set_vexpand(false);
+    plimage.set_hexpand(true);
+    plimage.set_vexpand(true);
     plimgbox.append(&plimage);
-    over1.add_overlay(&plimgbox);
-    b21.append(&over1);
+    b21.append(&plimgbox);
     let enimgbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     let enimage = gtk::Picture::for_filename(en.image.clone());
     enimage.add_css_class("enemy_image");
     enimgbox.add_css_class("imgbox");
     enimage.set_size_request(50, 50);
-    enimage.set_hexpand(false);
-    enimage.set_vexpand(false);
+    enimage.set_hexpand(true);
+    enimage.set_vexpand(true);
     enimgbox.append(&enimage);
-    over2.add_overlay(&enimgbox);
-    b12.append(&over2);
+    b12.append(&enimgbox);
     if *stat.clone().unwrap().get("turn").unwrap() == "false".to_string() 
     && *stat.clone().unwrap().get("anim").unwrap() == "attack".to_string() {
         plimage.add_css_class("attacking_p");
