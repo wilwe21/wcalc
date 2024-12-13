@@ -36,12 +36,12 @@ impl fmt::Display for Entity {
 }
 
 pub fn check_player_sprite(sprite: &str) -> String{
-    let path = format!("{}/{}_player.png", conf::assets_path().unwrap(), sprite);
+    let path = format!("{}/entity/{}_player.png", conf::assets_path().unwrap(), sprite);
     let p = Path::new(&path);
     if p.is_file() {
         return path.to_string();
     } else {
-        return format!("{}/{}.png", conf::assets_path().unwrap(), sprite)
+        return format!("{}/entity/{}.png", conf::assets_path().unwrap(), sprite)
     }
 }
 
@@ -77,8 +77,8 @@ impl Entity {
     pub fn new(display: char, image: Option<&str>, character: String, attacks: Vec<String>, health: usize, lvl: usize) -> Self {
         let mut im = String::new();
         match image {
-            Some(s) => im = format!("{}/{}", conf::assets_path().unwrap(), s),
-            _ => im = format!("{}/horse.png", conf::assets_path().unwrap())
+            Some(s) => im = format!("{}/entity/{}", conf::assets_path().unwrap(), s),
+            _ => im = format!("{}/entity/horse.png", conf::assets_path().unwrap())
         };
         Self {
             display,
@@ -100,7 +100,7 @@ impl Entity {
 
     pub fn enemy_list() -> Vec<Self> {
         let three = Self::new('3', Some("three.png"), "Three".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
-        let rock = Self::new('Q', Some("one.png"), "Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
+        let rock = Self::new('Q', Some("rock.png"), "Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
         let horse = Self::new('h', None, "El Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
         let duck = Self::new('D', Some("duck.png"), "Quark".to_string(), vec!("quack".to_string(), "i".to_string(), "quack".to_string(),"".to_string()), 100, 1);
         return vec!(three, rock, horse, duck)

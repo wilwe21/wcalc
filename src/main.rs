@@ -4,6 +4,7 @@ mod calc;
 mod window;
 mod tentity;
 mod tattacks;
+mod teffect;
 mod game;
 mod save;
 mod legend;

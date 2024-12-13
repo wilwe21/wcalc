@@ -46,19 +46,21 @@ pub fn in_assets() {
                 Ok(()) => println!("Created assets path"),
                 _ => println!("Can't create assets path")
             };
-            let names: Vec<&str> = vec!("horse.jpg", "one.png", "oneplayer.png", "three.png", "three_player.png", "duck.png");
-            let hb = include_bytes!("./assets/horse.png");
-            let bb = include_bytes!("./assets/one.png");
-            let bp = include_bytes!("./assets/one_player.png");
-            let tb = include_bytes!("./assets/three.png");
-            let tp = include_bytes!("./assets/three_player.png");
-            let db = include_bytes!("./assets/duck.png");
-            save_file(names[0], hb, &path);
-            save_file(names[1], bb, &path);
-            save_file(names[2], bp, &path);
-            save_file(names[3], tb, &path);
-            save_file(names[4], tp, &path);
-            save_file(names[5], db, &path);
+            let names: Vec<&str> = vec!("horse.jpg", "one.png", "oneplayer.png", "three.png", "three_player.png", "duck.png", "rock.png");
+            let hb = include_bytes!("./assets/entity/horse.png");
+            let bb = include_bytes!("./assets/entity/one.png");
+            let bp = include_bytes!("./assets/entity/one_player.png");
+            let tb = include_bytes!("./assets/entity/three.png");
+            let tp = include_bytes!("./assets/entity/three_player.png");
+            let db = include_bytes!("./assets/entity/duck.png");
+            let rb = include_bytes!("./assets/entity/rock.png");
+            save_file(names[0], hb, &format!("{}/entity", path));
+            save_file(names[1], bb, &format!("{}/entity", path));
+            save_file(names[2], bp, &format!("{}/entity", path));
+            save_file(names[3], tb, &format!("{}/entity", path));
+            save_file(names[4], tp, &format!("{}/entity", path));
+            save_file(names[5], db, &format!("{}/entity", path));
+            save_file(names[6], db, &format!("{}/entity", path));
         },
         _ => {}
     }
