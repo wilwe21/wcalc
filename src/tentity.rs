@@ -35,7 +35,7 @@ impl fmt::Display for Entity {
     }
 }
 
-pub fn check_player_sprite(sprite: &str) -> String{
+pub fn check_player_sprite(sprite: &str) -> String {
     let path = format!("{}/entity/{}_player.png", conf::assets_path().unwrap(), sprite);
     let p = Path::new(&path);
     if p.is_file() {
@@ -46,7 +46,7 @@ pub fn check_player_sprite(sprite: &str) -> String{
 }
 
 impl Entity {
-    pub fn new_player(character: String, image: Option<String>, position: String, room: String) -> Self {
+    pub fn new_player(character: String, image: Option<String>, position: String) -> Self {
         let mut im = String::new();
         match image {
             Some(s) => im = check_player_sprite(&s),
@@ -73,17 +73,48 @@ impl Entity {
             mode: "None".to_string()
         }
     }
+    
+    pub fn player_from_entity(e: Self, position: &str) -> Self {
+        let i = e.image.split("/").filter(|&x| x.ends_with(".png"))
+            .map(|x| x.strip_suffix(".png"))
+            .filter(|&x| x.is_some())
+            .map(|x| x.unwrap()).collect::<Vec<_>>();
+        let mut im = String::new();
+        if i.len() > 0 {
+            im = check_player_sprite(i[0]);
+        } else {
+            im = e.image;
+        }
+        let potion = Item::get_by_id("potionHP").unwrap();
+        let bag = Bag::new(Some((potion, 5)), None, None, None);
+        Self {
+            display: e.display,
+            image: im,
+            character: e.character,
+            attacks: e.attacks,
+            position: position.to_string(),
+            health: e.health,
+            maxhealth: e.maxhealth,
+            bag: Some(bag),
+            status: None,
+            lvl: 0,
+            score: 0,
+            room: "0".to_string(),
+            floor: Some(0),
+            mode: "None".to_string(),
+        }
+    }
 
-    pub fn new(display: char, image: Option<&str>, character: String, attacks: Vec<String>, health: usize, lvl: usize) -> Self {
+    pub fn new(display: char, image: Option<&str>, character: &str, attacks: Vec<String>, health: usize, lvl: usize) -> Self {
         let mut im = String::new();
         match image {
-            Some(s) => im = format!("{}/entity/{}", conf::assets_path().unwrap(), s),
+            Some(s) => im = format!("{}/entity/{}.png", conf::assets_path().unwrap(), s),
             _ => im = format!("{}/entity/horse.png", conf::assets_path().unwrap())
         };
         Self {
             display,
             image: im,
-            character,
+            character: character.to_string(),
             attacks,
             position: "None".to_string(),
             health,
@@ -98,12 +129,17 @@ impl Entity {
         }
     }
 
+    pub fn players_list() -> Vec<Self> {
+        let one = Self::new('1', Some("one"), "One", vec!("bite".to_string(), "divide".to_string(), "".to_string(), "".to_string()), 100, 1);
+        let three = Self::new('3', Some("three"), "Three", vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
+        return vec!(one, three)
+    }
+
     pub fn enemy_list() -> Vec<Self> {
-        let three = Self::new('3', Some("three.png"), "Three".to_string(), vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
-        let rock = Self::new('Q', Some("rock.png"), "Rock".to_string(), vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
-        let horse = Self::new('h', None, "El Horse".to_string(), vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
-        let duck = Self::new('D', Some("duck.png"), "Quark".to_string(), vec!("quack".to_string(), "i".to_string(), "quack".to_string(),"".to_string()), 100, 1);
-        return vec!(three, rock, horse, duck)
+        let rock = Self::new('Q', Some("rock"), "Rock", vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
+        let horse = Self::new('h', Some("horse"), "El Horse", vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
+        let duck = Self::new('D', Some("duck"), "Quark", vec!("quack".to_string(), "i".to_string(), "quack".to_string(),"".to_string()), 100, 1);
+        return vec!(rock, horse, duck)
     }
 
     pub fn get_by_name(name: &str) -> Option<Self> {
