@@ -31,6 +31,10 @@ pub fn get_global_stats() -> HashMap<String, HashMap<String, String>> {
         } else {
             let d = new_conf();
             init_global_stats(d.clone());
+            match player.as_ref() {
+                Some(_) => {},
+                _ => new_pl()
+            };
             d
         }
     }
@@ -79,13 +83,13 @@ pub fn get_player() -> Entity {
     }
 }
 
-pub fn new_conf() -> HashMap<String, HashMap<String, String>> {
-    set_mode(Some("choose".to_string()));
+pub fn new_pl() {
+    set_mode(None);
     charchoo::set_char_win(None);
     charchoo::toggle();
-    let plist = Entity::players_list();
-    let pp = Entity::player_from_entity(plist[1].clone(), &format!("{}x{}", spawn,spawn));
-    init_player(pp.clone());
+}
+
+pub fn new_conf() -> HashMap<String, HashMap<String, String>> {
     let s = new_map();
     map::init_map();
     s
@@ -106,6 +110,7 @@ pub fn start() -> String {
     conf.insert("game".to_string(),"rpg".to_string());
     conf::save_conf(conf);
     init_global_stats(new_conf());
+    new_pl();
     "".to_string()
 }
 

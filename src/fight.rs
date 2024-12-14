@@ -125,7 +125,7 @@ pub fn end(def: bool) {
             _ => {}
         };
     }
-    game::set_mode(None);
+    game::set_mode(Some("move".to_string()));
     game::update_player(pl);
     fui::close();
 }

@@ -4,6 +4,7 @@ use std::path::Path;
 use crate::save;
 use crate::bag::Item;
 use crate::bag::Bag;
+use crate::game;
 
 use crate::conf;
 
@@ -128,14 +129,18 @@ impl Entity {
     pub fn players_list() -> Vec<Self> {
         let one = Self::new('1', Some("one"), "One", vec!("bite".to_string(), "divide".to_string(), "".to_string(), "".to_string()), 100, 1);
         let three = Self::new('3', Some("three"), "Three", vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
-        return vec!(one, three)
+        return vec!(one,three)
     }
 
     pub fn enemy_list() -> Vec<Self> {
+        let pl = game::get_player();
         let rock = Self::new('Q', Some("rock"), "Rock", vec!("standStill".to_string(),"".to_string(), "".to_string(),"".to_string()), 5, 0);
         let horse = Self::new('h', Some("horse"), "El Horse", vec!("kick".to_string(), "standStill".to_string(), "standStill".to_string(),"".to_string()), 100, 1);
         let duck = Self::new('D', Some("duck"), "Quark", vec!("quack".to_string(), "i".to_string(), "quack".to_string(),"".to_string()), 100, 1);
-        return vec!(rock, horse, duck)
+        let mut e = vec!(rock, horse, duck);
+        let p = Self::players_list().into_iter().filter(|x| *x.character != pl.character.clone()).collect::<Vec<Self>>();
+        e.extend(p);
+        return e
     }
 
     pub fn get_by_name(name: &str) -> Option<Self> {

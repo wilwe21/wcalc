@@ -17,7 +17,6 @@ pub fn init_map() {
             .deletable(false)
             .build();
         mwin.set_default_size(200, 200);
-        let mbox = gtk::Box::new(gtk::Orientation::Vertical, 0);
         map = Some(Mutex::new(mwin));
     }
 }

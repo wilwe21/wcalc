@@ -96,12 +96,12 @@ pub fn rpginp(text: String, button: String) -> String {
         Some(m) => { 
             if m == "fight".to_string() {
                 return fight::moves(text.clone(), button.clone())
-            } else if m == "choose".to_string() {
-                return charchoo::moves(text.clone(), button.clone())
+            } else if m == "move".to_string() {
+                return map_move(text.clone(), button.clone())
             }
             return "".to_string()
         },
-        _ => return map_move(text.clone(), button.clone())
+        _ => return charchoo::moves(text.clone(), button.clone())
     };
 }
 

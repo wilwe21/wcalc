@@ -37,7 +37,7 @@ pub fn get_fw() -> gtk::Window {
                     .resizable(false)
                     .build();
                 win.set_default_size(400, 400);
-                set_fw(None);
+                set_fw(Some(win.clone()));
                 return win
             }
         }
