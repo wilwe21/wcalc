@@ -22,7 +22,6 @@ pub struct Entity {
     pub score: usize,
     pub room: String,
     pub floor: Option<usize>,
-    pub mode: String
 }
 
 impl fmt::Display for Entity {
@@ -70,7 +69,6 @@ impl Entity {
             score: 0,
             room: "0".to_string(),
             floor: Some(0),
-            mode: "None".to_string()
         }
     }
     
@@ -101,7 +99,6 @@ impl Entity {
             score: 0,
             room: "0".to_string(),
             floor: Some(0),
-            mode: "None".to_string(),
         }
     }
 
@@ -125,7 +122,6 @@ impl Entity {
             score: 0,
             room: "None".to_string(),
             floor: None,
-            mode: "None".to_string()
         }
     }
 
@@ -235,7 +231,6 @@ impl Entity {
         if fldata != "None" {
             floor = Some(fldata.parse::<usize>().unwrap());
         }
-        let mode = s.get("mode").unwrap().to_string();
         Self {
             display,
             image: im,
@@ -250,7 +245,6 @@ impl Entity {
             score,
             room,
             floor,
-            mode
         }
     }
 
@@ -307,7 +301,6 @@ impl Entity {
             Some(f) => st += &format!("floor = {}\n", f),
             _ => st += &format!("floor = None\n"),
         };
-        st += &format!("mode = {}\n", self.mode);
         return st
     }
     pub fn get_dmg(&mut self, amount: usize) {
@@ -329,9 +322,6 @@ impl Entity {
     }
     pub fn move_room(&mut self, room: &str) {
         self.room = room.to_string();
-    }
-    pub fn change_mode(&mut self, mode: String) {
-        self.mode = mode;
     }
     pub fn apply_status(&mut self, status: String) {
         match &self.status {

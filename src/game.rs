@@ -7,16 +7,16 @@ use crate::conf;
 use crate::save;
 use crate::generate;
 use crate::map;
+use crate::charchoo;
 
 pub static roomwidth: usize = 7;
 pub static mapwidth: usize = 6;
 pub static spawn: usize = roomwidth/2;
 
 static mut gm: Option<Mutex<u8>> = None;
-
 static mut stats: Option<Mutex<HashMap<String, HashMap<String, String>>>> = None;
-
 static mut player: Option<Mutex<Entity>> = None;
+static mut mode: Option<Mutex<String>> = None;
 
 pub fn init_global_stats(conf: HashMap<String, HashMap<String, String>>) {
     unsafe {
@@ -32,6 +32,24 @@ pub fn get_global_stats() -> HashMap<String, HashMap<String, String>> {
             let d = new_conf();
             init_global_stats(d.clone());
             d
+        }
+    }
+}
+
+pub fn set_mode(smode: Option<String>) {
+    unsafe {
+        match smode {
+            Some(s) => mode = Some(Mutex::new(s)),
+            _ => mode = None,
+        }
+    }
+}
+
+pub fn get_mode() -> Option<String> {
+    unsafe {
+        match mode.as_ref() {
+            Some(s) => return Some(s.lock().unwrap().clone()),
+            _ => return None
         }
     }
 }
@@ -62,8 +80,11 @@ pub fn get_player() -> Entity {
 }
 
 pub fn new_conf() -> HashMap<String, HashMap<String, String>> {
+    set_mode(Some("choose".to_string()));
+    charchoo::set_char_win(None);
+    charchoo::toggle();
     let plist = Entity::players_list();
-    let pp = Entity::player_from_entity(plist[0].clone(), &format!("{}x{}", spawn,spawn));
+    let pp = Entity::player_from_entity(plist[1].clone(), &format!("{}x{}", spawn,spawn));
     init_player(pp.clone());
     let s = new_map();
     map::init_map();

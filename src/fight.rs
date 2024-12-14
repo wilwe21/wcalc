@@ -125,7 +125,7 @@ pub fn end(def: bool) {
             _ => {}
         };
     }
-    pl.change_mode("None".to_string());
+    game::set_mode(None);
     game::update_player(pl);
     fui::close();
 }

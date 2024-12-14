@@ -15,6 +15,7 @@ mod fight;
 mod fui;
 mod tbutton;
 mod bag;
+mod charchoo;
 
 fn main() {
     window::load();

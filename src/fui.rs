@@ -20,7 +20,7 @@ pub fn set_fw(win: Option<gtk::Window>) {
                     .resizable(false)
                     .deletable(false)
                     .build();
-                win.set_default_size(250, 250);
+                win.set_default_size(400, 400);
                 fightwin = Some(Mutex::new(win));
             }
         }

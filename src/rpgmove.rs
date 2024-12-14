@@ -3,6 +3,7 @@ use std::collections::HashMap;
 use crate::game;
 use crate::legend;
 use crate::map;
+use crate::charchoo;
 
 use crate::tentity::Entity;
 use crate::tattacks::Attack;
@@ -81,7 +82,7 @@ pub fn check_entity(nex: Option<char>, pos: (u8,u8)) -> Option<String> {
         match p {
             Some(en) => {
                 let mut pl = game::get_player().clone();
-                pl.change_mode("fight".to_string());
+                game::set_mode(Some("fight".to_string()));
                 game::update_player(pl).clone();
                 return Some(fight::start(en, pos))
             },
@@ -91,206 +92,215 @@ pub fn check_entity(nex: Option<char>, pos: (u8,u8)) -> Option<String> {
 }
 
 pub fn rpginp(text: String, button: String) -> String {
+    match game::get_mode() {
+        Some(m) => { 
+            if m == "fight".to_string() {
+                return fight::moves(text.clone(), button.clone())
+            } else if m == "choose".to_string() {
+                return charchoo::moves(text.clone(), button.clone())
+            }
+            return "".to_string()
+        },
+        _ => return map_move(text.clone(), button.clone())
+    };
+}
+
+pub fn map_move(text: String, button: String) -> String{
     let mut s = game::get_global_stats();
     let mut player = game::get_player();
-    if player.mode == "fight".to_string() {
-        return fight::moves(text.clone(), button.clone())
-    } else {
-        let mut roomid = player.room.clone().clone();
-        let orid = roomid.clone();
-        let room = s.get(&format!("room{}",roomid).to_string()).unwrap().clone();
-        let mut pos: Vec<u8> = player.position.split("x").map(|r| r.parse::<u8>().unwrap()).collect();
-        let mx: u8 = (room.get(&"0".to_string()).unwrap().len() -1).try_into().unwrap();
-        let my: u8 = (room.len()-1).try_into().unwrap();
-        if button == "8" || (button == "=" && text.ends_with("8")) {
-            if pos[1] > 0 {
-                pos[1] -= 1;
-                let nex = movevalid(pos.clone(),room.clone());
-                if nex == Some(legend::wall) {
-                    return "can't move".to_string()
-                } else if nex == Some(legend::door) {
-                    let map = s.get("map").unwrap();
-                    let cur = player.room.clone();
-                    if !(cur.starts_with("a")) {
-                        for i in 1..(map.len()+1) {
-                            let row = map.get(&i.to_string()).unwrap();
-                            if let Some(ind) = row.find(&cur) {
-                                pos[1] = (map.len()-1) as u8;
-                                let le = i-1;
-                                let ri = ind;
-                                roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
-                                roomid = validaroom(map.clone(), le.clone(), ri.clone());
-                            }
-                        }
-                    } else {
-                        let num = cur.replace("a", "").parse::<usize>().unwrap(); 
-                        let v: Vec<usize> = finda(map.clone(), num.clone());
-                        pos[1] = (map.len()-1) as u8;
-                        let le = v[0]-1;
-                        let ri = v[1];
-                        roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
-                        roomid = validaroom(map.clone(), le.clone(), ri.clone());
-                    }
-                } else {
-                    match check_entity(nex, (pos[0],pos[1])) {
-                        Some(s) => return s,
-                        _ => {}
-                    };
-                }
-                player.move_to(&format!("{}x{}",pos[0],pos[1]));
-                player.move_room(&roomid);
-                game::update_player(player);
-                map::update();
-                if roomid == orid {
-                    return "move up".to_string()
-                } else {
-                    return format!("entering room {}", roomid)
-                }
-            } else {
+    let mut roomid = player.room.clone().clone();
+    let orid = roomid.clone();
+    let room = s.get(&format!("room{}",roomid).to_string()).unwrap().clone();
+    let mut pos: Vec<u8> = player.position.split("x").map(|r| r.parse::<u8>().unwrap()).collect();
+    let mx: u8 = (room.get(&"0".to_string()).unwrap().len() -1).try_into().unwrap();
+    let my: u8 = (room.len()-1).try_into().unwrap();
+    if button == "8" || (button == "=" && text.ends_with("8")) {
+        if pos[1] > 0 {
+            pos[1] -= 1;
+            let nex = movevalid(pos.clone(),room.clone());
+            if nex == Some(legend::wall) {
                 return "can't move".to_string()
-            }
-        } else if button == "2" || (button == "=" && text.ends_with("2")) {
-            if pos[1] < mx {
-                pos[1] += 1;
-                let nex = movevalid(pos.clone(),room.clone());
-                if nex == Some(legend::wall) {
-                    return "can't move".to_string()
-                } else if nex == Some(legend::door) {
-                    let map = s.get("map").unwrap();
-                    let cur = player.room.clone();
-                    if !(cur.starts_with("a")) {
-                        for i in 1..(map.len()+1) {
-                            if let Some(ind) = map.get(&i.to_string()).unwrap().find(&cur) {
-                                pos[1] = 1;
-                                let le = i+1;
-                                let ri = ind;
-                                roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
-                                roomid = validaroom(map.clone(), le.clone(), ri.clone());
-                            }
+            } else if nex == Some(legend::door) {
+                let map = s.get("map").unwrap();
+                let cur = player.room.clone();
+                if !(cur.starts_with("a")) {
+                    for i in 1..(map.len()+1) {
+                        let row = map.get(&i.to_string()).unwrap();
+                        if let Some(ind) = row.find(&cur) {
+                            pos[1] = (map.len()-1) as u8;
+                            let le = i-1;
+                            let ri = ind;
+                            roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
+                            roomid = validaroom(map.clone(), le.clone(), ri.clone());
                         }
-                    } else {
-                        let num = cur.replace("a", "").parse::<usize>().unwrap(); 
-                        let v: Vec<usize> = finda(map.clone(), num.clone());
-                        pos[1] = 1;
-                        let le = v[0]+1;
-                        let ri = v[1];
-                        roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
-                        roomid = validaroom(map.clone(), le.clone(), ri.clone());
                     }
                 } else {
-                    match check_entity(nex, (pos[0],pos[1])) {
-                        Some(s) => return s,
-                        _ => {}
-                    };
-                }
-                player.move_to(&format!("{}x{}",pos[0],pos[1]));
-                player.move_room(&roomid);
-                game::update_player(player);
-                map::update();
-                if roomid == orid {
-                    return "move down".to_string()
-                } else {
-                    return format!("entering room {}", roomid)
+                    let num = cur.replace("a", "").parse::<usize>().unwrap(); 
+                    let v: Vec<usize> = finda(map.clone(), num.clone());
+                    pos[1] = (map.len()-1) as u8;
+                    let le = v[0]-1;
+                    let ri = v[1];
+                    roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
+                    roomid = validaroom(map.clone(), le.clone(), ri.clone());
                 }
             } else {
-                return "can't move".to_string();
+                match check_entity(nex, (pos[0],pos[1])) {
+                    Some(s) => return s,
+                    _ => {}
+                };
             }
-        } else if button == "4" || (button == "=" && text.ends_with("4")) {
-            if pos[0] > 0 {
-                pos[0] -= 1;
-                let nex = movevalid(pos.clone(),room.clone());
-                if nex == Some(legend::wall) {
-                    return "can't move".to_string()
-                } else if nex == Some(legend::door) {
-                    let map = s.get("map").unwrap();
-                    let cur = player.room.clone();
-                    if !(cur.starts_with("a")) {
-                        for i in 1..(map.len()+1) {
-                            if let Some(ind) = map.get(&i.to_string()).unwrap().find(&cur) {
-                                pos[0] = (map.get(&i.to_string()).unwrap().len()-1) as u8;
-                                let le = i;
-                                let ri = ind-1;
-                                roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
-                                roomid = validaroom(map.clone(), le.clone(), ri.clone());
-                            }
-                        }
-                    } else {
-                        let num = cur.replace("a", "").parse::<usize>().unwrap(); 
-                        let v: Vec<usize> = finda(map.clone(), num.clone());
-                        pos[0] = (map.get(&"1".to_string()).unwrap().len()-1) as u8;
-                        let le = v[0];
-                        let ri = v[1]-1;
-                        roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
-                        roomid = validaroom(map.clone(), le.clone(), ri.clone());
-                    }
-                } else {
-                    match check_entity(nex, (pos[0],pos[1])) {
-                        Some(s) => return s,
-                        _ => {}
-                    };
-                }
-                player.move_to(&format!("{}x{}",pos[0],pos[1]));
-                player.move_room(&roomid);
-                game::update_player(player);
-                map::update();
-                if roomid == orid {
-                    return "move left".to_string()
-                } else {
-                    return format!("entering room {}", roomid)
-                }
+            player.move_to(&format!("{}x{}",pos[0],pos[1]));
+            player.move_room(&roomid);
+            game::update_player(player);
+            map::update();
+            if roomid == orid {
+                return "move up".to_string()
             } else {
-                return "can't move".to_string()
+                return format!("entering room {}", roomid)
             }
-        } else if button == "6" || (button == "=" && text.ends_with("6")) {
-            if pos[0] < my {
-                pos[0] += 1;
-                let nex = movevalid(pos.clone(),room.clone());
-                if nex == Some(legend::wall) {
-                    return "can't move".to_string()
-                } else if nex == Some(legend::door) {
-                    let map = s.get("map").unwrap();
-                    let cur = player.room.clone();
-                    if !(cur.starts_with("a")) {
-                        for i in 1..(map.len()+1) {
-                            if let Some(ind) = map.get(&i.to_string()).unwrap().find(&cur) {
-                                pos[0] = 1;
-                                let le = i;
-                                let ri = ind+1;
-                                roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
-                                roomid = validaroom(map.clone(), le.clone(), ri.clone());
-                            }
-                        }
-                    } else {
-                        let num = cur.replace("a", "").parse::<usize>().unwrap(); 
-                        let v: Vec<usize> = finda(map.clone(), num.clone());
-                        pos[0] = 1;
-                        let le = v[0];
-                        let ri = v[1]+1;
-                        roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
-                        roomid = validaroom(map.clone(), le.clone(), ri.clone());
-                    }
-                } else {
-                    match check_entity(nex, (pos[0],pos[1])) {
-                        Some(s) => return s,
-                        _ => {}
-                    };
-                }
-                player.move_to(&format!("{}x{}",pos[0],pos[1]));
-                player.move_room(&roomid);
-                game::update_player(player);
-                map::update();
-                if roomid == orid {
-                    return "move right".to_string()
-                } else {
-                    return format!("entering room {}", roomid)
-                }
-            } else {
-                return "can't move".to_string()
-            }
-        } else if button == "√" || (button == "=" && text.ends_with("map")) {
-            return map::toggle_map()
+        } else {
+            return "can't move".to_string()
         }
-        return "".to_string()
+    } else if button == "2" || (button == "=" && text.ends_with("2")) {
+        if pos[1] < mx {
+            pos[1] += 1;
+            let nex = movevalid(pos.clone(),room.clone());
+            if nex == Some(legend::wall) {
+                return "can't move".to_string()
+            } else if nex == Some(legend::door) {
+                let map = s.get("map").unwrap();
+                let cur = player.room.clone();
+                if !(cur.starts_with("a")) {
+                    for i in 1..(map.len()+1) {
+                        if let Some(ind) = map.get(&i.to_string()).unwrap().find(&cur) {
+                            pos[1] = 1;
+                            let le = i+1;
+                            let ri = ind;
+                            roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
+                            roomid = validaroom(map.clone(), le.clone(), ri.clone());
+                        }
+                    }
+                } else {
+                    let num = cur.replace("a", "").parse::<usize>().unwrap(); 
+                    let v: Vec<usize> = finda(map.clone(), num.clone());
+                    pos[1] = 1;
+                    let le = v[0]+1;
+                    let ri = v[1];
+                    roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
+                    roomid = validaroom(map.clone(), le.clone(), ri.clone());
+                }
+            } else {
+                match check_entity(nex, (pos[0],pos[1])) {
+                    Some(s) => return s,
+                    _ => {}
+                };
+            }
+            player.move_to(&format!("{}x{}",pos[0],pos[1]));
+            player.move_room(&roomid);
+            game::update_player(player);
+            map::update();
+            if roomid == orid {
+                return "move down".to_string()
+            } else {
+                return format!("entering room {}", roomid)
+            }
+        } else {
+            return "can't move".to_string();
+        }
+    } else if button == "4" || (button == "=" && text.ends_with("4")) {
+        if pos[0] > 0 {
+            pos[0] -= 1;
+            let nex = movevalid(pos.clone(),room.clone());
+            if nex == Some(legend::wall) {
+                return "can't move".to_string()
+            } else if nex == Some(legend::door) {
+                let map = s.get("map").unwrap();
+                let cur = player.room.clone();
+                if !(cur.starts_with("a")) {
+                    for i in 1..(map.len()+1) {
+                        if let Some(ind) = map.get(&i.to_string()).unwrap().find(&cur) {
+                            pos[0] = (map.get(&i.to_string()).unwrap().len()-1) as u8;
+                            let le = i;
+                            let ri = ind-1;
+                            roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
+                            roomid = validaroom(map.clone(), le.clone(), ri.clone());
+                        }
+                    }
+                } else {
+                    let num = cur.replace("a", "").parse::<usize>().unwrap(); 
+                    let v: Vec<usize> = finda(map.clone(), num.clone());
+                    pos[0] = (map.get(&"1".to_string()).unwrap().len()-1) as u8;
+                    let le = v[0];
+                    let ri = v[1]-1;
+                    roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
+                    roomid = validaroom(map.clone(), le.clone(), ri.clone());
+                }
+            } else {
+                match check_entity(nex, (pos[0],pos[1])) {
+                    Some(s) => return s,
+                    _ => {}
+                };
+            }
+            player.move_to(&format!("{}x{}",pos[0],pos[1]));
+            player.move_room(&roomid);
+            game::update_player(player);
+            map::update();
+            if roomid == orid {
+                return "move left".to_string()
+            } else {
+                return format!("entering room {}", roomid)
+            }
+        } else {
+            return "can't move".to_string()
+        }
+    } else if button == "6" || (button == "=" && text.ends_with("6")) {
+        if pos[0] < my {
+            pos[0] += 1;
+            let nex = movevalid(pos.clone(),room.clone());
+            if nex == Some(legend::wall) {
+                return "can't move".to_string()
+            } else if nex == Some(legend::door) {
+                let map = s.get("map").unwrap();
+                let cur = player.room.clone();
+                if !(cur.starts_with("a")) {
+                    for i in 1..(map.len()+1) {
+                        if let Some(ind) = map.get(&i.to_string()).unwrap().find(&cur) {
+                            pos[0] = 1;
+                            let le = i;
+                            let ri = ind+1;
+                            roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
+                            roomid = validaroom(map.clone(), le.clone(), ri.clone());
+                        }
+                    }
+                } else {
+                    let num = cur.replace("a", "").parse::<usize>().unwrap(); 
+                    let v: Vec<usize> = finda(map.clone(), num.clone());
+                    pos[0] = 1;
+                    let le = v[0];
+                    let ri = v[1]+1;
+                    roomid = map.get(&le.clone().to_string()).unwrap().chars().enumerate().map(|(j, r)| if j == ri.clone() { r } else { '#' }).filter(|&r| r != '#').collect::<String>();
+                    roomid = validaroom(map.clone(), le.clone(), ri.clone());
+                }
+            } else {
+                match check_entity(nex, (pos[0],pos[1])) {
+                    Some(s) => return s,
+                    _ => {}
+                };
+            }
+            player.move_to(&format!("{}x{}",pos[0],pos[1]));
+            player.move_room(&roomid);
+            game::update_player(player);
+            map::update();
+            if roomid == orid {
+                return "move right".to_string()
+            } else {
+                return format!("entering room {}", roomid)
+            }
+        } else {
+            return "can't move".to_string()
+        }
+    } else if button == "√" || (button == "=" && text.ends_with("map")) {
+        return map::toggle_map()
     }
     return "".to_string()
 }
