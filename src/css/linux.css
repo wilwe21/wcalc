@@ -84,7 +84,9 @@ box {
 .Map > label {
 	color: var(--map_fg);
 }
-.fightbox > box > box > box > label, .fightbox > box > box > label, .fightbox > box > box > box > box > label, .fightbox > box > box > box > box > box > label {
+.fightbox > box > box > box > label, .fightbox > box > box > label, .fightbox > box > box > box > box > label, .fightbox > box > box > box > box > box > label, .box3 > label,
+.upperbox > box > label, .upperbox > box > box > label,
+.option0 > box > label, .option1 > box > label, .option2 > box > label, .option3 > box > label {
 	color: var(--map_fg);
 }
 .enemybox {

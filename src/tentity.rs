@@ -357,7 +357,7 @@ impl Entity {
                     let pos = att.iter().position(|r| *r == "".to_string()).unwrap();
                     self.attacks[pos] = attack.to_string();
                 } else {
-                    game::set_mode(Some("change attack".to_string()));
+                    game::set_mode(Some(format!("change attack {}", attack)));
                 }
             }
         } else {

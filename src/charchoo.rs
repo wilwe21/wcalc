@@ -5,7 +5,7 @@ use crate::tentity::Entity;
 use crate::game;
 
 static mut charwin: Option<Mutex<gtk::Window>> = None;
-static mut vis: Option<Mutex<bool>> = None;
+static mut vis: Mutex<bool> = Mutex::new(false);
 static mut selected: Mutex<usize> = Mutex::new(0);
 
 pub fn set_char_win(win: Option<gtk::Window>) {
@@ -153,30 +153,25 @@ pub fn moves(text: String, button: String) -> String {
     return plist[sel].character.clone().to_string()
 }
 
-pub fn set_vis(val: Option<bool>) {
+pub fn set_vis(val: bool) {
     unsafe {
-        vis = Some(Mutex::new(val.unwrap_or(false)))
+        vis = Mutex::new(val);
     }
 }
 
 pub fn get_vis() -> bool {
     unsafe {
-        if let Some(ref mut v) = vis {
-            v.lock().unwrap().clone()
-        } else {
-            set_vis(Some(false));
-            false
-        }
+        vis.lock().unwrap().clone()
     }
 }
 
 pub fn toggle() {
     if get_vis() {
         close();
-        set_vis(Some(false));
+        set_vis(false);
     } else {
         open();
-        set_vis(Some(true));
+        set_vis(true);
     }
 }
 

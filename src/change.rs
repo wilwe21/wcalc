@@ -2,10 +2,13 @@ use gtk::prelude::*;
 use std::sync::Mutex;
 
 use crate::tbutton::Button;
+use crate::tattacks::Attack;
+use crate::bag::Item;
 
 static mut chwin: Option<Mutex<gtk::Window>> = None;
-static mut vis: Option<Mutex<bool>> = None;
+static mut vis: Mutex<bool> = Mutex::new(false);
 static mut selected: Mutex<usize> = Mutex::new(0);
+static mut who: Option<Mutex<String>> = None;
 
 pub fn set_ch_win(win: Option<gtk::Window>) {
     unsafe {
@@ -51,6 +54,24 @@ pub fn set_selected(sel: Option<usize>) {
     }
 }
 
+pub fn set_who(ho: Option<String>) {
+    unsafe {
+        match ho {
+            Some(h) => who = Some(Mutex::new(h)),
+            _ => who = None
+        }
+    }
+}
+
+pub fn get_who() -> String {
+    unsafe {
+        match who.as_ref() {
+            Some(w) => w.lock().unwrap().clone(),
+            _ => "None".to_string()
+        }
+    }
+}
+
 pub fn update(typ: &str) {
     let win = get_ch_win();
     let b = gtk::Box::new(gtk::Orientation::Vertical, 1);
@@ -61,9 +82,55 @@ pub fn update(typ: &str) {
     bd.set_hexpand(true);
     bd.set_vexpand(true);
     let sel = get_selected();
-    let label = gtk::Label::new(Some(&"test"));
-    let ymenu = Button::r#box(typ, &sel.to_string());
-    bu.append(&label);
+    let mut name = String::new();
+    let mut desc = String::new();
+    if typ == "Attack" {
+        let at = Attack::get_by_id(&get_who()).unwrap();
+        name = at.name;
+        desc = at.desc;
+    } else if typ == "Bag" {
+        let it = Item::get_by_id(&get_who()).unwrap();
+        name = it.name;
+        desc = it.desc;
+    };
+    let wn = gtk::Box::new(gtk::Orientation::Vertical, 1);
+    let wnl = gtk::Label::new(Some(&name));
+    wn.add_css_class("option");
+    wn.set_valign(gtk::Align::Center);
+    wn.append(&wnl);
+    wn.set_hexpand(true);
+    wn.set_vexpand(true);
+    let wd = gtk::Label::builder()
+        .label(&*desc)
+        .hexpand(true)
+        .vexpand(true)
+        .valign(gtk::Align::Start)
+        .justify(gtk::Justification::Center)
+        .width_chars(20)
+        .wrap(true)
+        .wrap_mode(gtk::pango::WrapMode::WordChar)
+        .build();
+    let ymenu = Button::r#box(typ.clone(), &sel.to_string());
+    ymenu.add_css_class("box32");
+    let pos = Button::get_position(&typ, sel);
+    let d = &pos.desc;
+    let dilab = gtk::Label::builder()
+        .label(&*d)
+        .hexpand(true)
+        .vexpand(true)
+        .valign(gtk::Align::Start)
+        .justify(gtk::Justification::Center)
+        .width_chars(20)
+        .wrap(true)
+        .wrap_mode(gtk::pango::WrapMode::WordChar)
+        .build();
+    let ubox = gtk::Box::new(gtk::Orientation::Horizontal, 1);
+    ubox.append(&wd);
+    ubox.append(&wn);
+    bd.add_css_class("box3");
+    bu.add_css_class("upperbox");
+    bd.append(&dilab);
+    bu.append(&ubox);
     bd.append(&ymenu);
     b.append(&bu);
     b.append(&bd);
@@ -111,30 +178,25 @@ pub fn get_selected() -> usize {
     }
 }
 
-pub fn set_vis(val: Option<bool>) {
+pub fn set_vis(val: bool) {
     unsafe {
-        vis = Some(Mutex::new(val.unwrap_or(false)))
+        vis = Mutex::new(val)
     }
 }
 
 pub fn get_vis() -> bool {
     unsafe {
-        if let Some(ref mut v) = vis {
-            v.lock().unwrap().clone()
-        } else {
-            set_vis(Some(false));
-            false
-        }
+        vis.lock().unwrap().clone()
     }
 }
 
 pub fn toggle() {
     if get_vis() {
         close();
-        set_vis(Some(false));
+        set_vis(false);
     } else {
         open();
-        set_vis(Some(true));
+        set_vis(true);
     }
 }
 

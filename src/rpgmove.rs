@@ -100,8 +100,9 @@ pub fn rpginp(text: String, button: String) -> String {
             } else if m == "move".to_string() {
                 return map_move(text.clone(), button.clone())
             } else if m.starts_with("change") {
-                if m.ends_with("attack") {
-                    return change::moves(text.clone(), button.clone(), "Bag")
+                if m.strip_prefix("change ").unwrap().starts_with("attack") {
+                    change::set_who(Some(m.strip_prefix("change attack ").unwrap().to_string()));
+                    return change::moves(text.clone(), button.clone(), "Attack")
                 } else {
                     return change::moves(text.clone(), button.clone(), "Bag")
                 }
@@ -115,16 +116,6 @@ pub fn rpginp(text: String, button: String) -> String {
 pub fn map_move(text: String, button: String) -> String{
     let mut s = game::get_global_stats();
     let mut player = game::get_player();
-    player.add_attack("sub");
-    game::update_player(player.clone());
-    player.add_attack("venom");
-    game::update_player(player.clone());
-    player.add_attack("kick");
-    game::update_player(player.clone());
-    player.add_attack("quack");
-    game::update_player(player.clone());
-    player.add_attack("standStill");
-    game::update_player(player.clone());
     let mut roomid = player.room.clone().clone();
     let orid = roomid.clone();
     let room = s.get(&format!("room{}",roomid).to_string()).unwrap().clone();
