@@ -356,9 +356,8 @@ impl Entity {
                 if att.contains(&"".to_string()) {
                     let pos = att.iter().position(|r| *r == "".to_string()).unwrap();
                     self.attacks[pos] = attack.to_string();
-                    println!("Posiadasz pusty slot {}", pos);
                 } else {
-                    println!("Nie posiadasz slotu");
+                    game::set_mode(Some("change attack".to_string()));
                 }
             }
         } else {

@@ -16,6 +16,7 @@ mod fui;
 mod tbutton;
 mod bag;
 mod charchoo;
+mod change;
 
 fn main() {
     window::load();

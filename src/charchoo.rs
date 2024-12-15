@@ -113,7 +113,7 @@ pub fn char_box(ch: Entity,  sel: bool) -> gtk::Box {
     if sel {
         image.add_css_class("selected");
     }
-    image.set_size_request(-1, 60);
+    image.set_size_request(-1, 80);
     image.add_css_class("option");
     bbb.append(&label);
     bbb.append(&image);

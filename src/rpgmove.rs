@@ -4,6 +4,7 @@ use crate::game;
 use crate::legend;
 use crate::map;
 use crate::charchoo;
+use crate::change;
 
 use crate::tentity::Entity;
 use crate::tattacks::Attack;
@@ -98,6 +99,12 @@ pub fn rpginp(text: String, button: String) -> String {
                 return fight::moves(text.clone(), button.clone())
             } else if m == "move".to_string() {
                 return map_move(text.clone(), button.clone())
+            } else if m.starts_with("change") {
+                if m.ends_with("attack") {
+                    return change::moves(text.clone(), button.clone(), "Bag")
+                } else {
+                    return change::moves(text.clone(), button.clone(), "Bag")
+                }
             }
             return "".to_string()
         },
@@ -108,6 +115,16 @@ pub fn rpginp(text: String, button: String) -> String {
 pub fn map_move(text: String, button: String) -> String{
     let mut s = game::get_global_stats();
     let mut player = game::get_player();
+    player.add_attack("sub");
+    game::update_player(player.clone());
+    player.add_attack("venom");
+    game::update_player(player.clone());
+    player.add_attack("kick");
+    game::update_player(player.clone());
+    player.add_attack("quack");
+    game::update_player(player.clone());
+    player.add_attack("standStill");
+    game::update_player(player.clone());
     let mut roomid = player.room.clone().clone();
     let orid = roomid.clone();
     let room = s.get(&format!("room{}",roomid).to_string()).unwrap().clone();
