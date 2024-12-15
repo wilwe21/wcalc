@@ -46,7 +46,7 @@ pub fn in_assets() {
                 Ok(()) => println!("Created assets path"),
                 _ => println!("Can't create assets path")
             };
-            let names: Vec<&str> = vec!("horse.jpg", "one.png", "oneplayer.png", "three.png", "three_player.png", "duck.png", "rock.png");
+            let names: Vec<&str> = vec!("horse.jpg", "one.png", "one_player.png", "three.png", "three_player.png", "duck.png", "rock.png", "two.png", "two_player.png");
             let hb = include_bytes!("./assets/entity/horse.png");
             let bb = include_bytes!("./assets/entity/one.png");
             let bp = include_bytes!("./assets/entity/one_player.png");
@@ -54,6 +54,8 @@ pub fn in_assets() {
             let tp = include_bytes!("./assets/entity/three_player.png");
             let db = include_bytes!("./assets/entity/duck.png");
             let rb = include_bytes!("./assets/entity/rock.png");
+            let wb = include_bytes!("./assets/entity/two.png");
+            let wp = include_bytes!("./assets/entity/two_player.png");
             save_file(names[0], hb, &format!("{}/entity", path));
             save_file(names[1], bb, &format!("{}/entity", path));
             save_file(names[2], bp, &format!("{}/entity", path));
@@ -61,6 +63,8 @@ pub fn in_assets() {
             save_file(names[4], tp, &format!("{}/entity", path));
             save_file(names[5], db, &format!("{}/entity", path));
             save_file(names[6], db, &format!("{}/entity", path));
+            save_file(names[7], wb, &format!("{}/entity", path));
+            save_file(names[8], wp, &format!("{}/entity", path));
         },
         _ => {}
     }

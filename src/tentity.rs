@@ -129,8 +129,9 @@ impl Entity {
 
     pub fn players_list() -> Vec<Self> {
         let one = Self::new('1', Some("one"), "One", vec!("bite".to_string(), "divide".to_string(), "".to_string(), "".to_string()), 100, 1);
-        let three = Self::new('3', Some("three"), "Three", vec!("bite".to_string(),"venom".to_string(), "".to_string(),"".to_string()), 100, 1);
-        return vec!(one,three)
+        let two = Self::new('2', Some("two"), "Two Snake", vec!("bite".to_string(), "venom".to_string(), "".to_string(), "".to_string()), 75, 1);
+        let three = Self::new('3', Some("three"), "Three", vec!("bite".to_string(),"kick".to_string(), "".to_string(),"".to_string()), 75, 1);
+        return vec!(one, two, three)
     }
 
     pub fn enemy_list() -> Vec<Self> {
