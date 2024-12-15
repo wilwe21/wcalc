@@ -5,6 +5,7 @@ use crate::save;
 use crate::bag::Item;
 use crate::bag::Bag;
 use crate::game;
+use crate::tattacks::Attack;
 
 use crate::conf;
 
@@ -343,5 +344,24 @@ impl Entity {
     }
     pub fn change_floor(&mut self, floor: usize) {
         self.floor = Some(floor);
+    }
+    pub fn add_attack(&mut self, attack: &str) {
+        let att = self.attacks.clone();
+        let atlist = Attack::list().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
+        if atlist.contains(&attack.to_string()) {
+            if att.contains(&attack.to_string()) {
+                println!("posiadasz attack {}", attack);
+            } else {
+                if att.contains(&"".to_string()) {
+                    let pos = att.iter().position(|r| *r == "".to_string()).unwrap();
+                    self.attacks[pos] = attack.to_string();
+                    println!("Posiadasz pusty slot {}", pos);
+                } else {
+                    println!("Nie posiadasz slotu");
+                }
+            }
+        } else {
+            println!("{} is not an attack", attack);
+        }
     }
 }
