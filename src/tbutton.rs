@@ -3,7 +3,7 @@ use gtk::prelude::*;
 use crate::game;
 use crate::tattacks::Attack;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Button {
     pub label: String,
     pub action: String,
@@ -34,10 +34,10 @@ impl Button {
         } else if menu == "Attack".to_string() {
             let pl = game::get_player().clone();
             let ats = pl.attacks;
-            let at0 = Attack::get_by_id(&ats[0]).unwrap();
-            let at1 = Attack::get_by_id(&ats[2]).unwrap();
-            let at2 = Attack::get_by_id(&ats[1]).unwrap();
-            let at3 = Attack::get_by_id(&ats[3]).unwrap();
+            let at0 = ats[0].clone();
+            let at1 = ats[2].clone();
+            let at2 = ats[1].clone();
+            let at3 = ats[3].clone();
             let at0b = Self::new(&at0.name, &format!("use {}", at0.id), 0, &at0.desc);
             let at1b = Self::new(&at1.name, &format!("use {}", at1.id), 1, &at1.desc);
             let at2b = Self::new(&at2.name, &format!("use {}", at2.id), 2, &at2.desc);

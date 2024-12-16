@@ -284,9 +284,8 @@ pub fn moves(text: String, button: String) -> String {
                     return "Back".to_string()
                 }
             } else {
-                let attacks = en.attacks.clone().into_iter().filter(|r| r != "").collect::<Vec<_>>();
-                let atname = attacks.choose(&mut rand::thread_rng()).unwrap();
-                let at = Attack::get_by_id(&atname).unwrap();
+                let attacks = en.attacks.clone().into_iter().filter(|r| r.name != "".to_string()).collect::<Vec<_>>();
+                let at = attacks.choose(&mut rand::thread_rng()).unwrap();
                 let (s, t, anim) = at.r#use(en.clone(), pl.clone());
                 game::update_player(t.clone());
                 fui::update(t.clone(),en.clone());

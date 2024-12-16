@@ -9,12 +9,12 @@ use crate::tattacks::Attack;
 
 use crate::conf;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Entity {
     pub display: char,
     pub image: String,
     pub character: String,
-    pub attacks: Vec<String>,
+    pub attacks: Vec<Attack>,
     pub position: String,
     pub health: usize,
     pub maxhealth: usize,
@@ -54,6 +54,7 @@ impl Entity {
             _ => im = check_player_sprite("one")
         };
         let attacks: Vec<String> = vec!("bite".to_string(), "divide".to_string(), "".to_string(), "".to_string());
+        let attacks = attacks.into_iter().map(|x| Attack::get_by_id(&x).unwrap()).collect::<Vec<Attack>>();
         let potion = Item::get_by_id("potionHP").unwrap();
         let bag = Bag::new(Some((potion, 5)), None, None, None);
         let health: usize = 100;
@@ -110,6 +111,7 @@ impl Entity {
             Some(s) => im = format!("{}/entity/{}.png", conf::assets_path().unwrap(), s),
             _ => im = format!("{}/entity/horse.png", conf::assets_path().unwrap())
         };
+        let attacks = attacks.into_iter().map(|x| Attack::get_by_id(&x).unwrap()).collect::<Vec<Attack>>();
         Self {
             display,
             image: im,
@@ -173,10 +175,14 @@ impl Entity {
         let image = s.get("image").unwrap().to_string();
         let im = format!("{}/{}", conf::assets_path().unwrap(), image).to_string();
         let a1 = s.get("attack1").unwrap().to_string();
+        let at1 = Attack::get_by_id(&a1).unwrap();
         let a2 = s.get("attack2").unwrap().to_string();
+        let at2 = Attack::get_by_id(&a2).unwrap();
         let a3 = s.get("attack3").unwrap().to_string();
+        let at3 = Attack::get_by_id(&a3).unwrap();
         let a4 = s.get("attack4").unwrap().to_string();
-        let attacks: Vec<String> = vec!(a1,a2,a3,a4);
+        let at4 = Attack::get_by_id(&a4).unwrap();
+        let attacks: Vec<Attack> = vec!(at1,at2,at3,at4);
         let position = s.get("position").unwrap().to_string();
         let health = s.get("health").unwrap().parse::<usize>().unwrap();
         let maxhealth = s.get("maxhealth").unwrap().parse::<usize>().unwrap();
@@ -340,14 +346,9 @@ impl Entity {
             _ => self.status = Some(vec!(status))
         }
     }
-    pub fn change_bag(&mut self, bag: Bag) {
-        self.bag = Some(bag);
-    }
-    pub fn change_floor(&mut self, floor: usize) {
-        self.floor = Some(floor);
-    }
-    pub fn add_attack(&mut self, attack: &str) {
-        let att = self.attacks.clone();
+    pub fn add_item(&mut self, item: Item) {
+        println!("Add Later");
+        /*let att = self.attacks.clone();
         let atlist = Attack::list().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
         if atlist.contains(&attack.to_string()) {
             if att.contains(&attack.to_string()) {
@@ -362,6 +363,33 @@ impl Entity {
             }
         } else {
             println!("{} is not an attack", attack);
+        }*/
+    }
+    pub fn change_bag(&mut self, bag: Bag) {
+        self.bag = Some(bag);
+    }
+    pub fn change_floor(&mut self, floor: usize) {
+        self.floor = Some(floor);
+    }
+    pub fn add_attack(&mut self, attack: &str) {
+        let att = self.attacks.clone().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
+        let atlist = Attack::list().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
+        if atlist.contains(&attack.to_string()) {
+            if att.contains(&attack.to_string()) {
+                println!("posiadasz attack {}", attack);
+            } else {
+                if att.contains(&"".to_string()) {
+                    let pos = att.iter().position(|r| *r == "".to_string()).unwrap();
+                    self.attacks[pos] = Attack::get_by_id(&attack).unwrap();
+                } else {
+                    game::set_mode(Some(format!("change attack {}", attack)));
+                }
+            }
+        } else {
+            println!("{} is not an attack", attack);
         }
+    }
+    pub fn change_attacks(&mut self, attacks: Vec<Attack>) {
+        self.attacks = attacks
     }
 }

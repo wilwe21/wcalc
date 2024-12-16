@@ -1,6 +1,7 @@
 use gtk::prelude::*;
 use std::sync::Mutex;
 
+use crate::game;
 use crate::tbutton::Button;
 use crate::tattacks::Attack;
 use crate::bag::Item;
@@ -166,6 +167,38 @@ pub fn moves(text: String, button: String, typ: &str) -> String {
             set_selected(Some(0));
         } else if sel == 3 {
             set_selected(Some(2));
+        }
+    } else if button == "5" || (button == "=" && text.ends_with("5")) {
+        let mut pl = game::get_player();
+        if typ == "Attack" {
+            let mut attacks = pl.clone().attacks;
+            let mut s: Attack = Attack::get_by_id("").unwrap();
+            match sel {
+                _ if sel == 0 => {
+                    s = attacks[0].clone();
+                    attacks[0].name = get_who();
+                },
+                _ if sel == 1 => {
+                    s = attacks[2].clone();
+                    attacks[2].name = get_who();
+                },
+                _ if sel == 2 => {
+                    s = attacks[1].clone();
+                    attacks[1].name = get_who();
+                },
+                _ if sel == 3 => {
+                    s = attacks[3].clone();
+                    attacks[3].name = get_who();
+                },
+                _ => {}
+            };
+            let ola = s;
+            let nea = Attack::get_by_id(&get_who()).unwrap().name;
+            pl.change_attacks(attacks);
+            close();
+            game::update_player(pl);
+            game::set_mode(Some("move".to_string()));
+            return format!("changed {} to {}", ola, nea)
         }
     }
     update(typ);

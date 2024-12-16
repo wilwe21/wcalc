@@ -1,6 +1,6 @@
 use crate::tentity::Entity;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Item {
     pub name: String,
     pub id: String,
@@ -8,7 +8,7 @@ pub struct Item {
     pub desc: String,
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Bag {
     pub s0: Option<(Item, usize)>,
     pub s1: Option<(Item, usize)>,

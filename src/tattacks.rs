@@ -3,7 +3,7 @@ use std::fmt;
 use crate::tentity::Entity;
 use crate::fight;
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Attack {
     pub name: String,
     pub id: String,
