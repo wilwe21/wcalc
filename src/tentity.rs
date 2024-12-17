@@ -348,8 +348,8 @@ impl Entity {
     }
     pub fn add_item(&mut self, item: Item) {
         println!("Add Later");
-        /*let att = self.attacks.clone();
-        let atlist = Attack::list().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
+        let bag = self.bag.clone();
+        /*let atlist = Attack::list().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
         if atlist.contains(&attack.to_string()) {
             if att.contains(&attack.to_string()) {
                 println!("posiadasz attack {}", attack);
