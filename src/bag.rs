@@ -121,6 +121,13 @@ impl Bag {
             }
         }
     }
+    pub fn to_vec(&self) -> Vec<Item> {
+        let u = self.s0.clone();
+        let d = self.s1.clone();
+        let t = self.s2.clone();
+        let q = self.s3.clone();
+        return vec!(u, d, t, q)
+    }
 }
 
 impl Item {
