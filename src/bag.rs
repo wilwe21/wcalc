@@ -121,12 +121,16 @@ impl Bag {
             }
         }
     }
-    pub fn to_vec(&self) -> Vec<Item> {
+    pub fn to_vec(&self) -> Vec<Option<(Item, usize)>> {
         let u = self.s0.clone();
         let d = self.s1.clone();
         let t = self.s2.clone();
         let q = self.s3.clone();
         return vec!(u, d, t, q)
+    }
+    pub fn to_vec_str(&self) -> Vec<String> {
+        let v = self.to_vec().clone();
+        return v.into_iter().filter(|x| x.is_some()).map(|x| x.unwrap().0.name).collect::<Vec<String>>()
     }
 }
 
@@ -142,7 +146,7 @@ impl Item {
 
     pub fn list_items() -> Vec<Self> {
         let heal = Self::new("HP Potion", "potionHP", "heal 20", "Heal yourself by 20 hp");
-        let bow = Self::new("Bow", "bow", "shoot", "Shoot your enemy");
+        let bow = Self::new("Bow", "bow", "shoot 35", "Shoot your enemy");
         return vec!(heal, bow)
     }
 

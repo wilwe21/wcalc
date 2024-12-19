@@ -348,7 +348,7 @@ impl Entity {
     }
     pub fn add_item(&mut self, item: Item) {
         println!("Add Later");
-        let bag = self.bag.clone().to_vec();
+        let bag = self.bag.clone().unwrap().to_vec();
         /*let atlist = Attack::list().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
         if atlist.contains(&attack.to_string()) {
             if att.contains(&attack.to_string()) {
