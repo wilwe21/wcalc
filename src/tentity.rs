@@ -348,13 +348,14 @@ impl Entity {
     }
     pub fn add_item(&mut self, item: Item) {
         println!("Add Later");
-        let bag = self.bag.clone().unwrap().to_vec();
-        /*let atlist = Attack::list().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
-        if atlist.contains(&attack.to_string()) {
-            if att.contains(&attack.to_string()) {
+        let bag = self.bag.clone().unwrap().to_vec_stri_id();
+        let itlist = Item::list_items().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
+        if itlist.contains(&item.id.to_string()) {
+            println!("end later");
+            if bag.contains(&item.id.to_string()) {
                 println!("posiadasz attack {}", attack);
             } else {
-                if att.contains(&"".to_string()) {
+                if bag.contains(&"".to_string()) {
                     let pos = att.iter().position(|r| *r == "".to_string()).unwrap();
                     self.attacks[pos] = attack.to_string();
                 } else {

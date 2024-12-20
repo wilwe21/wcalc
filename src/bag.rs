@@ -132,6 +132,10 @@ impl Bag {
         let v = self.to_vec().clone();
         return v.into_iter().filter(|x| x.is_some()).map(|x| x.unwrap().0.name).collect::<Vec<String>>()
     }
+    pub fn to_vec_str_id(&self) -> Vec<String> {
+        let v = self.to_vec().clone();
+        return v.into_iter().filter(|x| x.is_some()).map(|x| x.unwrap().0.id).collect::<Vec<String>>()
+    }
 }
 
 impl Item {
