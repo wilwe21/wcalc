@@ -24,6 +24,7 @@ pub struct Entity {
     pub score: usize,
     pub room: String,
     pub floor: Option<usize>,
+    pub drop: Option<String>,
 }
 
 impl fmt::Display for Entity {
@@ -72,6 +73,7 @@ impl Entity {
             score: 0,
             room: "0".to_string(),
             floor: Some(0),
+            drop: None,
         }
     }
     
@@ -102,6 +104,7 @@ impl Entity {
             score: 0,
             room: "0".to_string(),
             floor: Some(0),
+            drop: None,
         }
     }
 
@@ -126,6 +129,7 @@ impl Entity {
             score: 0,
             room: "None".to_string(),
             floor: None,
+            drop: None,
         }
     }
 
@@ -258,6 +262,7 @@ impl Entity {
             score,
             room,
             floor,
+            drop: None,
         }
     }
 
