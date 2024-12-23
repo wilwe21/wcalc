@@ -130,11 +130,22 @@ impl Bag {
     }
     pub fn to_vec_str(&self) -> Vec<String> {
         let v = self.to_vec().clone();
-        return v.into_iter().filter(|x| x.is_some()).map(|x| x.unwrap().0.name).collect::<Vec<String>>()
+        let mut c = v.into_iter().filter(|x| x.is_some()).map(|x| x.unwrap().0.name).collect::<Vec<String>>();
+        while c.len() < 4 {
+            c.push("".to_string());
+        }
+        return c
     }
     pub fn to_vec_str_id(&self) -> Vec<String> {
         let v = self.to_vec().clone();
-        return v.into_iter().filter(|x| x.is_some()).map(|x| x.unwrap().0.id).collect::<Vec<String>>()
+        let mut c = v.into_iter().filter(|x| x.is_some()).map(|x| x.unwrap().0.id).collect::<Vec<String>>();
+        while c.len() < 4 {
+            c.push("".to_string());
+        }
+        return c
+    }
+    pub fn add_item(&self) {
+        /* For later */
     }
 }
 

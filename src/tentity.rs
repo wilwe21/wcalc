@@ -351,25 +351,24 @@ impl Entity {
             _ => self.status = Some(vec!(status))
         }
     }
-    pub fn add_item(&mut self, item: Item) {
-        println!("Add Later");
-        let bag = self.bag.clone().unwrap().to_vec_stri_id();
+    pub fn add_item(&mut self, item: &str) {
+        let bag = self.bag.clone();
+        let bag_id = self.bag.clone().unwrap().to_vec_str_id();
         let itlist = Item::list_items().into_iter().map(|x| x.id.to_string()).collect::<Vec<String>>();
-        if itlist.contains(&item.id.to_string()) {
-            println!("end later");
-            if bag.contains(&item.id.to_string()) {
-                println!("posiadasz attack {}", attack);
+        if itlist.contains(&item.to_string()) {
+            if bag_id.contains(&item.to_string()) {
+                println!("posiadasz item {} trzeba dodać 1 do count", item);
             } else {
-                if bag.contains(&"".to_string()) {
-                    let pos = att.iter().position(|r| *r == "".to_string()).unwrap();
-                    self.attacks[pos] = attack.to_string();
+                if bag_id.contains(&"".to_string()) {
+
+                    println!("wolny slot");
                 } else {
-                    game::set_mode(Some(format!("change attack {}", attack)));
+                    game::set_mode(Some(format!("change bag {}", item)));
                 }
             }
         } else {
-            println!("{} is not an attack", attack);
-        }*/
+            println!("{} is not an item", item);
+        }
     }
     pub fn change_bag(&mut self, bag: Bag) {
         self.bag = Some(bag);
