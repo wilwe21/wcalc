@@ -27,9 +27,13 @@ pub fn up_map(win: gtk::Window) {
     }
 }
 
-pub fn use_map() -> gtk::Window {
+pub fn use_map() -> Option<gtk::Window> {
     unsafe {
-        map.as_ref().unwrap().lock().unwrap().clone()
+        if map.is_some() {
+            return Some(map.as_ref().unwrap().lock().unwrap().clone())
+        } else {
+            return None
+        }
     }
 }
 
@@ -52,7 +56,7 @@ pub fn update() {
     display.insert(pos[1].to_string(), pru);
     sus.insert("roomcur".to_string(), display);
     let s: String = save::conf_to_str(sus).split("\n").enumerate().map(|(i, r)| if i != 0 { format!("{}\n",r) } else { "".to_string() } ).collect();
-    let m = use_map();
+    let m = use_map().unwrap();
     let mbox = gtk::Box::new(gtk::Orientation::Vertical, 1);
     mbox.add_css_class("Map");
     let fli = game::get_player().floor.unwrap();
@@ -101,9 +105,15 @@ pub fn toggle_map() -> String {
 }
 
 pub fn open_map() {
-    use_map().show();
+    let mapy = use_map();
+    if mapy.is_some() {
+        mapy.unwrap().show();
+    }
 }
 
 pub fn close_map() {
-    use_map().hide();
+    let mapy = use_map();
+    if mapy.is_some() {
+        mapy.unwrap().hide();
+    }
 }

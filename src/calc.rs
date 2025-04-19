@@ -206,7 +206,7 @@ pub fn ent_str(text: String, button: String) -> String {
                             endst = format!("{}{}",&text, &button); 
                         } else {
                             if le > 1 {
-                                if &text[le-1..le] == button || &text[le-2..le-1] == button{
+                                if &text[le-1..le] == button {
                                     endst = text.to_string();
                                 } else { endst = format!("{}{}", &text, &button); }
                             } else {
